@@ -675,14 +675,15 @@ function etapaApixHtml() {
 function requisitosEtapa(e, d) {
   const x = ETAPAS_APIX[e], lista = [];
   lista.push({ texto: x.entrenos + " entrenos", llevas: d.entrenos + " / " + x.entrenos, parte: Math.min(1, d.entrenos / x.entrenos), ok: d.entrenos >= x.entrenos });
-  lista.push({ texto: "Racha de " + x.racha + " semanas", llevas: "Tu mejor racha: " + d.racha, parte: Math.min(1, d.racha / x.racha), ok: d.racha >= x.racha });
+  if (e >= 2) lista.push({ texto: "Racha de " + x.racha + " semanas seguidas", llevas: "Tu racha: " + d.rachaActual, parte: Math.min(1, d.rachaActual / x.racha), ok: d.rachaActual >= x.racha });
+  else lista.push({ texto: "Racha de " + x.racha + " semanas", llevas: "Tu mejor racha: " + d.racha, parte: Math.min(1, d.racha / x.racha), ok: d.racha >= x.racha });
   if (x.rango) lista.push({ texto: "Rango global " + RANGOS[x.rango].nombre, llevas: "Ahora: " + (d.rango < 0 ? "sin rango" : RANGOS[d.rango].nombre), parte: d.rango < 0 ? 0 : Math.min(1, (d.rango + 1) / (x.rango + 1)), ok: d.rango >= x.rango });
   return lista;
 }
 // Ventana con las 5 etapas: las conseguidas a color y las siguientes en sombra
 function hojaEtapas() {
   const e = etapaApix(), d = datosEtapa();
-  let h = cabeceraHoja("Apix crece contigo", "Etapas") + '<p class="muted small" style="margin-bottom:12px">Para que Apix evolucione hay que cumplirlo todo: entrenos, constancia y fuerza. No es fácil: muy poca gente llega a Leyenda. Lo que consigues ya no se pierde.</p><div class="etapas-lista">';
+  let h = cabeceraHoja("Apix crece contigo", "Etapas") + '<p class="muted small" style="margin-bottom:12px">Para que Apix evolucione hay que cumplirlo todo: entrenos, constancia y fuerza. No es fácil: muy poca gente llega a Leyenda.</p><p class="small" style="color:var(--warn);margin:-4px 0 12px">⚠️ Desde Fuerte, si pierdes la racha, Apix vuelve a Aprendiz.</p><div class="etapas-lista">';
   ETAPAS_APIX.forEach(function (x, i) {
     const tiene = i <= e;
     h += '<div class="etapa' + (tiene ? " hecha" : "") + (i === e ? " actual" : "") + '">' + apixSVG(i === e ? "orgulloso" : "contento", "", i) +

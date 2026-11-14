@@ -62,6 +62,8 @@ const PATRONES = [
   ["{x} entrenos", "{x} workouts", "{x} séances", "{x} حصص"],
   ["Racha de {x} semanas", "{x}-week streak", "Série de {x} semaines", "سلسلة ديال {x} سيمانات"],
   ["Rango global {x}", "Overall rank {x}", "Rang global {x}", "الرتبة العامة {x}"],
+  ["Racha de {x} semanas seguidas", "{x} weeks in a row", "{x} semaines d'affilée", "{x} سيمانات متتابعين"],
+  ["Tu racha: {x}", "Your streak: {x}", "Ta série : {x}", "السلسلة ديالك: {x}"],
   ["Tu mejor racha: {x}", "Your best streak: {x}", "Ta meilleure série : {x}", "أحسن سلسلة ديالك: {x}"],
   ["Ahora: {x}", "Now: {x}", "Maintenant : {x}", "دابا: {x}"],
   ["Etapa {x} de {x}", "Stage {x} of {x}", "Étape {x} sur {x}", "المرحلة {x} من {x}"],

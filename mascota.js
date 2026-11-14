@@ -141,6 +141,11 @@ function estadoMascota() {
   if (estado.bienvenidaApix === hoyF && validas.length === 0) {
     return { humor: "contento", mensaje: "¡Hola! Soy Apix y estaré aquí para que cumplas tus objetivos." };
   }
+  // 0b. Ha vuelto a Aprendiz por perder la racha (lo dice 2 días)
+  etapaApix();
+  if (estado.apixBajada && diasEntre(estado.apixBajada, hoyF) <= 1) {
+    return { humor: "enfadado", mensaje: "Has perdido la racha y he vuelto a ser Aprendiz. 😤 Hay que recuperar la constancia para volver a crecer." };
+  }
   // 1. Molestias recientes: nunca presionar
   if (ultima && diasEntre(ultima.fecha, hoyF) <= 3 && ultima.ejercicios.some(function (e) { return e.molestias; })) {
     return { humor: "cuida", mensaje: mensajeDelDia(MENSAJES_APIX.cuida, hoyF) };
@@ -197,8 +202,9 @@ function estadoMascota() {
 }
 
 // ---------- Etapas de Apix: crece contigo, pero cuesta ----------
-// Para pasar de etapa hay que cumplir TODO: entrenos, mejor racha (de siempre) y rango global.
-// Una vez conseguida, la etapa ya no se pierde (se guarda en estado.apixEtapa).
+// Para pasar de etapa hay que cumplir TODO: entrenos, racha y rango global.
+// Aprendiz se consigue con tu mejor racha y ya no se pierde.
+// Fuerte, Bestia y Leyenda piden la racha ACTUAL: si pierdes la racha, Apix vuelve a Aprendiz.
 const ETAPAS_APIX = [
   { nombre: "Novato", entrenos: 0, racha: 0, rango: 0 },
   { nombre: "Aprendiz", entrenos: 30, racha: 4, rango: 0 },
@@ -224,12 +230,24 @@ function mejorRacha() {
 // Lo que llevas de cada requisito
 function datosEtapa() {
   const pg = puntosGlobal();
-  return { entrenos: sesionesValidas().length, racha: mejorRacha(), rango: pg === null ? -1 : rangoDePuntos(pg) };
+  return { entrenos: sesionesValidas().length, racha: mejorRacha(), rachaActual: rachaSemanas(), rango: pg === null ? -1 : rangoDePuntos(pg) };
 }
-// ¿Cumples todo lo que pide esa etapa?
+// ¿Cumples todo lo que pide esa etapa? (de Fuerte en adelante cuenta la racha actual)
 function cumpleEtapa(e, d) {
   const x = ETAPAS_APIX[e];
-  return d.entrenos >= x.entrenos && d.racha >= x.racha && (x.rango === 0 || d.rango >= x.rango);
+  const racha = e >= 2 ? (d.rachaActual !== undefined ? d.rachaActual : d.racha) : d.racha;
+  return d.entrenos >= x.entrenos && racha >= x.racha && (x.rango === 0 || d.rango >= x.rango);
+}
+// ¿Se ha roto la racha desde que conseguiste la etapa? Mira cada semana ya terminada desde esa fecha.
+function rachaRotaDesde(fecha) {
+  const mapa = sesionesPorSemana();
+  let lunes = lunesDe(fecha);
+  const actual = lunesDe(hoy());
+  while (lunes < actual) {
+    if ((mapa[lunes] || 0) < minimoSemanal()) return true;
+    lunes = sumarDias(lunes, 7);
+  }
+  return false;
 }
 // Tu etapa (0 a 4). Se guarda la más alta conseguida para que nunca baje.
 let cacheEtapa = { clave: "", e: 0 };
@@ -241,8 +259,17 @@ function etapaApix() {
   const d = datosEtapa();
   let e = 0;
   for (let i = 1; i < ETAPAS_APIX.length; i++) { if (cumpleEtapa(i, d)) e = i; else break; }
-  if (estado.modo !== "demo") e = Math.max(e, estado.apixEtapa || 0);
-  if (estado.modo !== "demo" && e > (estado.apixEtapa || 0)) estado.apixEtapa = e;
+  if (estado.modo !== "demo") {
+    let guardada = estado.apixEtapa || 0;
+    // Perdiste la racha después de conseguir Fuerte o más: vuelve a Aprendiz
+    if (guardada >= 2 && estado.apixEtapaFecha && rachaRotaDesde(estado.apixEtapaFecha)) {
+      estado.apixEtapa = guardada = 1;
+      estado.apixBajada = hoy();
+      estado.apixEtapaFecha = hoy();
+    }
+    if (e > guardada) { estado.apixEtapa = e; estado.apixEtapaFecha = hoy(); }
+    e = Math.max(e, estado.apixEtapa || 0);
+  }
   cacheEtapa = { clave: estado.sesiones.length + "|" + hoy() + "|" + (estado.apixEtapa || 0) + "|" + estado.modo + "|" + (estado.perfil.peso || 0), e: e };
   return e;
 }

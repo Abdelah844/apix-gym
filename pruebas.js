@@ -1063,8 +1063,16 @@ const PRUEBAS = [
     if (cumpleEtapa(2, { entrenos: 200, racha: 30, rango: 2 })) return "Fuerte sin rango Oro";
     if (cumpleEtapa(4, { entrenos: 300, racha: 25, rango: 8 })) return "Leyenda sin 26 semanas de racha";
     if (etapaApix() !== 0 && d.entrenos < 30) return "La demo no debería pasar de Novato con " + d.entrenos + " entrenos";
-    estado.apixEtapa = 3;                                    // conseguida antes: no baja
-    if (etapaApix() !== 3) return "Apix ha bajado de etapa";
+    if (cumpleEtapa(2, { entrenos: 100, racha: 20, rachaActual: 3, rango: 5 })) return "Fuerte con la racha actual por debajo de 8";
+    // Bestia conseguida hace 5 semanas y sin entrenar desde entonces: la racha se ha roto, vuelve a Aprendiz
+    estado.apixEtapa = 3; estado.apixEtapaFecha = sumarDias(hoy(), -35); estado.apixBajada = null;
+    estado.sesiones = estado.sesiones.filter(function (x) { return x.fecha < estado.apixEtapaFecha; });
+    cacheEtapa = { clave: "", e: 0 };
+    if (etapaApix() !== 1 || estado.apixEtapa !== 1 || estado.apixBajada !== hoy()) return "Al perder la racha no vuelve a Aprendiz";
+    if (estadoMascota().humor !== "enfadado") return "Apix no avisa de que ha bajado";
+    // Aprendiz no se pierde nunca
+    estado.apixEtapa = 1; estado.apixEtapaFecha = sumarDias(hoy(), -60); cacheEtapa = { clave: "", e: 0 };
+    if (etapaApix() !== 1) return "Aprendiz se ha perdido";
     const novato = apixSVG("contento", "", 0), fuerte = apixSVG("contento", "", 2), leyenda = apixSVG("contento", "", 4);
     if (novato.indexOf("#3A2A1C") >= 0 || fuerte.indexOf("#3A2A1C") >= 0) return "El cinturón sale antes de Bestia";
     if (leyenda.indexOf("#D7263D") < 0 || leyenda.indexOf("#3A2A1C") < 0) return "A Leyenda le falta la capa o el cinturón";

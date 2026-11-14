@@ -15348,6 +15348,21 @@ const TRADUCCIONES = {
 "Étape maximale. Une vraie légende !",
 "أعلى مرحلة. أسطورة!"
 ],
+"Para que Apix evolucione hay que cumplirlo todo: entrenos, constancia y fuerza. No es fácil: muy poca gente llega a Leyenda.": [
+"For Apix to evolve you have to meet everything: workouts, consistency and strength. It's not easy: very few people reach Legend.",
+"Pour qu'Apix évolue, il faut tout remplir : séances, régularité et force. Ce n'est pas facile : très peu de gens arrivent à Légende.",
+"باش Apix يتطوّر خاصك تكمّل كلشي: الحصص، الاستمرارية والقوة. ماشي ساهل: قليل بزاف اللي كيوصل لأسطورة."
+],
+"⚠️ Desde Fuerte, si pierdes la racha, Apix vuelve a Aprendiz.": [
+"⚠️ From Strong onwards, if you lose your streak, Apix goes back to Apprentice.",
+"⚠️ À partir de Costaud, si tu perds ta série, Apix redevient Apprenti.",
+"⚠️ من «قوي» لفوق، إلا ضيّعتي السلسلة، Apix كيرجع متعلم."
+],
+"Has perdido la racha y he vuelto a ser Aprendiz. 😤 Hay que recuperar la constancia para volver a crecer.": [
+"You lost your streak and I'm back to Apprentice. 😤 You need to get consistent again for me to grow.",
+"Tu as perdu ta série et je suis redevenu Apprenti. 😤 Il faut retrouver la régularité pour que je grandisse à nouveau.",
+"ضيّعتي السلسلة ورجعت متعلم. 😤 خاصك ترجع للاستمرارية باش نكبر من جديد."
+],
 "Social": [
 "Social",
 "Social",
