@@ -1080,6 +1080,11 @@ const PRUEBAS = [
     if (semanaCuadraConRutina() || diaRutinaDe(0) !== null) return "Con días que no cuadran no debería decir qué día toca";
     if (planAvisos(lunes, 7).length !== 3) return "Con 3 días deberían salir 3 avisos";
     if (validarEsquema(JSON.parse(JSON.stringify(estado))).length) return "El estado no es válido: " + validarEsquema(JSON.parse(JSON.stringify(estado)))[0];
+    // Los 7 días también valen
+    guardarSemana([0, 1, 2, 3, 4, 5, 6], {});
+    if (estado.perfil.dias !== 7 || validarEsquema(JSON.parse(JSON.stringify(estado))).length) return "No deja entrenar los 7 días";
+    if (planAvisos(lunes, 7).length !== 7) return "Con 7 días deberían salir 7 avisos";
+    guardarSemana([0, 2, 4], { 0: "07:15" });
     // En la app (sin push): antes de la hora no avisa, después sí
     if (recordatorioPendiente(new Date(2026, 10, 16, 7, 0, 0)) !== null) return "Avisa antes de la hora";
     return recordatorioPendiente(new Date(2026, 10, 16, 7, 20, 0)) !== null || "No avisa después de la hora";

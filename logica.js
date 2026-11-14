@@ -116,7 +116,7 @@ const NOMBRES_DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes
 
 // Días de la semana propuestos según cuántos días entrenas (0 = lunes)
 function calendarioPorDefecto(n) {
-  return ({ 1: [0], 2: [0, 3], 3: [0, 2, 4], 4: [0, 1, 3, 4], 5: [0, 1, 2, 4, 5], 6: [0, 1, 2, 3, 4, 5] })[n] || [0, 2, 4];
+  return ({ 1: [0], 2: [0, 3], 3: [0, 2, 4], 4: [0, 1, 3, 4], 5: [0, 1, 2, 4, 5], 6: [0, 1, 2, 3, 4, 5], 7: [0, 1, 2, 3, 4, 5, 6] })[n] || [0, 2, 4];
 }
 
 // ---------- Unidades: todo se GUARDA en kg; si eliges libras, solo cambia lo que ves y escribes ----------
@@ -249,7 +249,7 @@ function validarEsquema(d) {
   comprobar(numero(p.peso, 35, 250), "Perfil: peso fuera de rango (35-250 kg).");
   comprobar(["principiante", "intermedio", "avanzado"].includes(p.experiencia), "Perfil: experiencia no válida.");
   comprobar(["masa", "fuerza", "condicion", "activo"].includes(p.objetivo), "Perfil: objetivo no válido.");
-  comprobar(entero(p.dias, 1, 6), "Perfil: días por semana fuera de rango (1-6).");
+  comprobar(entero(p.dias, 1, 7), "Perfil: días por semana fuera de rango (1-7).");
   comprobar([30, 45, 60, 90].includes(p.duracion), "Perfil: duración no válida.");
   comprobar(["gimnasio", "casa", "calistenia"].includes(p.lugar), "Perfil: lugar no válido.");
   comprobar(Array.isArray(p.equipo) && p.equipo.length > 0 && p.equipo.every(function (x) { return EQUIPOS[x]; }), "Perfil: equipamiento no válido o vacío.");

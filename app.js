@@ -238,7 +238,7 @@ const OP_EXPERIENCIA = [["principiante", "Principiante (menos de 1 año)"], ["in
 const OP_OBJETIVO = [["masa", "Ganar masa muscular"], ["fuerza", "Mejorar la fuerza"], ["condicion", "Mejorar la condición física"], ["activo", "Mantenerse activo"]];
 const OP_SEXO = [["", "Elige una opción"], ["hombre", "Hombre"], ["mujer", "Mujer"], ["nd", "Prefiero no decirlo"]];
 const OP_LUGAR = [["gimnasio", "Gimnasio"], ["casa", "Casa"], ["calistenia", "Calistenia"]];
-const OP_DIAS = [[1, "1 día"], [2, "2 días"], [3, "3 días"], [4, "4 días"], [5, "5 días"], [6, "6 días"]];
+const OP_DIAS = [[1, "1 día"], [2, "2 días"], [3, "3 días"], [4, "4 días"], [5, "5 días"], [6, "6 días"], [7, "7 días"]];
 const OP_DURACION = [[30, "30 min"], [45, "45 min"], [60, "60 min"], [90, "90 min"]];
 
 // Formulario de perfil (sirve para el registro y para Ajustes)
@@ -623,7 +623,8 @@ function hojaSemana(nueva) {
     NOMBRES_DIAS_SEMANA.map(function (nom, i) {
       return '<button class="chip' + (semOp.dias.includes(i) ? " on" : "") + '" data-act="semana-dia" data-a="' + i + '">' + nom.slice(0, 2) + '</button>';
     }).join("") + '</div><p class="muted small">' + (semOp.dias.length === 1 ? "1 día elegido." : semOp.dias.length + " días elegidos.") +
-      (semOp.dias.length && semOp.dias.length !== n ? ' Tu rutina tiene ' + n + ' días: se irán turnando en orden.' : '') + '</p></div>';
+      (semOp.dias.length && semOp.dias.length !== n ? ' Tu rutina tiene ' + n + ' días: se irán turnando en orden.' : '') + '</p>' +
+      (semOp.dias.length === 7 ? '<p class="small" style="color:var(--warn)">Entrenar los 7 días es mucho: el músculo crece cuando descansa. Si notas cansancio o dolores, deja un día libre.</p>' : '') + '</div>';
   if (orden.length) {
     h += '<div class="card stack tight"><h3>¿A qué hora? <span class="muted small">(opcional)</span></h3>';
     orden.forEach(function (d, k) {
@@ -1856,8 +1857,9 @@ const OBJETIVO_INFO = { masa: ["💪", "Ganar músculo"], fuerza: ["🏋️", "M
 function hojaGenerador(reiniciar) {
   const p = estado.perfil;
   if (reiniciar || !genOp) {
-    genOp = { objetivo: p.objetivo, nivel: p.experiencia, dias: Math.max(2, p.dias), duracion: p.duracion,
-      calendario: (p.diasSemana && p.diasSemana.length === Math.max(2, p.dias)) ? p.diasSemana.slice() : calendarioPorDefecto(Math.max(2, p.dias)),
+    const nDias = Math.min(6, Math.max(2, p.dias));          // las rutinas que crea la app son de 2 a 6 días
+    genOp = { objetivo: p.objetivo, nivel: p.experiencia, dias: nDias, duracion: p.duracion,
+      calendario: (p.diasSemana && p.diasSemana.length === nDias) ? p.diasSemana.slice() : calendarioPorDefecto(nDias),
       equipo: p.equipo.slice(), tipo: "auto", prioridad: "", evitar: p.evitar || "" };
     pasoGen = 1;
   }

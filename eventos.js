@@ -63,7 +63,7 @@ const ACCIONES = {
     estado = estadoVacio(p);
     estado.ajustes.privacidadAceptada = hoy() + " v" + VERSION_PRIVACIDAD;
     estado.bienvenidaApix = hoy();          // Apix se presenta solo el día que creas tu perfil
-    estado.rutina = generarRutina({ objetivo: p.objetivo, nivel: p.experiencia, dias: p.dias, duracion: p.duracion,
+    estado.rutina = generarRutina({ objetivo: p.objetivo, nivel: p.experiencia, dias: Math.min(6, p.dias), duracion: p.duracion,
       tipo: "auto", equipo: p.equipo, prioridad: "", evitar: p.evitar });
     guardar(); tab = "inicio"; pintar();
     mostrarTutorial(0);                     // la primera vez, Apix enseña la app
@@ -104,7 +104,7 @@ const ACCIONES = {
   },
   "guardar-semana": function () {
     leerHorasSemana();
-    if (semOp.dias.length < 1 || semOp.dias.length > 6) { $("semError").textContent = "Elige entre 1 y 6 días. Deja al menos un día de descanso."; return; }
+    if (semOp.dias.length < 1) { $("semError").textContent = "Elige al menos 1 día."; return; }
     guardarSemana(semOp.dias, semOp.horas);
     estado.ajustes.notif.recordatorios = semOp.avisar;
     const pedir = semOp.avisar && permisoAvisos() === "default";

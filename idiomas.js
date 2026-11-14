@@ -15183,6 +15183,16 @@ const TRADUCCIONES = {
 "+ Heure",
 "+ الساعة"
 ],
+"Elige al menos {n} día.": [
+"Choose at least {n} day.",
+"Choisis au moins {n} jour.",
+"Choisis au moins {n} jour."
+],
+"Entrenar los {n} días es mucho: el músculo crece cuando descansa. Si notas cansancio o dolores, deja un día libre.": [
+"Training all {n} days is a lot: muscle grows when it rests. If you feel tired or sore, leave a day free.",
+"S'entraîner les {n} jours, c'est beaucoup : le muscle grandit quand il se repose. Si tu te sens fatigué ou si tu as mal, garde un jour libre.",
+"التمرين {n} أيام بزاف: العضلة كتكبر ملي كترتاح. إلا حسيتي بالعيا ولا الوجع، خلي نهار خاوي."
+],
 "Social": [
 "Social",
 "Social",
