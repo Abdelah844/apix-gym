@@ -1933,6 +1933,18 @@ function indiceFatiga() {
 // ---------- Mi semana: días y horas de entreno ----------
 // Los días están en rutina.calendario (0 = lunes … 6 = domingo).
 // Las horas son opcionales y se guardan en ajustes.horasEntreno, por día de la semana: { "0": "18:30" }.
+// Los días de la semana que entrenas. Pueden ser más o menos que los días de la rutina:
+// en ese caso los días de la rutina se van turnando en orden.
+function diasDeEntreno() {
+  const d = estado.ajustes.diasEntreno;                 // lo elegido en «Mi semana»
+  if (Array.isArray(d) && d.length && d.every(function (x) { return Number.isInteger(x) && x >= 0 && x <= 6; })) return d;
+  if (estado.rutina && Array.isArray(estado.rutina.calendario)) return estado.rutina.calendario;
+  return estado.perfil.diasSemana || [];
+}
+// ¿Coinciden los días de la semana con los de la rutina? (lunes = Día 1, miércoles = Día 2…)
+function semanaCuadraConRutina() {
+  return !!estado.rutina && diasDeEntreno().length === estado.rutina.dias.length;
+}
 function horaDeEntreno(diaSemana) {
   const h = (estado.ajustes.horasEntreno || {})[diaSemana];
   return typeof h === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(h) ? h : "";
@@ -1945,16 +1957,17 @@ function momentoAviso(diaSemana) {
 }
 // Qué día de la rutina toca ese día de la semana (según el calendario), o null
 function diaRutinaDe(diaSemana) {
-  const r = estado.rutina;
-  if (!r || !Array.isArray(r.calendario)) return null;
-  const i = r.calendario.indexOf(diaSemana);
-  return i >= 0 && r.dias[i] ? r.dias[i] : null;
+  if (!semanaCuadraConRutina()) return null;            // si no cuadran, los días se turnan: no se sabe cuál toca
+  const i = diasDeEntreno().indexOf(diaSemana);
+  return i >= 0 && estado.rutina.dias[i] ? estado.rutina.dias[i] : null;
 }
 // Guarda los días (ordenados) y las horas elegidas en «Mi semana»
 function guardarSemana(dias, horas) {
   const cal = dias.slice().sort(function (a, b) { return a - b; });
-  if (estado.rutina) estado.rutina.calendario = cal;
+  estado.ajustes.diasEntreno = cal.slice();
   estado.perfil.diasSemana = cal.slice();
+  estado.perfil.dias = cal.length;                      // tu meta semanal pasa a ser esos días
+  if (estado.rutina && cal.length === estado.rutina.dias.length) estado.rutina.calendario = cal.slice();
   const limpias = {};
   for (const d of cal) if (/^([01]\d|2[0-3]):[0-5]\d$/.test(horas[d] || "")) limpias[d] = horas[d];
   estado.ajustes.horasEntreno = limpias;
@@ -1990,7 +2003,7 @@ function recordatorioPendiente(ahora, paraPlan) {
   }
   // Día de entreno según tu calendario
   if (n.recordatorios !== false) {
-    const cal = estado.rutina && Array.isArray(estado.rutina.calendario) ? estado.rutina.calendario : (estado.perfil.diasSemana || []);
+    const cal = diasDeEntreno();
     if (cal.includes(diaSemana)) {
       // Con hora puesta, Apix te dice qué día de la rutina te toca
       const dr = horaDeEntreno(diaSemana) ? diaRutinaDe(diaSemana) : null;

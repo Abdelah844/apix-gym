@@ -1073,6 +1073,13 @@ const PRUEBAS = [
     if (plan[0].texto.indexOf(estado.rutina.dias[0].nombre) < 0) return "El aviso con hora no dice qué día toca";
     const segundo = new Date(plan[1].cuando);
     if (segundo.getHours() !== 18 || segundo.getDay() !== 3) return "El aviso del miércoles debería salir a las 18:00";
+    // Menos días que la rutina: se guardan igual y la rutina no se rompe
+    guardarSemana([0, 2, 4], { 0: "07:15" });
+    if (diasDeEntreno().join() !== "0,2,4" || estado.perfil.dias !== 3) return "No deja entrenar menos días que la rutina";
+    if (estado.rutina.calendario.length !== estado.rutina.dias.length) return "El calendario de la rutina se ha descuadrado";
+    if (semanaCuadraConRutina() || diaRutinaDe(0) !== null) return "Con días que no cuadran no debería decir qué día toca";
+    if (planAvisos(lunes, 7).length !== 3) return "Con 3 días deberían salir 3 avisos";
+    if (validarEsquema(JSON.parse(JSON.stringify(estado))).length) return "El estado no es válido: " + validarEsquema(JSON.parse(JSON.stringify(estado)))[0];
     // En la app (sin push): antes de la hora no avisa, después sí
     if (recordatorioPendiente(new Date(2026, 10, 16, 7, 0, 0)) !== null) return "Avisa antes de la hora";
     return recordatorioPendiente(new Date(2026, 10, 16, 7, 20, 0)) !== null || "No avisa después de la hora";

@@ -104,8 +104,7 @@ const ACCIONES = {
   },
   "guardar-semana": function () {
     leerHorasSemana();
-    const n = estado.rutina.dias.length;
-    if (semOp.dias.length !== n) { $("semError").textContent = "Elige exactamente " + n + " días (llevas " + semOp.dias.length + ")."; return; }
+    if (semOp.dias.length < 1 || semOp.dias.length > 6) { $("semError").textContent = "Elige entre 1 y 6 días. Deja al menos un día de descanso."; return; }
     guardarSemana(semOp.dias, semOp.horas);
     estado.ajustes.notif.recordatorios = semOp.avisar;
     const pedir = semOp.avisar && permisoAvisos() === "default";
@@ -155,6 +154,7 @@ const ACCIONES = {
     if (estado.rutina && !pideConfirmar("usar-propuesta", hojaPropuesta)) return;
     estado.rutina = propuesta; propuesta = null; genOp = null;
     estado.perfil.diasSemana = estado.rutina.calendario.slice();
+    delete estado.ajustes.diasEntreno;               // rutina nueva con sus días: mandan los que acabas de elegir
     guardar(); cerrarHoja(); irA("entrenar");
     toast("✓ Rutina guardada. ¡A entrenar!", "ok");
   },
@@ -840,7 +840,9 @@ const ACCIONES = {
       estado.pesoCorporal.push({ fecha: hoy(), kg: p.peso });
     }
     p.uid = estado.perfil.uid;                       // el identificador nunca cambia
-    p.diasSemana = estado.perfil.diasSemana;
+    // Si cambias los «días por semana», los días elegidos en «Mi semana» se recolocan para que coincidan
+    p.diasSemana = Array.isArray(estado.perfil.diasSemana) && estado.perfil.diasSemana.length === p.dias ? estado.perfil.diasSemana : calendarioPorDefecto(p.dias);
+    if (p.dias !== estado.perfil.dias) estado.ajustes.diasEntreno = p.diasSemana.slice();
     estado.perfil = p;
     const a = estado.ajustes;
     a.descanso = parseInt($("aDescanso").value); a.descansoAislamiento = a.descanso; a.descansoCompuesto = parseInt($("aDescComp").value); a.formula1RM = $("aFormula").value; a.incremento = parseFloat($("aIncremento").value); a.incrementoMancuernas = parseFloat($("aIncMancuernas").value);
@@ -1474,3 +1476,9 @@ function descansoTrasAnadir() {
   const quedan = Math.round(a.ultimaSerie.seg - (Date.now() - a.ultimaSerie.hora) / 1000);
   if (quedan >= 5) empezarDescanso(quedan);
 }
+
+// «Mi semana»: la pista «+ Hora» se quita en cuanto la casilla tiene una hora
+document.addEventListener("input", function (ev) {
+  const t = ev.target;
+  if (t && t.dataset && t.dataset.horaDia !== undefined && t.parentElement) t.parentElement.classList.toggle("vacia", !t.value);
+});

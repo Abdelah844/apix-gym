@@ -15163,6 +15163,26 @@ const TRADUCCIONES = {
 "✓ Semaine enregistrée",
 "✓ السيمانة تحفظات"
 ],
+"{n} día elegido.": [
+"{n} day chosen.",
+"{n} jour choisi.",
+"{n} jour choisi."
+],
+"{n} días elegidos.": [
+"{n} days chosen.",
+"{n} jours choisis.",
+"{n} أيام مختارين."
+],
+"Elige entre {n} y {n} días. Deja al menos un día de descanso.": [
+"Choose between {n} and {n} days. Leave at least one rest day.",
+"Choisis entre {n} et {n} jours. Garde au moins un jour de repos.",
+"ختار بين {n} و{n} أيام. خلي على الأقل نهار ديال الراحة."
+],
+"+ Hora": [
+"+ Time",
+"+ Heure",
+"+ الساعة"
+],
 "Social": [
 "Social",
 "Social",

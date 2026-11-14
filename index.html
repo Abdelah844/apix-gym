@@ -581,6 +581,14 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 .semana-dia .hora { font-size: .68rem; color: var(--muted); min-height: 1em; }
 .semana-fila { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); }
 .semana-fila input[type=time] { width: auto; min-width: 118px; }
+/* En iPhone una hora vacía se ve como una caja en blanco: se pone «+ Hora» encima hasta que la rellenas */
+.hora-caja { position: relative; display: inline-block; }
+.hora-pista { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; color: var(--accent); font-weight: 700; font-size: .9rem; pointer-events: none; }
+.hora-caja.vacia .hora-pista { display: flex; }
+.hora-caja.vacia input { color: transparent; }
+.hora-caja.vacia input::-webkit-calendar-picker-indicator { opacity: 0; }
+.hora-caja.vacia input:focus { color: inherit; }
+.hora-caja.vacia:focus-within .hora-pista { display: none; }
 .logros-inicio { display: flex; align-items: center; gap: 14px; width: 100%; }
 .logro-ico { font-size: 1.7rem; line-height: 1; flex: none; width: 40px; text-align: center; }
 .barra-logro { height: 6px; border-radius: 99px; background: var(--surface3); overflow: hidden; }

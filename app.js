@@ -370,7 +370,7 @@ function pintarInicio() {
   } else {
     const idx = indiceSiguienteDia();
     const dia = estado.rutina.dias[idx];
-    const cal = estado.rutina.calendario || [];
+    const cal = diasDeEntreno();
     const hoyN = (new Date().getDay() + 6) % 7;
     const descanso = cal.length > 0 && !cal.includes(hoyN);
     let proximo = "";
@@ -511,7 +511,8 @@ function pintarEntrenar() {
     estado.rutina.dias.forEach(function (d, i) {
       const reales = sesionesValidas().filter(function (s) { return s.diaIndex === i && s.diaNombre === d.nombre; });
       const media = reales.length ? Math.round(reales.reduce(function (t, s) { return t + s.duracion; }, 0) / reales.length) : 0;
-      const diaSemana = estado.rutina.calendario && estado.rutina.calendario[i] !== undefined ? NOMBRES_DIAS_SEMANA[estado.rutina.calendario[i]] + " · " : "";
+      // El día de la semana solo se pone si tus días cuadran con los de la rutina; si no, se van turnando
+      const diaSemana = semanaCuadraConRutina() && diasDeEntreno()[i] !== undefined ? NOMBRES_DIAS_SEMANA[diasDeEntreno()[i]] + " · " : "";
       const etiqueta = diaSemana + '~' + duracionDia(d, fd) + ' min' + (media ? ' (real: ' + media + ')' : "");
       let lista = '<div class="list">';
       for (const o of d.ejercicios) {
@@ -595,7 +596,7 @@ function fotosDelDia(dia) {
 // ---------- Mi semana (Entrenar) ----------
 // Tarjeta con los 7 días: los de entreno resaltados, con su hora si la tiene
 function miSemanaHtml() {
-  const cal = estado.rutina.calendario || [];
+  const cal = diasDeEntreno();
   const hoyN = (new Date().getDay() + 6) % 7;
   const avisa = (estado.ajustes.notif || {}).recordatorios !== false && permisoAvisos() === "granted";
   let h = '<button class="card mi-semana" data-act="abrir-semana" style="text-align:left"><div class="row between"><p class="label">📅 Mi semana' + (avisa ? ' · 🔔' : '') + '</p><span class="btn-txt small">Cambiar</span></div><div class="semana-dias">';
@@ -612,7 +613,7 @@ function miSemanaHtml() {
 let semOp = null;
 function hojaSemana(nueva) {
   if (nueva || !semOp) {
-    semOp = { dias: (estado.rutina.calendario || []).slice(), horas: Object.assign({}, estado.ajustes.horasEntreno || {}),
+    semOp = { dias: diasDeEntreno().slice(), horas: Object.assign({}, estado.ajustes.horasEntreno || {}),
       avisar: (estado.ajustes.notif || {}).recordatorios !== false && permisoAvisos() === "granted" };
   }
   const n = estado.rutina.dias.length;
@@ -621,13 +622,15 @@ function hojaSemana(nueva) {
     '<div class="card stack tight"><h3>¿Qué días entrenas?</h3><div class="chips">' +
     NOMBRES_DIAS_SEMANA.map(function (nom, i) {
       return '<button class="chip' + (semOp.dias.includes(i) ? " on" : "") + '" data-act="semana-dia" data-a="' + i + '">' + nom.slice(0, 2) + '</button>';
-    }).join("") + '</div><p class="muted small">' + (semOp.dias.length === n ? "✓ " + n + " días elegidos." : "Elige " + n + " días (llevas " + semOp.dias.length + ").") + ' Tu rutina tiene ' + n + ' días.</p></div>';
+    }).join("") + '</div><p class="muted small">' + (semOp.dias.length === 1 ? "1 día elegido." : semOp.dias.length + " días elegidos.") +
+      (semOp.dias.length && semOp.dias.length !== n ? ' Tu rutina tiene ' + n + ' días: se irán turnando en orden.' : '') + '</p></div>';
   if (orden.length) {
     h += '<div class="card stack tight"><h3>¿A qué hora? <span class="muted small">(opcional)</span></h3>';
     orden.forEach(function (d, k) {
       const dr = estado.rutina.dias[k];
       h += '<label class="semana-fila"><span class="grow"><b>' + NOMBRES_DIAS_SEMANA[d] + '</b>' + (dr && semOp.dias.length === n ? '<span class="muted small" style="display:block">' + esc(dr.nombre) + '</span>' : "") + '</span>' +
-        '<input type="time" data-hora-dia="' + d + '" value="' + (semOp.horas[d] || "") + '" aria-label="Hora"></label>';
+        '<span class="hora-caja' + (semOp.horas[d] ? "" : " vacia") + '"><span class="hora-pista" aria-hidden="true">+ Hora</span>' +
+        '<input type="time" data-hora-dia="' + d + '" value="' + (semOp.horas[d] || "") + '" aria-label="Hora"></span></label>';
     });
     h += '<p class="muted small">Déjala vacía si no tienes hora fija.</p></div>';
   }
