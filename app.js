@@ -2435,7 +2435,8 @@ function hojaAjustes() {
     '<div class="card stack"><h3>Apariencia</h3><div class="seg">' + [["oscuro", "Oscuro"], ["claro", "Claro"], ["sistema", "Sistema"]].map(function (o) { return '<button data-act="tema" data-a="' + o[0] + '" class="' + (a.tema === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div>' +
     '<div class="card stack"><h3>Privacidad</h3><label class="f">Quién ve tu perfil<select id="aPrivacidad">' + opciones([["publico", "Todo el mundo"], ["amigos", "Solo amigos"], ["privado", "Solo yo"]], a.privacidad) + '</select></label>' +
       chk("aCompartir", a.compartir, "Mostrar mis entrenos a mis amigos") + '</div>' +
-    '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>' +
+    // Solo sale si aún no la tienes instalada (si ya lo está, no aporta nada)
+    (appInstalada() ? "" : '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>') +
     '<div class="card stack tight"><h3>Calentamiento</h3>' + chk("aCalentamiento", a.calentamiento !== false, "Proponer series de calentamiento") +
       '<p class="muted small">En los ejercicios grandes con peso (sentadilla, press banca, peso muerto…). No cuentan para récords ni rangos.</p></div>' +
     '<div class="card stack tight" id="aj-sonido"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") + chk("aVibracion", a.vibracion !== false, "Vibración") +
