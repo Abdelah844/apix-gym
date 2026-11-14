@@ -196,21 +196,60 @@ function estadoMascota() {
   return { humor: "contento", mensaje: mensajeDelDia(MENSAJES_APIX.contento, hoyF) };
 }
 
-// ---------- Etapas de Apix: crece con tus entrenos ----------
-// Nunca baja de etapa: lo ganado es tuyo.
+// ---------- Etapas de Apix: crece contigo, pero cuesta ----------
+// Para pasar de etapa hay que cumplir TODO: entrenos, mejor racha (de siempre) y rango global.
+// Una vez conseguida, la etapa ya no se pierde (se guarda en estado.apixEtapa).
 const ETAPAS_APIX = [
-  { nombre: "Novato", min: 0 },
-  { nombre: "Aprendiz", min: 10 },
-  { nombre: "Fuerte", min: 25 },
-  { nombre: "Bestia", min: 50 },
-  { nombre: "Leyenda", min: 100 }
+  { nombre: "Novato", entrenos: 0, racha: 0, rango: 0 },
+  { nombre: "Aprendiz", entrenos: 30, racha: 4, rango: 0 },
+  { nombre: "Fuerte", entrenos: 80, racha: 8, rango: 3 },        // rango 3 = Oro
+  { nombre: "Bestia", entrenos: 160, racha: 16, rango: 6 },      // rango 6 = Diamante
+  { nombre: "Leyenda", entrenos: 300, racha: 26, rango: 7 }      // rango 7 = Titán
 ];
-// Etapa (0 a 4) según el número de entrenos. Sin número, usa los tuyos.
-function etapaApix(entrenos) {
-  if (entrenos === undefined) entrenos = (typeof estado !== "undefined" && estado && estado.sesiones) ? sesionesValidas().length : 0;
+
+// La racha más larga que has tenido nunca (en semanas)
+function mejorRacha() {
+  const mapa = sesionesPorSemana();
+  const validas = sesionesValidas();
+  if (!validas.length) return 0;
+  let lunes = lunesDe(validas[0].fecha), fin = lunesDe(hoy()), seguidas = 0, mejor = 0;
+  while (lunes <= fin) {
+    if ((mapa[lunes] || 0) >= minimoSemanal()) { seguidas++; if (seguidas > mejor) mejor = seguidas; }
+    else if (lunes !== fin) seguidas = 0;                 // la semana actual aún no ha acabado: no rompe la racha
+    lunes = sumarDias(lunes, 7);
+  }
+  return mejor;
+}
+
+// Lo que llevas de cada requisito
+function datosEtapa() {
+  const pg = puntosGlobal();
+  return { entrenos: sesionesValidas().length, racha: mejorRacha(), rango: pg === null ? -1 : rangoDePuntos(pg) };
+}
+// ¿Cumples todo lo que pide esa etapa?
+function cumpleEtapa(e, d) {
+  const x = ETAPAS_APIX[e];
+  return d.entrenos >= x.entrenos && d.racha >= x.racha && (x.rango === 0 || d.rango >= x.rango);
+}
+// Tu etapa (0 a 4). Se guarda la más alta conseguida para que nunca baje.
+let cacheEtapa = { clave: "", e: 0 };
+function etapaApix() {
+  if (typeof estado === "undefined" || !estado || !estado.sesiones) return 0;
+  // Calcular el rango cuesta: se guarda el resultado mientras no cambien los entrenos ni el día
+  const clave = estado.sesiones.length + "|" + hoy() + "|" + (estado.apixEtapa || 0) + "|" + estado.modo + "|" + (estado.perfil.peso || 0);
+  if (cacheEtapa.clave === clave) return cacheEtapa.e;
+  const d = datosEtapa();
   let e = 0;
-  ETAPAS_APIX.forEach(function (x, i) { if (entrenos >= x.min) e = i; });
+  for (let i = 1; i < ETAPAS_APIX.length; i++) { if (cumpleEtapa(i, d)) e = i; else break; }
+  if (estado.modo !== "demo") e = Math.max(e, estado.apixEtapa || 0);
+  if (estado.modo !== "demo" && e > (estado.apixEtapa || 0)) estado.apixEtapa = e;
+  cacheEtapa = { clave: estado.sesiones.length + "|" + hoy() + "|" + (estado.apixEtapa || 0) + "|" + estado.modo + "|" + (estado.perfil.peso || 0), e: e };
   return e;
+}
+// La etapa del Apix de un amigo (la publica su app)
+function etapaAmigo(p) {
+  const e = p && p.apix;
+  return Number.isInteger(e) && e >= 0 && e <= 4 ? e : 0;
 }
 
 // ---------- Dibujo de Apix ----------

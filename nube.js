@@ -316,7 +316,7 @@ async function actualizarPerfilPublico() {
   const pg = puntosGlobal();
   const datos = {
     usuario: nube.id, rango: t.rango, puntos: pg === null ? null : Math.round(pg * 10) / 10,
-    racha: t.racha, entrenos: t.entrenos, marcas: t.records,
+    racha: t.racha, entrenos: t.entrenos, marcas: t.records, apix: etapaApix(),
     // Menores de 16: la parte social está desactivada, así que su perfil es siempre privado
     privacidad: estado.perfil.edad < 16 ? "privado" : (estado.ajustes.privacidad || "amigos"), actualizado: new Date().toISOString()
   };
@@ -437,7 +437,7 @@ async function cargarSocialNube() {
     for (const x of am.datos) otros.push(x.de === yo ? x.a : x.de);
     let perfiles = [];
     if (otros.length) {
-      const pr = await pedirNube("/rest/v1/perfiles?select=usuario,nombre_usuario,rango,puntos,racha,entrenos,marcas,actualizado&usuario=in.(" + otros.join(",") + ")", "GET");
+      const pr = await pedirNube("/rest/v1/perfiles?select=usuario,nombre_usuario,rango,puntos,racha,entrenos,marcas,apix,actualizado&usuario=in.(" + otros.join(",") + ")", "GET");
       if (pr.ok) perfiles = pr.datos;
     }
     const perfilDe = function (id) { return perfiles.find(function (p) { return p.usuario === id; }) || null; };
@@ -461,7 +461,7 @@ async function cargarSocialNube() {
 // Ranking: tú y tus amigos ordenados por rango y puntos
 function rankingAmigos() {
   const lista = socialNube.amigos.filter(function (a) { return a.perfil; }).map(function (a) {
-    return { usuario: a.usuario, rango: a.perfil.rango, puntos: a.perfil.puntos || 0, racha: a.perfil.racha || 0, entrenos: a.perfil.entrenos || 0, marcas: a.perfil.marcas || [], id: a.id, yo: false };
+    return { usuario: a.usuario, rango: a.perfil.rango, puntos: a.perfil.puntos || 0, racha: a.perfil.racha || 0, entrenos: a.perfil.entrenos || 0, marcas: a.perfil.marcas || [], apix: a.perfil.apix || 0, id: a.id, yo: false };
   });
   if (estado && estado.perfil) {
     const t = miTarjeta(); const pg = puntosGlobal();

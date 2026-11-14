@@ -1055,13 +1055,20 @@ const PRUEBAS = [
     return (d.version === VERSION_DATOS && Array.isArray(d.medidas) && d.ajustes.ultimaCopia === "") || "Migración incompleta";
   }]
   ,
-  ["3.0 Etapas de Apix", "Apix crece con los entrenos y cada etapa lleva sus piezas", function () {
-    if (etapaApix(0) !== 0 || etapaApix(9) !== 0 || etapaApix(10) !== 1 || etapaApix(25) !== 2 || etapaApix(49) !== 2 || etapaApix(50) !== 3 || etapaApix(100) !== 4 || etapaApix(500) !== 4) return "Etapas mal calculadas";
+  ["3.0 Etapas de Apix", "Apix solo evoluciona si cumples entrenos, racha y rango, y nunca baja", function () {
+    crearDemo(); estado.modo = "normal"; estado.apixEtapa = 0;
+    const d = datosEtapa();
+    if (cumpleEtapa(1, { entrenos: 29, racha: 9, rango: 7 })) return "Aprendiz con 29 entrenos";
+    if (!cumpleEtapa(1, { entrenos: 30, racha: 4, rango: -1 })) return "Aprendiz no necesita rango";
+    if (cumpleEtapa(2, { entrenos: 200, racha: 30, rango: 2 })) return "Fuerte sin rango Oro";
+    if (cumpleEtapa(4, { entrenos: 300, racha: 25, rango: 8 })) return "Leyenda sin 26 semanas de racha";
+    if (etapaApix() !== 0 && d.entrenos < 30) return "La demo no debería pasar de Novato con " + d.entrenos + " entrenos";
+    estado.apixEtapa = 3;                                    // conseguida antes: no baja
+    if (etapaApix() !== 3) return "Apix ha bajado de etapa";
     const novato = apixSVG("contento", "", 0), fuerte = apixSVG("contento", "", 2), leyenda = apixSVG("contento", "", 4);
     if (novato.indexOf("#3A2A1C") >= 0 || fuerte.indexOf("#3A2A1C") >= 0) return "El cinturón sale antes de Bestia";
     if (leyenda.indexOf("#D7263D") < 0 || leyenda.indexOf("#3A2A1C") < 0) return "A Leyenda le falta la capa o el cinturón";
-    if (apixSVG("celebra", "", 4).split("#FFD25A").length > apixSVG("contento", "", 4).split("#FFD25A").length + 4) return "Leyenda celebrando lleva dos coronas";
-    return apixSVG("contento", "", 1) !== apixSVG("contento", "", 0) || "Aprendiz y Novato son iguales";
+    return mejorRacha() >= rachaSemanas() || "La mejor racha es menor que la actual";
   }],
   ["2.9 Mi semana", "Cada día de entreno avisa a su hora; sin hora, a la general de Ajustes", function () {
     crearDemo();

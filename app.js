@@ -663,23 +663,35 @@ function anilloSemana(hechos, meta) {
 // ---------- Etapas de Apix ----------
 // Línea bajo la tarjeta de Apix: en qué etapa está y cuánto falta para la siguiente
 function etapaApixHtml() {
-  const n = sesionesValidas().length, e = etapaApix(n);
-  const sig = ETAPAS_APIX[e + 1];
-  const desde = ETAPAS_APIX[e].min;
-  const parte = sig ? Math.round((n - desde) / (sig.min - desde) * 100) : 100;
+  const e = etapaApix(), d = datosEtapa(), sig = ETAPAS_APIX[e + 1];
+  if (!sig) return '<button class="etapa-apix" data-act="ver-etapas"><span class="label">Apix ' + ETAPAS_APIX[e].nombre + '</span><span class="barra-logro grow"><i style="width:100%"></i></span><span class="muted small">¡Etapa máxima!</span></button>';
+  const partes = requisitosEtapa(e + 1, d);
+  const media = partes.reduce(function (t, x) { return t + x.parte; }, 0) / partes.length;
   return '<button class="etapa-apix" data-act="ver-etapas"><span class="label">Apix ' + ETAPAS_APIX[e].nombre + '</span>' +
-    '<span class="barra-logro grow"><i style="width:' + parte + '%"></i></span>' +
-    '<span class="muted small num">' + (sig ? (sig.min - n === 1 ? "1 entreno para " : (sig.min - n) + " entrenos para ") + sig.nombre : "¡Etapa máxima!") + '</span></button>';
+    '<span class="barra-logro grow"><i style="width:' + Math.round(media * 100) + '%"></i></span>' +
+    '<span class="muted small">Siguiente: ' + sig.nombre + ' →</span></button>';
+}
+// Los requisitos de una etapa, con lo que llevas y si ya lo cumples
+function requisitosEtapa(e, d) {
+  const x = ETAPAS_APIX[e], lista = [];
+  lista.push({ texto: x.entrenos + " entrenos", llevas: d.entrenos + " / " + x.entrenos, parte: Math.min(1, d.entrenos / x.entrenos), ok: d.entrenos >= x.entrenos });
+  lista.push({ texto: "Racha de " + x.racha + " semanas", llevas: "Tu mejor racha: " + d.racha, parte: Math.min(1, d.racha / x.racha), ok: d.racha >= x.racha });
+  if (x.rango) lista.push({ texto: "Rango global " + RANGOS[x.rango].nombre, llevas: "Ahora: " + (d.rango < 0 ? "sin rango" : RANGOS[d.rango].nombre), parte: d.rango < 0 ? 0 : Math.min(1, (d.rango + 1) / (x.rango + 1)), ok: d.rango >= x.rango });
+  return lista;
 }
 // Ventana con las 5 etapas: las conseguidas a color y las siguientes en sombra
 function hojaEtapas() {
-  const n = sesionesValidas().length, e = etapaApix(n);
-  let h = cabeceraHoja("Apix crece contigo", "Etapas") + '<p class="muted small" style="margin-bottom:12px">Cada etapa se consigue con tus entrenos y ya no se pierde. Llevas ' + n + (n === 1 ? ' entreno.' : ' entrenos.') + '</p><div class="etapas-lista">';
+  const e = etapaApix(), d = datosEtapa();
+  let h = cabeceraHoja("Apix crece contigo", "Etapas") + '<p class="muted small" style="margin-bottom:12px">Para que Apix evolucione hay que cumplirlo todo: entrenos, constancia y fuerza. No es fácil: muy poca gente llega a Leyenda. Lo que consigues ya no se pierde.</p><div class="etapas-lista">';
   ETAPAS_APIX.forEach(function (x, i) {
     const tiene = i <= e;
     h += '<div class="etapa' + (tiene ? " hecha" : "") + (i === e ? " actual" : "") + '">' + apixSVG(i === e ? "orgulloso" : "contento", "", i) +
-      '<div class="grow"><h3>' + x.nombre + (i === e ? ' <span class="pill up">Tu Apix</span>' : '') + '</h3><p class="muted small">' + (x.min === 0 ? "Al empezar" : x.min + " entrenos") + '</p>' +
-      (tiene ? "" : '<p class="small">🔒 Te faltan ' + (x.min - n) + '</p>') + '</div></div>';
+      '<div class="grow stack tight"><h3>' + x.nombre + (i === e ? ' <span class="pill up">Tu Apix</span>' : '') + '</h3>';
+    if (i === 0) h += '<p class="muted small">Al empezar</p>';
+    else h += '<div class="requisitos">' + requisitosEtapa(i, d).map(function (r) {
+      return '<p class="small' + (r.ok || tiene ? " ok" : "") + '">' + (r.ok || tiene ? "✓ " : "🔒 ") + r.texto + (r.ok || tiene ? "" : ' <span class="muted">· ' + r.llevas + '</span>') + '</p>';
+    }).join("") + '</div>';
+    h += '</div></div>';
   });
   abrirHoja(h + '</div>');
 }
@@ -1637,7 +1649,7 @@ function podioHtml(ranking) {
   for (const pos of [1, 0, 2]) {
     const a = ranking[pos];
     h += '<div class="podio-puesto p' + (pos + 1) + (a.yo ? '' : ' tocable') + '"' + (a.yo ? '' : ' data-act="ver-amigo" data-a="' + esc(a.id) + '"') + '>' +
-      '<span class="podio-apix">' + apixSVG(pos === 0 ? "celebra" : "contento", "", etapaApix(a.entrenos || 0)) + '</span>' +
+      '<span class="podio-apix">' + apixSVG(pos === 0 ? "celebra" : "contento", "", a.yo ? etapaApix() : etapaAmigo(a)) + '</span>' +
       '<span class="name small podio-nombre">' + (a.yo ? "Tú" : '@' + esc(a.usuario || "?")) + '</span>' +
       '<span class="muted small">' + nombreRango(a.rango) + '</span>' +
       '<div class="escalon-podio"><b class="num">' + (pos + 1) + '</b></div></div>';
@@ -1721,10 +1733,10 @@ function hojaAmigo(id, mantener) {
   if (!a) return;
   hojaSocial = { tipo: "amigo", id: id };
   const p = a.perfil || {};
-  const eA = etapaApix(p.entrenos || 0);
+  const eA = etapaAmigo(p);
   let h = cabeceraHoja('@' + esc(a.usuario || "?"), "Perfil de tu amigo") + '<div class="stack">' +
     '<div class="card row apix-amigo" style="gap:14px">' + apixSVG("contento", "s", eA) + '<div class="grow"><p class="label">Su Apix</p><h3>' + ETAPAS_APIX[eA].nombre + '</h3>' +
-    '<p class="muted small">' + (ETAPAS_APIX[eA + 1] ? "Le faltan " + (ETAPAS_APIX[eA + 1].min - (p.entrenos || 0)) + " entrenos para " + ETAPAS_APIX[eA + 1].nombre : "Etapa máxima") + '</p></div></div>' +
+    '<p class="muted small">' + (eA === 4 ? "Etapa máxima. ¡Es una leyenda!" : "Etapa " + (eA + 1) + " de 5") + '</p></div></div>' +
     '<div class="card row" style="gap:14px">' + insignia(p.rango, "md") + '<div class="grow"><p class="name">' + nombreRango(p.rango) + '</p>' +
     '<p class="muted small">🔥 Racha de ' + (p.racha || 0) + (p.racha === 1 ? ' semana · ' : ' semanas · ') + (p.entrenos || 0) + (p.entrenos === 1 ? ' entreno' : ' entrenos') + '</p></div></div>';
   const marcas = p.marcas || [];
@@ -2357,7 +2369,7 @@ function hojaResumen(r) {
   }
   if (r.etapaNueva !== null && r.etapaNueva !== undefined) {
     h += '<div class="card evolucion">' + apixSVG("celebra", "", r.etapaNueva) + '<div><p class="label">¡Apix ha evolucionado!</p><h3>Ahora es ' + ETAPAS_APIX[r.etapaNueva].nombre + '</h3>' +
-      '<p class="muted small">' + (ETAPAS_APIX[r.etapaNueva + 1] ? "Siguiente etapa a los " + ETAPAS_APIX[r.etapaNueva + 1].min + " entrenos." : "Ha llegado a la etapa máxima. ¡Eres una leyenda!") + '</p></div></div>';
+      '<p class="muted small">' + (ETAPAS_APIX[r.etapaNueva + 1] ? "Muy poca gente llega hasta aquí. Siguiente etapa: " + ETAPAS_APIX[r.etapaNueva + 1].nombre + "." : "Ha llegado a la etapa máxima. ¡Eres una leyenda!") + '</p></div></div>';
   }
   if (r.logros && r.logros.length) {
     h += '<div class="card logros-nuevos"><h3>🏅 Logro conseguido</h3><div class="list">' + r.logros.map(function (l) {

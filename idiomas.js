@@ -15333,6 +15333,21 @@ const TRADUCCIONES = {
 "Prépare-toi !",
 "وجّد راسك!"
 ],
+"Para que Apix evolucione hay que cumplirlo todo: entrenos, constancia y fuerza. No es fácil: muy poca gente llega a Leyenda. Lo que consigues ya no se pierde.": [
+"For Apix to evolve you have to meet everything: workouts, consistency and strength. It's not easy: very few people reach Legend. What you earn is never lost.",
+"Pour qu'Apix évolue, il faut tout remplir : séances, régularité et force. Ce n'est pas facile : très peu de gens arrivent à Légende. Ce que tu gagnes ne se perd jamais.",
+"باش Apix يتطوّر خاصك تكمّل كلشي: الحصص، الاستمرارية والقوة. ماشي ساهل: قليل بزاف اللي كيوصل لأسطورة. اللي كتربح ما كيضيعش."
+],
+"sin rango": [
+"no rank",
+"sans rang",
+"بلا رتبة"
+],
+"Etapa máxima. ¡Es una leyenda!": [
+"Top stage. A true legend!",
+"Étape maximale. Une vraie légende !",
+"أعلى مرحلة. أسطورة!"
+],
 "Social": [
 "Social",
 "Social",
