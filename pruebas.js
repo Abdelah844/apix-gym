@@ -1055,6 +1055,14 @@ const PRUEBAS = [
     return (d.version === VERSION_DATOS && Array.isArray(d.medidas) && d.ajustes.ultimaCopia === "") || "Migración incompleta";
   }]
   ,
+  ["3.0 Etapas de Apix", "Apix crece con los entrenos y cada etapa lleva sus piezas", function () {
+    if (etapaApix(0) !== 0 || etapaApix(9) !== 0 || etapaApix(10) !== 1 || etapaApix(25) !== 2 || etapaApix(49) !== 2 || etapaApix(50) !== 3 || etapaApix(100) !== 4 || etapaApix(500) !== 4) return "Etapas mal calculadas";
+    const novato = apixSVG("contento", "", 0), fuerte = apixSVG("contento", "", 2), leyenda = apixSVG("contento", "", 4);
+    if (novato.indexOf("#3A2A1C") >= 0 || fuerte.indexOf("#3A2A1C") >= 0) return "El cinturón sale antes de Bestia";
+    if (leyenda.indexOf("#D7263D") < 0 || leyenda.indexOf("#3A2A1C") < 0) return "A Leyenda le falta la capa o el cinturón";
+    if (apixSVG("celebra", "", 4).split("#FFD25A").length > apixSVG("contento", "", 4).split("#FFD25A").length + 4) return "Leyenda celebrando lleva dos coronas";
+    return apixSVG("contento", "", 1) !== apixSVG("contento", "", 0) || "Aprendiz y Novato son iguales";
+  }],
   ["2.9 Mi semana", "Cada día de entreno avisa a su hora; sin hora, a la general de Ajustes", function () {
     crearDemo();
     estado.sesiones = [];                                   // sin entrenos: no hay «hoy ya entrenaste»

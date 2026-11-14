@@ -357,8 +357,9 @@ function pintarInicio() {
       '<div class="bocadillo"><p class="label">Apix</p><p>' + esc(apix.mensaje) + '</p>' +
       (apix.accion === "ver-retos" ? '<button class="btn-txt small" data-act="ir-retos">Ver mi reto →</button>' : (apix.accion === "nuevo-reto" ? '<button class="btn-txt small" data-act="nuevo-reto">Crear un reto →</button>' : "")) +
       ((apix.humor === "anima" || apix.humor === "enfadado") && estado.rutina && !estado.activa ? '<button class="btn-txt small" data-act="empezar-dia" data-a="' + indiceSiguienteDia() + '">Vamos a entrenar →</button>' : "") +
-      '</div></div>';
+      '</div></div>' + etapaApixHtml();
   }
+  h += resumenSemanaApixHtml();
 
   // Entreno en curso o entreno de hoy
   if (estado.activa) {
@@ -657,6 +658,62 @@ function anilloSemana(hechos, meta) {
     '<svg viewBox="0 0 72 72" aria-hidden="true"><circle class="fondo" cx="36" cy="36" r="' + r + '"/>' +
     (parte <= 0 ? "" : '<circle class="avance" cx="36" cy="36" r="' + r + '" stroke-dasharray="' + (largo * parte).toFixed(1) + ' ' + largo.toFixed(1) + '" transform="rotate(-90 36 36)"/>') + '</svg>' +
     '<div class="anillo-num"><span class="num"><b>' + hechos + '</b><span class="muted">/' + meta + '</span></span><span class="label">' + (cumplida ? "✓" : "Semana") + '</span></div></div>';
+}
+
+// ---------- Etapas de Apix ----------
+// Línea bajo la tarjeta de Apix: en qué etapa está y cuánto falta para la siguiente
+function etapaApixHtml() {
+  const n = sesionesValidas().length, e = etapaApix(n);
+  const sig = ETAPAS_APIX[e + 1];
+  const desde = ETAPAS_APIX[e].min;
+  const parte = sig ? Math.round((n - desde) / (sig.min - desde) * 100) : 100;
+  return '<button class="etapa-apix" data-act="ver-etapas"><span class="label">Apix ' + ETAPAS_APIX[e].nombre + '</span>' +
+    '<span class="barra-logro grow"><i style="width:' + parte + '%"></i></span>' +
+    '<span class="muted small num">' + (sig ? (sig.min - n === 1 ? "1 entreno para " : (sig.min - n) + " entrenos para ") + sig.nombre : "¡Etapa máxima!") + '</span></button>';
+}
+// Ventana con las 5 etapas: las conseguidas a color y las siguientes en sombra
+function hojaEtapas() {
+  const n = sesionesValidas().length, e = etapaApix(n);
+  let h = cabeceraHoja("Apix crece contigo", "Etapas") + '<p class="muted small" style="margin-bottom:12px">Cada etapa se consigue con tus entrenos y ya no se pierde. Llevas ' + n + (n === 1 ? ' entreno.' : ' entrenos.') + '</p><div class="etapas-lista">';
+  ETAPAS_APIX.forEach(function (x, i) {
+    const tiene = i <= e;
+    h += '<div class="etapa' + (tiene ? " hecha" : "") + (i === e ? " actual" : "") + '">' + apixSVG(i === e ? "orgulloso" : "contento", "", i) +
+      '<div class="grow"><h3>' + x.nombre + (i === e ? ' <span class="pill up">Tu Apix</span>' : '') + '</h3><p class="muted small">' + (x.min === 0 ? "Al empezar" : x.min + " entrenos") + '</p>' +
+      (tiene ? "" : '<p class="small">🔒 Te faltan ' + (x.min - n) + '</p>') + '</div></div>';
+  });
+  abrirHoja(h + '</div>');
+}
+
+// ---------- Resumen del domingo ----------
+// Domingo y lunes, Apix te cuenta tu semana (la que acaba o la que acabó ayer) en 3 frases
+function resumenSemanaApixHtml() {
+  const hoyF = hoy(), dS = new Date(hoyF + "T12:00:00").getDay();       // 0 = domingo, 1 = lunes
+  if (dS !== 0 && dS !== 1) return "";
+  const lunes = dS === 0 ? lunesDe(hoyF) : sumarDias(lunesDe(hoyF), -7);
+  if (estado.ajustes.resumenSemanaVisto === lunesDe(hoyF) || estado.ajustes.mascota === false) return "";
+  const semana = sesionesValidas().filter(function (s) { return s.fecha >= lunes && s.fecha <= sumarDias(lunes, 6); });
+  const anterior = sesionesValidas().filter(function (s) { return s.fecha >= sumarDias(lunes, -7) && s.fecha < lunes; });
+  if (!semana.length && !anterior.length) return "";
+  const meta = estado.perfil.dias || 3;
+  const records = semana.reduce(function (t, s) { return t + (s.prs || []).length; }, 0);
+  const kilos = function (l) { return l.reduce(function (t, s) { return t + (s.volumen || 0); }, 0); };
+  // Músculos principales que no has trabajado esta semana
+  const tocados = {};
+  for (const s of semana) for (const e of s.ejercicios) if (e.series.some(function (x) { return x.hecha; })) tocados[buscarEj(e.id).grupo] = true;
+  const olvidados = GRUPOS_PRINCIPALES.filter(function (g) { return !tocados[g]; }).map(function (g) { return GRUPOS[g].toLowerCase(); });
+  const frases = [];
+  // 1. Cómo ha ido
+  if (!semana.length) frases.push("Esta semana no has entrenado. No pasa nada: lo importante es volver.");
+  else if (semana.length >= meta) frases.push("¡Semana cumplida! " + semana.length + " de " + meta + " entrenos" + (records ? " y " + records + (records === 1 ? " récord." : " récords.") : "."));
+  else frases.push("Has entrenado " + semana.length + " de " + meta + " días" + (records ? " y has batido " + records + (records === 1 ? " récord." : " récords.") : "."));
+  // 2. Qué ha mejorado o qué ha faltado
+  if (semana.length && anterior.length && kilos(semana) > kilos(anterior) * 1.05) frases.push("Has movido un " + Math.round((kilos(semana) / kilos(anterior) - 1) * 100) + " % más de peso que la semana anterior.");
+  else if (semana.length && olvidados.length && olvidados.length <= 4) frases.push("Te ha faltado trabajar: " + olvidados.join(", ") + ".");
+  // 3. El plan
+  frases.push(semana.length >= meta ? "La que viene, a por lo mismo: " + meta + " días." : "Para la que viene: " + meta + " días. ¡Tú puedes!");
+  return '<div class="card resumen-semana">' + apixSVG(semana.length >= meta ? "orgulloso" : "anima", "s") +
+    '<div class="grow stack tight"><div class="row between"><p class="label">Tu semana con Apix</p><button class="btn-txt small" data-act="cerrar-semana-apix" aria-label="Cerrar">✕</button></div>' +
+    frases.map(function (f) { return '<p class="small">' + esc(f) + '</p>'; }).join("") + '</div></div>';
 }
 
 // ---------- Logros ----------
@@ -1580,7 +1637,7 @@ function podioHtml(ranking) {
   for (const pos of [1, 0, 2]) {
     const a = ranking[pos];
     h += '<div class="podio-puesto p' + (pos + 1) + (a.yo ? '' : ' tocable') + '"' + (a.yo ? '' : ' data-act="ver-amigo" data-a="' + esc(a.id) + '"') + '>' +
-      (pos === 0 ? '<span class="corona" aria-hidden="true">👑</span>' : "") + avatarColor(a.usuario, "grande") +
+      '<span class="podio-apix">' + apixSVG(pos === 0 ? "celebra" : "contento", "", etapaApix(a.entrenos || 0)) + '</span>' +
       '<span class="name small podio-nombre">' + (a.yo ? "Tú" : '@' + esc(a.usuario || "?")) + '</span>' +
       '<span class="muted small">' + nombreRango(a.rango) + '</span>' +
       '<div class="escalon-podio"><b class="num">' + (pos + 1) + '</b></div></div>';
@@ -1664,7 +1721,10 @@ function hojaAmigo(id, mantener) {
   if (!a) return;
   hojaSocial = { tipo: "amigo", id: id };
   const p = a.perfil || {};
+  const eA = etapaApix(p.entrenos || 0);
   let h = cabeceraHoja('@' + esc(a.usuario || "?"), "Perfil de tu amigo") + '<div class="stack">' +
+    '<div class="card row apix-amigo" style="gap:14px">' + apixSVG("contento", "s", eA) + '<div class="grow"><p class="label">Su Apix</p><h3>' + ETAPAS_APIX[eA].nombre + '</h3>' +
+    '<p class="muted small">' + (ETAPAS_APIX[eA + 1] ? "Le faltan " + (ETAPAS_APIX[eA + 1].min - (p.entrenos || 0)) + " entrenos para " + ETAPAS_APIX[eA + 1].nombre : "Etapa máxima") + '</p></div></div>' +
     '<div class="card row" style="gap:14px">' + insignia(p.rango, "md") + '<div class="grow"><p class="name">' + nombreRango(p.rango) + '</p>' +
     '<p class="muted small">🔥 Racha de ' + (p.racha || 0) + (p.racha === 1 ? ' semana · ' : ' semanas · ') + (p.entrenos || 0) + (p.entrenos === 1 ? ' entreno' : ' entrenos') + '</p></div></div>';
   const marcas = p.marcas || [];
@@ -2295,6 +2355,10 @@ function hojaResumen(r) {
     h += '<div class="card"><p class="label">Frente a la última vez (' + fechaBonita(r.anterior.fecha) + ')</p><p class="num"><b style="color:' + (ds >= 0 ? "var(--good)" : "var(--danger)") + '">' + (ds >= 0 ? "+" : "") + ds + '</b> series efectivas</p>' +
       '<p class="muted small">El tonelaje solo se compara ejercicio a ejercicio (en Progreso), porque un kilo en prensa no equivale a un kilo en curl.</p></div>';
   }
+  if (r.etapaNueva !== null && r.etapaNueva !== undefined) {
+    h += '<div class="card evolucion">' + apixSVG("celebra", "", r.etapaNueva) + '<div><p class="label">¡Apix ha evolucionado!</p><h3>Ahora es ' + ETAPAS_APIX[r.etapaNueva].nombre + '</h3>' +
+      '<p class="muted small">' + (ETAPAS_APIX[r.etapaNueva + 1] ? "Siguiente etapa a los " + ETAPAS_APIX[r.etapaNueva + 1].min + " entrenos." : "Ha llegado a la etapa máxima. ¡Eres una leyenda!") + '</p></div></div>';
+  }
   if (r.logros && r.logros.length) {
     h += '<div class="card logros-nuevos"><h3>🏅 Logro conseguido</h3><div class="list">' + r.logros.map(function (l) {
       return '<div class="item"><span class="logro-ico" aria-hidden="true">' + l.icono + '</span><span class="grow"><b>' + l.nombre + '</b><span class="muted small" style="display:block">' + l.texto + '</span></span></div>'; }).join("") + '</div></div>';
@@ -2675,6 +2739,21 @@ function pintarTimer() {
   $("timerAnillo").style.strokeDashoffset = (276.5 * (1 - tRest / tTotal)).toFixed(1);
   const sig = textoSiguiente();
   if ($("timerSig").textContent !== sig) $("timerSig").textContent = sig;
+  apixDescanso();
+}
+// Apix en el descanso en grande: te acompaña con una frase según lo que queda
+const FRASES_DESCANSO = ["Respira hondo… 🌬️", "Bebe un poco de agua 💧", "Sacude los brazos 👐", "Relaja los hombros", "Piensa en la técnica de la siguiente"];
+let apixDescansoFrase = "";
+function apixDescanso() {
+  const caja = $("timerApix");
+  if (!caja || !$("timer").classList.contains("grande") || (estado && estado.ajustes.mascota === false)) { if (caja) caja.innerHTML = ""; apixDescansoFrase = ""; return; }
+  let humor = "descanso", frase;
+  if (tRest <= 5) { humor = "anima"; frase = tr("¡Prepárate!") + " " + tRest + "…"; }
+  else frase = tr(FRASES_DESCANSO[Math.floor((tTotal - tRest) / 15) % FRASES_DESCANSO.length]);   // cambia cada 15 s
+  const clave = humor + frase;
+  if (clave === apixDescansoFrase) return;
+  apixDescansoFrase = clave;
+  caja.innerHTML = apixSVG(humor, "") + '<p data-no-traducir>' + esc(frase) + '</p>';
 }
 // Pitido corto y vibración (si el dispositivo lo permite)
 function avisoFinDescanso() {

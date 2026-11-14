@@ -542,7 +542,9 @@ const ACCIONES = {
     const semana = lunesDe(hoy());
     const rachaAntes = (sesionesPorSemana()[semana] || 0) >= minimoSemanal();
     revisarLogros();                                 // los que ya tenías de antes no cuentan como nuevos
+    const etapaAntes = etapaApix();
     const r = terminarSesion();
+    r.etapaNueva = (!r.vacio && !r.duplicado && etapaApix() > etapaAntes) ? etapaApix() : null;   // ¿Apix ha evolucionado?
     r.logros = (r.vacio || r.duplicado) ? [] : revisarLogros();     // logros conseguidos con este entreno
     if (r.logros.length) guardar();
     sincronizarAvisosPush();                         // hoy ya has entrenado: se quita el aviso de hoy
@@ -590,6 +592,7 @@ const ACCIONES = {
   "timer-grande": function () {
     estado.ajustes.timerGrande = !estado.ajustes.timerGrande; guardar();
     $("timer").classList.toggle("grande", !!estado.ajustes.timerGrande);
+    apixDescanso();
   },
 
   // ---------- Progreso ----------
@@ -652,6 +655,8 @@ const ACCIONES = {
   "tuto-sig": function () { if (pasoTutorial < PASOS_TUTORIAL.length - 1) mostrarTutorial(pasoTutorial + 1); else cerrarTutorial(); },
   "tuto-saltar": function () { cerrarTutorial(); },
   "ver-logros": function () { hojaLogros(); },
+  "ver-etapas": function () { hojaEtapas(); },
+  "cerrar-semana-apix": function () { estado.ajustes.resumenSemanaVisto = lunesDe(hoy()); guardar(); pintar(); },
   "ver-tutorial": function () { cerrarHoja(); mostrarTutorial(0); },
   "aviso-descanso": function () {
     Notification.requestPermission().then(function (p) {

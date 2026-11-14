@@ -9941,7 +9941,7 @@ const TRADUCCIONES = {
 "{n} entrenos": [
 "{n} workouts",
 "{n} séances",
-"{n} حصص"
+"{n} حصة"
 ],
 "{n} kg y {n} repeticiones se bloquean": [
 "{n} kg and {n} reps are blocked",
@@ -15192,6 +15192,146 @@ const TRADUCCIONES = {
 "Training all {n} days is a lot: muscle grows when it rests. If you feel tired or sore, leave a day free.",
 "S'entraîner les {n} jours, c'est beaucoup : le muscle grandit quand il se repose. Si tu te sens fatigué ou si tu as mal, garde un jour libre.",
 "التمرين {n} أيام بزاف: العضلة كتكبر ملي كترتاح. إلا حسيتي بالعيا ولا الوجع، خلي نهار خاوي."
+],
+"Novato": [
+"Rookie",
+"Débutant",
+"مبتدئ"
+],
+"Aprendiz": [
+"Apprentice",
+"Apprenti",
+"متعلم"
+],
+"Fuerte": [
+"Strong",
+"Costaud",
+"قوي"
+],
+"Bestia": [
+"Beast",
+"Bête",
+"وحش"
+],
+"Leyenda": [
+"Legend",
+"Légende",
+"أسطورة"
+],
+"una semana": [
+"a week",
+"une semaine",
+"سيمانة"
+],
+"un mes": [
+"a month",
+"un mois",
+"شهر"
+],
+"{n} meses": [
+"{n} months",
+"{n} mois",
+"{n} شهور"
+],
+"medio año": [
+"half a year",
+"six mois",
+"نص عام"
+],
+"un año": [
+"a year",
+"un an",
+"عام"
+],
+"dos años": [
+"two years",
+"deux ans",
+"عامين"
+],
+"¡Etapa máxima!": [
+"Top stage!",
+"Étape maximale !",
+"أعلى مرحلة!"
+],
+"Etapa máxima": [
+"Top stage",
+"Étape maximale",
+"أعلى مرحلة"
+],
+"Apix crece contigo": [
+"Apix grows with you",
+"Apix grandit avec toi",
+"Apix كيكبر معاك"
+],
+"Etapas": [
+"Stages",
+"Étapes",
+"المراحل"
+],
+"Al empezar": [
+"At the start",
+"Au début",
+"ف البداية"
+],
+"Tu Apix": [
+"Your Apix",
+"Ton Apix",
+"Apix ديالك"
+],
+"Su Apix": [
+"Their Apix",
+"Son Apix",
+"Apix ديالو"
+],
+"¡Apix ha evolucionado!": [
+"Apix has evolved!",
+"Apix a évolué !",
+"Apix تطوّر!"
+],
+"Ha llegado a la etapa máxima. ¡Eres una leyenda!": [
+"It has reached the top stage. You're a legend!",
+"Il a atteint l'étape maximale. Tu es une légende !",
+"وصل لأعلى مرحلة. نتا أسطورة!"
+],
+"Tu semana con Apix": [
+"Your week with Apix",
+"Ta semaine avec Apix",
+"السيمانة ديالك مع Apix"
+],
+"Esta semana no has entrenado. No pasa nada: lo importante es volver.": [
+"You didn't train this week. That's okay: what matters is coming back.",
+"Tu ne t'es pas entraîné cette semaine. Ce n'est pas grave : l'important, c'est de revenir.",
+"هاد السيمانة ما تمرنتيش. ماشي مشكل: المهم ترجع."
+],
+"Respira hondo… 🌬️": [
+"Take a deep breath… 🌬️",
+"Respire profondément… 🌬️",
+"تنفس مزيان… 🌬️"
+],
+"Bebe un poco de agua 💧": [
+"Drink some water 💧",
+"Bois un peu d'eau 💧",
+"شرب شوية ديال الما 💧"
+],
+"Sacude los brazos 👐": [
+"Shake out your arms 👐",
+"Secoue les bras 👐",
+"حرّك دراعاتك 👐"
+],
+"Relaja los hombros": [
+"Relax your shoulders",
+"Détends tes épaules",
+"رخّي كتافك"
+],
+"Piensa en la técnica de la siguiente": [
+"Think about your technique for the next one",
+"Pense à la technique de la prochaine",
+"فكّر ف التقنية ديال الجاية"
+],
+"¡Prepárate!": [
+"Get ready!",
+"Prépare-toi !",
+"وجّد راسك!"
 ],
 "Social": [
 "Social",

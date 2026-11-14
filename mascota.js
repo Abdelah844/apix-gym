@@ -178,7 +178,10 @@ function estadoMascota() {
   // 4. Hoy ya has entrenado
   if (ultima && ultima.fecha === hoyF) return { humor: "orgulloso", mensaje: mensajeDelDia(MENSAJES_APIX.orgulloso, hoyF) };
   // 5. Hoy toca entrenar (según tu calendario) y aún no lo has hecho
-  const cal = estado.rutina && Array.isArray(estado.rutina.calendario) ? estado.rutina.calendario : (estado.perfil.diasSemana || []);
+  // 4b. Recuerdo (fecha especial o mejora en tu ejercicio favorito)
+  const recuerdo = recuerdoApix(hoyF);
+  if (recuerdo) return { humor: "orgulloso", mensaje: recuerdo };
+  const cal = diasDeEntreno();
   const hoyN = (new Date(hoyF + "T12:00:00").getDay() + 6) % 7;
   if (cal.includes(hoyN)) {
     const dias = diasSinEntrenar();
@@ -193,11 +196,29 @@ function estadoMascota() {
   return { humor: "contento", mensaje: mensajeDelDia(MENSAJES_APIX.contento, hoyF) };
 }
 
+// ---------- Etapas de Apix: crece con tus entrenos ----------
+// Nunca baja de etapa: lo ganado es tuyo.
+const ETAPAS_APIX = [
+  { nombre: "Novato", min: 0 },
+  { nombre: "Aprendiz", min: 10 },
+  { nombre: "Fuerte", min: 25 },
+  { nombre: "Bestia", min: 50 },
+  { nombre: "Leyenda", min: 100 }
+];
+// Etapa (0 a 4) según el número de entrenos. Sin número, usa los tuyos.
+function etapaApix(entrenos) {
+  if (entrenos === undefined) entrenos = (typeof estado !== "undefined" && estado && estado.sesiones) ? sesionesValidas().length : 0;
+  let e = 0;
+  ETAPAS_APIX.forEach(function (x, i) { if (entrenos >= x.min) e = i; });
+  return e;
+}
+
 // ---------- Dibujo de Apix ----------
 // Bolita suave morada con brillo, bracitos y patitas.
 // Según el humor cambian los ojos, las cejas, la boca y algún complemento.
-function apixSVG(humor, tam) {
+function apixSVG(humor, tam, etapa) {
   const h = humor || "contento";
+  if (etapa === undefined) etapa = etapaApix();       // sin decir etapa, tu Apix
   const enfadado = h === "enfadado";
   const feliz = h === "campeon" || h === "celebra";   // amarillo: entreno completo, récord o reto conseguido
   // Colores del cuerpo: morado normal, rojo si se enfada y amarillo si está feliz
@@ -207,11 +228,17 @@ function apixSVG(humor, tam) {
   if (enfadado) { claro = "#FF9A9A"; medio = "#FF4D4D"; borde = "#C81E2E"; }
   if (feliz) { claro = "#FFF4B8"; medio = "#FFD23F"; borde = "#E0A100"; }
   const tinta = "#1F2B2B";                            // ojos, cejas y boca
-  const id = "kg-" + h;                               // id del degradado (uno por humor)
+  const id = "kg-" + h + "-" + etapa;                 // id del degradado (uno por humor y etapa)
+  // Las primeras etapas se dibujan más pequeñas: así se nota que crece
+  const escala = [0.8, 0.88, 0.95, 1, 1][etapa] || 1;
 
-  let s = '<svg class="apix apix-' + h + ' ' + (tam || "") + '" viewBox="0 -16 120 136" role="img" aria-label="Apix, la mascota de Apix Gym">';
+  let s = '<svg class="apix apix-' + h + ' ' + (tam || "") + '" viewBox="-14 -20 148 144" role="img" aria-label="Apix, la mascota de Apix Gym">';
   s += '<defs><radialGradient id="' + id + '" cx="40%" cy="30%" r="80%">' +
        '<stop offset="0" stop-color="' + claro + '"/><stop offset=".6" stop-color="' + medio + '"/><stop offset="1" stop-color="' + borde + '"/></radialGradient></defs>';
+  s += '<g transform="translate(60 110) scale(' + escala + ') translate(-60 -110)">';
+  // Leyenda: brillo dorado y capa roja (van detrás del cuerpo)
+  if (etapa >= 4) s += '<circle cx="60" cy="62" r="70" fill="#FFD25A" opacity=".10"/><circle cx="60" cy="62" r="56" fill="#FFD25A" opacity=".10"/>' +
+    '<path d="M24,58 C4,84 0,104 -8,116 C18,112 40,116 60,110 C80,116 102,112 128,116 C120,104 116,84 96,58 Z" fill="#D7263D"/><path d="M24,58 C10,84 8,100 4,112 C22,110 40,113 60,108 Z" fill="#A81B2E"/>';
   // Sombra, patas y brazos
   s += '<ellipse cx="60" cy="110" rx="34" ry="4" fill="#000" opacity=".15"/>' +
        '<ellipse cx="43" cy="104" rx="9" ry="6" fill="' + borde + '"/><ellipse cx="77" cy="104" rx="9" ry="6" fill="' + borde + '"/>' +
@@ -255,5 +282,59 @@ function apixSVG(humor, tam) {
   else if (h === "cuida") s += '<path d="M54,80 Q60,78 66,80" fill="none" stroke="' + tinta + '" stroke-width="2.5" stroke-linecap="round"/>';
   else if (h === "descanso") s += '<ellipse cx="60" cy="79" rx="3" ry="2.5" fill="' + tinta + '"/>';
   else s += '<path d="M54,77 Q60,82 66,77" fill="none" stroke="' + tinta + '" stroke-width="2.5" stroke-linecap="round"/>';
-  return s + '</svg>';
+  s += piezasEtapa(etapa, h, borde, medio);
+  return s + '</g></svg>';
+}
+
+// Lo que Apix lleva puesto en cada etapa (va delante del cuerpo)
+function piezasEtapa(etapa, h, borde, medio) {
+  let s = "";
+  const conCorona = h === "celebra" || h === "campeon";
+  // Aprendiz en adelante: cinta naranja (si ya la lleva por su humor, no se repite; con corona no cabe)
+  if (etapa >= 1 && etapa < 4 && h !== "anima" && h !== "enfadado" && !conCorona) s += '<path d="M22,46 Q60,34 98,46 L97,54 Q60,42 23,54 Z" fill="#FF8A3D"/><path d="M96,48 l13,-5 l-4,11 z" fill="#FF8A3D"/><path d="M98,50 l11,3 l-7,7 z" fill="#E86F22"/>';
+  // Fuerte en adelante: brazos con bíceps (tapan los bracitos)
+  if (etapa >= 2) {
+    const brazo = function (x, d) {
+      return '<g transform="translate(' + x + ',0) scale(' + d + ',1)"><path d="M0,84 C-10,84 -20,76 -18,62 C-17,52 -8,50 -4,56 C-1,48 8,50 8,60 C8,72 6,84 0,84 Z" fill="' + borde + '"/>' +
+        '<ellipse cx="-7" cy="63" rx="7" ry="6" fill="' + medio + '" opacity=".9"/><ellipse cx="-9" cy="60" rx="2.6" ry="1.8" fill="#fff" opacity=".6"/></g>';
+    };
+    s += brazo(14, 1) + brazo(106, -1);
+  }
+  // Bestia en adelante: cinturón de fuerza y mancuerna
+  if (etapa >= 3) {
+    s += '<path d="M19,88 Q60,99 101,88 L100,97 Q60,107 20,97 Z" fill="#3A2A1C"/><rect x="53" y="89" width="14" height="12" rx="2.5" fill="#FFD25A" stroke="#C9971A" stroke-width="1.5"/>' +
+      '<g transform="translate(-6,48) rotate(-18)"><rect x="-10" y="-3" width="20" height="6" rx="2" fill="#B9C4D2"/><rect x="-16" y="-9" width="7" height="18" rx="2.5" fill="#2A2733" stroke="#5F6B7C" stroke-width="1.5"/><rect x="9" y="-9" width="7" height="18" rx="2.5" fill="#2A2733" stroke="#5F6B7C" stroke-width="1.5"/></g>';
+  }
+  // Leyenda: corona con joyas y destellos (si ya lleva corona o fuego por su humor, no se pone)
+  if (etapa >= 4) {
+    if (!conCorona && h !== "enfadado") s += '<path d="M41,27 L45,6 L54,18 L60,0 L66,18 L75,6 L79,27 Z" fill="#FFD25A" stroke="#C9971A" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="19" r="3" fill="#FF4D8D"/><circle cx="48" cy="21" r="2" fill="#4A9DFF"/><circle cx="72" cy="21" r="2" fill="#4A9DFF"/>';
+    s += '<path d="M-6,20 l2.5,6 6,2.5 -6,2.5 -2.5,6 -2.5,-6 -6,-2.5 6,-2.5z" fill="#FFE9A8"/><path d="M124,40 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2z" fill="#FFE9A8"/>';
+  }
+  return s;
+}
+
+// ---------- Recuerdos de Apix ----------
+// Fechas especiales desde tu primer entreno y cuánto has mejorado en tu ejercicio favorito
+function recuerdoApix(hoyF) {
+  const validas = sesionesValidas();
+  if (validas.length < 4) return null;
+  const primera = validas[0].fecha;
+  const dias = diasEntre(primera, hoyF);
+  const hitos = { 7: "una semana", 30: "un mes", 91: "3 meses", 182: "medio año", 365: "un año", 730: "dos años" };
+  if (hitos[dias]) return "Hoy hace " + hitos[dias] + " de tu primer entreno conmigo. ¡Mira todo lo que has hecho desde entonces!";
+  // Una vez por semana (los miércoles): «hace un mes levantabas X; hoy, Y»
+  if (new Date(hoyF + "T12:00:00").getDay() !== 3) return null;
+  const veces = {};
+  for (const s of validas) for (const e of s.ejercicios) if (!buscarEj(e.id).corporal) veces[e.id] = (veces[e.id] || 0) + 1;
+  const fav = Object.keys(veces).sort(function (a, b) { return veces[b] - veces[a]; })[0];
+  if (!fav) return null;
+  function mejorPeso(lista) {
+    let m = 0;
+    for (const s of lista) for (const e of s.ejercicios) if (e.id === fav) for (const x of e.series) if (serieValida(x) && x.peso > m) m = x.peso;
+    return m;
+  }
+  const antes = mejorPeso(validas.filter(function (s) { const d = diasEntre(s.fecha, hoyF); return d >= 28 && d <= 45; }));
+  const ahora = mejorPeso(validas.filter(function (s) { return diasEntre(s.fecha, hoyF) < 14; }));
+  if (!antes || ahora <= antes) return null;
+  return "Hace un mes tu mejor serie de " + buscarEj(fav).nombre.toLowerCase() + " era con " + String(antes).replace(".", ",") + " kg. Hoy, con " + String(ahora).replace(".", ",") + " kg. ¡Así se crece!";
 }

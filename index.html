@@ -589,6 +589,30 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 .hora-caja.vacia input::-webkit-calendar-picker-indicator { opacity: 0; }
 .hora-caja.vacia input:focus { color: inherit; }
 .hora-caja.vacia:focus-within .hora-pista { display: none; }
+/* Etapas de Apix */
+.etapa-apix { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: -6px; padding: 8px 14px; background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; }
+.etapa-apix .label { margin: 0; white-space: nowrap; color: var(--accent); }
+.etapa-apix .muted { white-space: nowrap; }
+.etapas-lista { display: grid; gap: 10px; }
+.etapa { display: flex; align-items: center; gap: 12px; background: var(--surface2); border-radius: 16px; padding: 10px 14px; }
+.etapa .apix { width: 84px; height: 84px; flex: none; }
+.etapa:not(.hecha) .apix { filter: grayscale(1) brightness(.35); }
+.etapa.actual { border: 1px solid var(--accent); box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 25%, transparent); }
+.evolucion { display: flex; align-items: center; gap: 14px; border-color: var(--oro); }
+.evolucion .apix { width: 96px; height: 96px; flex: none; animation: insignia-llega 1s cubic-bezier(.2, 1.4, .4, 1); }
+.apix-amigo .apix { width: 72px; height: 72px; flex: none; }
+.podio-apix .apix { width: 62px; height: 62px; display: block; }
+.p1 .podio-apix .apix { width: 76px; height: 76px; }
+/* Resumen del domingo */
+.resumen-semana { display: flex; gap: 12px; align-items: flex-start; }
+.resumen-semana > .apix { width: 64px; height: 64px; flex: none; }
+/* Apix en el descanso en grande */
+#timerApix { display: none; }
+#timer.grande #timerApix { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+#timerApix .apix { width: 92px; height: 92px; animation: apix-respira 2.4s ease-in-out infinite; }
+#timerApix p { margin: 0; font-weight: 700; color: var(--muted); text-align: center; }
+@keyframes apix-respira { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.06, .96) translateY(3px); } }
+@media (prefers-reduced-motion: reduce) { #timerApix .apix, .evolucion .apix { animation: none !important; } }
 .logros-inicio { display: flex; align-items: center; gap: 14px; width: 100%; }
 .logro-ico { font-size: 1.7rem; line-height: 1; flex: none; width: 40px; text-align: center; }
 .barra-logro { height: 6px; border-radius: 99px; background: var(--surface3); overflow: hidden; }
@@ -662,6 +686,7 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
     <button class="anillo" data-act="timer-grande" aria-label="Ver el descanso en grande"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="fondo"/><circle cx="50" cy="50" r="44" class="avance" id="timerAnillo"/></svg><span class="t num" id="timerTxt">1:30</span><span class="agrandar" aria-hidden="true">⤢</span></button>
     <div class="grow"><p class="label">Descanso · siguiente</p><p class="sig" id="timerSig"></p><div class="bar"><i id="timerBar" style="width:100%"></i></div></div>
   </div>
+  <div id="timerApix" aria-live="polite"></div>
   <div class="timer-botones">
     <button class="btn-sec" data-act="timer-menos">−15 s</button>
     <button class="btn-sec" data-act="timer-mas">+15 s</button>
