@@ -1438,31 +1438,28 @@ function pintarProgreso() {
   const olvidados = Object.keys(GRUPOS)
     .filter(function (g) { return nivelMusculo(g, cuenta[g] / semanas) === "poco"; })
     .sort(function (a, b) { return cuenta[a] / (MINIMO_SEMANAL[a] || 6) - cuenta[b] / (MINIMO_SEMANAL[b] || 6); });
-  h += resumenApixHtml(ses, prev, clave, olvidados) +
-    '<div class="grid2 cifras">' +
-      '<div class="card"><p class="label">Entrenos</p><div class="big-num num">' + ses.length + delta(ses.length, prev.length) + '</div></div>' +
-      '<div class="card"><p class="label">Series efectivas</p><div class="big-num num">' + efectivas + delta(efectivas, efectivasPrev) + '</div><p class="muted small">hechas y válidas</p></div>' +
-      '<div class="card"><p class="label">Duración media</p><div class="big-num num">' + (ses.length ? Math.round(dur / ses.length) : 0) + '</div><p class="muted small">minutos reales</p></div>' +
-      '<div class="card"><p class="label">Récords</p><div class="big-num num" style="color:var(--pr)">' + prs + delta(prs, prsPrev) + '</div><p class="muted small">racha: ' + rachaSemanas() + ' sem</p></div>' +
-    '</div>' +
-    (periodo && prev.length ? '<p class="muted small">Los % comparan con las ' + (periodo / 7) + ' semanas anteriores.</p>' : "");
-
-  h += pesoTotalHtml(ses);
-  h += calendarioConstanciaHtml();
-  h += ejerciciosClaveHtml(clave);
-
-  // Carga semanal o mensual y fatiga
-  const serie = vistaCarga === "mes" ? cargaPorMeses(6) : cargaPorSemanas(8);
+  // Orden: lo que te dice Apix → ¿estoy más fuerte? → ¿qué me dejo? → ¿estoy yendo? → curiosidad
+  h += resumenApixHtml(ses, prev, clave, olvidados);
+  // La fatiga solo se enseña cuando hay que hacer algo con ella
   const fat = indiceFatiga();
-  const colorFat = { "muy-alta": "var(--danger)", alta: "var(--warn)", normal: "var(--good)", baja: "var(--muted)", pocos: "var(--muted)" }[fat.nivel];
-  h += '<div class="card stack"><div class="row between"><h3>Carga de entrenamiento</h3><div class="seg mini">' + [["semana", "Semanal"], ["mes", "Mensual"]].map(function (o) { return '<button data-act="vista-carga" data-a="' + o[0] + '" class="' + (vistaCarga === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div>' +
-    graficaBarras(serie.map(function (x, i) { if (i === serie.length - 1) return "Ahora"; return vistaCarga === "mes" ? MESES_CORTOS[parseInt(x.desde.slice(5, 7)) - 1] : fechaBonita(x.desde); }), serie.map(function (x) { return Math.round(pesoVista(x.carga.kg)); }), unidadPeso()) +
-    '<div class="fatiga" style="border-color:' + colorFat + '"><p class="label" style="color:' + colorFat + '">Fatiga · ' + { "muy-alta": "muy alta", alta: "alta", normal: "normal", baja: "baja", pocos: "sin datos" }[fat.nivel] + (fat.ratio ? ' (' + fat.ratio.toFixed(2).replace(".", ",") + ')' : "") + '</p><p class="small">' + fat.texto + '</p></div>' +
-    '<p class="muted small">Tonelaje = kg × reps. La fatiga compara tus series de los últimos 7 días con tu media de las 4 semanas anteriores.</p></div>';
+  if (fat.nivel === "alta" || fat.nivel === "muy-alta") {
+    const colorFat = fat.nivel === "muy-alta" ? "var(--danger)" : "var(--warn)";
+    h += '<div class="fatiga" style="border-color:' + colorFat + '"><p class="label" style="color:' + colorFat + '">Fatiga ' + (fat.nivel === "muy-alta" ? "muy alta" : "alta") + '</p><p class="small">' + fat.texto + '</p></div>';
+  }
+  h += ejerciciosClaveHtml(clave);
+  if (ejerciciosHechos().length) h += '<button class="btn-sec small full" data-act="ver-evolucion">📈 Ver la gráfica de otro ejercicio</button>';
+  h += mapaProgresoHtml(cuenta, semanas, olvidados);
+  h += calendarioConstanciaHtml();
+  h += pesoTotalHtml(ses);
 
-  // Evolución de un ejercicio (aquí sí tiene sentido el peso: se compara el ejercicio consigo mismo)
+  $("app").innerHTML = h + '</div>';
+}
+
+// Ventana: evolución de un ejercicio (se abre al tocar un ejercicio clave)
+function hojaEvolucion() {
   const hechos = ejerciciosHechos();
-  if (hechos.length) {
+  if (!hechos.length) return;
+  let h = "";
     if (!hechos.includes(ejGrafica)) ejGrafica = hechos[0];
     const ej = buscarEj(ejGrafica);
     const porDia = {};
@@ -1478,16 +1475,20 @@ function pintarProgreso() {
     }
     const fechas = Object.keys(porDia).sort();
     const unidades = { rm: unidadPeso(), peso: unidadPeso(), reps: "reps", tonelaje: unidadPeso() };
-    h += '<div class="card stack" id="evolucion"><h3>Evolución por ejercicio</h3>' +
+    h += '<div class="stack">' +
       '<select data-cambio="ej-grafica" aria-label="Ejercicio">' + hechos.map(function (id) { return '<option value="' + id + '"' + (id === ejGrafica ? " selected" : "") + '>' + esc(buscarEj(id).nombre) + '</option>'; }).join("") + '</select>' +
       '<div class="seg">' + [["rm", "1RM"], ["peso", "Peso máx."], ["reps", "Reps máx."], ["tonelaje", "Tonelaje"]].map(function (o) { return '<button data-act="metrica" data-a="' + o[0] + '" class="' + (metrica === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div>' +
       graficaLinea(fechas.map(fechaBonita), fechas.map(function (f) { return metrica === "reps" ? porDia[f] : pesoVista(porDia[f]); }), unidades[metrica], null, true) +
       '<p class="muted small"><span class="punto-oro"></span> Récord: ese día superaste todo lo anterior.</p>' +
       (metrica === "rm" ? '<p class="muted small">1RM estimada con ' + FORMULAS_1RM[estado.ajustes.formula1RM || "epley"].nombre.replace(" (por defecto)", "") + '. Cámbiala en Ajustes.</p>' : "") +
       (metrica === "tonelaje" ? '<p class="muted small">Tonelaje externo de este ejercicio (kg × reps). ' + (ej.equipo === "corporal" ? "En este ejercicio no incluye tu peso corporal, así que puede ser 0." : "") + '</p>' : "") + '</div>';
-  }
+  abrirHoja(cabeceraHoja(buscarEj(ejGrafica).nombre, "Evolución") + h);
+}
 
-  // Series efectivas por semana (todas las semanas, también las que no entrenaste)
+// Ventana: series por semana de un músculo (se abre al tocar un músculo del mapa)
+function hojaSeriesMusculo() {
+  const ses = sesionesValidas().filter(function (x) { return enPeriodo(x.fecha, periodo); });
+  let h = "";
   const desde = ses.length ? ses[0].fecha : hoy();
   const lunes = semanasEntre(periodo ? fechaTexto(periodo - 1) : desde, hoy());
   const porSemana = {};
@@ -1499,13 +1500,12 @@ function pintarProgreso() {
     if (grupoVolumen) porSemana[l] += g[grupoVolumen];
     else porSemana[l] += s.seriesEfectivas;
   }
-  h += mapaProgresoHtml(cuenta, semanas, olvidados);
-  h += '<div class="card stack" id="series-semana"><h3>Series efectivas por semana</h3><select data-cambio="grupo-volumen" aria-label="Grupo muscular"><option value="">Todo el cuerpo</option>' +
+  h += '<div class="stack"><select data-cambio="grupo-volumen" aria-label="Grupo muscular"><option value="">Todo el cuerpo</option>' +
     Object.keys(GRUPOS).map(function (g) { return '<option value="' + g + '"' + (g === grupoVolumen ? " selected" : "") + '>' + GRUPOS[g] + '</option>'; }).join("") + '</select>' +
     graficaBarras(lunes.map(function (l) { return l === lunesDe(hoy()) ? "Ahora" : fechaBonita(l); }), lunes.map(function (l) { return porSemana[l]; }), "series") +
     '<p class="muted small">' + (grupoVolumen ? "Directas cuentan 1 y secundarias 0,5. " : "") + '«Ahora» es la semana en curso: aún no ha terminado.</p></div>';
 
-  $("app").innerHTML = h + '</div>';
+  abrirHoja(cabeceraHoja(grupoVolumen ? GRUPOS[grupoVolumen] : "Todo el cuerpo", "Series efectivas por semana") + h);
 }
 
 // Tarjeta de peso corporal (pestaña Cuerpo)

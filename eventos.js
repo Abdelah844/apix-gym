@@ -601,18 +601,11 @@ const ACCIONES = {
   "compartir-mes": function () { compartirImagenMes(); },
   "sub-progreso": function (sub) { subProgreso = sub; pintarProgreso(); scrollTo(0, 0); },
   // Ejercicio clave tocado: se enseña su gráfica de 1RM
-  "ver-clave": function (id) {
-    ejGrafica = id; metrica = "rm"; pintarProgreso();
-    const tarjeta = document.getElementById("evolucion");
-    if (tarjeta) tarjeta.scrollIntoView({ behavior: "smooth", block: "start" });
-  },
+  "ver-clave": function (id) { ejGrafica = id; metrica = "rm"; hojaEvolucion(); },
+  "ver-evolucion": function () { hojaEvolucion(); },
   // Músculo tocado en el mapa: se enseñan sus series por semana
-  "grupo-progreso": function (g) {
-    grupoVolumen = g; pintarProgreso();
-    const tarjeta = document.getElementById("series-semana");
-    if (tarjeta) tarjeta.scrollIntoView({ behavior: "smooth", block: "start" });
-  },
-  "metrica": function (m) { metrica = m; pintarProgreso(); },
+  "grupo-progreso": function (g) { grupoVolumen = g; hojaSeriesMusculo(); },
+  "metrica": function (m) { metrica = m; hojaEvolucion(); },
   "guardar-peso": function () {
     const v = pesoDesdeVista(leerNumero($("nuevoPeso").value));
     if (!(v >= 35 && v <= 250)) { $("errPeso").textContent = "Escribe un peso entre 35 y 250 kg."; return; }
@@ -1181,13 +1174,13 @@ document.addEventListener("change", function (ev) {
     if (o.repMin > o.repMax) { if (d.k === "repMin") o.repMax = o.repMin; else o.repMin = o.repMax; }
     guardar(); hojaEditarDia(parseInt(d.e));
   }
-  if (d.cambio === "ej-grafica") { ejGrafica = t.value; pintarProgreso(); }
+  if (d.cambio === "ej-grafica") { ejGrafica = t.value; hojaEvolucion(); }
   if (t.id === "importArchivo" && t.files && t.files[0]) {
     const lector = new FileReader();
     lector.onload = function () { $("importTxt").value = lector.result; toast("Archivo cargado. Pulsa «Importar» para restaurar."); };
     lector.readAsText(t.files[0]);
   }
-  if (d.cambio === "grupo-volumen") { grupoVolumen = t.value; pintarProgreso(); }
+  if (d.cambio === "grupo-volumen") { grupoVolumen = t.value; hojaSeriesMusculo(); }
   if (t.id === "gDias") {
     const cal = calendarioPorDefecto(parseInt(t.value));
     for (const c of document.querySelectorAll('input[name="gDia"]')) c.checked = cal.includes(parseInt(c.value));

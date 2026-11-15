@@ -15458,6 +15458,26 @@ const TRADUCCIONES = {
 "Voir les règles exactes",
 "شوف القواعد بالضبط"
 ],
+"📈 Ver la gráfica de otro ejercicio": [
+"📈 See another exercise's chart",
+"📈 Voir le graphique d'un autre exercice",
+"📈 شوف الرسم ديال تمرين آخر"
+],
+"Evolución": [
+"Progress",
+"Évolution",
+"التطور"
+],
+"Fatiga alta": [
+"High fatigue",
+"Fatigue élevée",
+"العيا طالع"
+],
+"Fatiga muy alta": [
+"Very high fatigue",
+"Fatigue très élevée",
+"العيا طالع بزاف"
+],
 "Social": [
 "Social",
 "Social",
