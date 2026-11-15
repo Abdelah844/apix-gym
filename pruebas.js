@@ -684,6 +684,7 @@ const PRUEBAS = [
     estadoPrueba();
     sesionPrueba(fechaTexto(8), [["press-banca", [[60, 8]]]]);
     sesionPrueba(fechaTexto(1), [["press-banca", [[65, 8]]]]);
+    estado.ajustes.diasEntreno = [(new Date().getDay() + 6) % 7];        // hoy toca entrenar (si no, Apix descansa)
     const k = estadoMascota();
     return (k.humor === "celebra" && k.mensaje.indexOf("65 kg") >= 0 && k.mensaje.indexOf("press de banca") >= 0) || k.humor + ": " + k.mensaje;
   }],
@@ -963,6 +964,7 @@ const PRUEBAS = [
     estadoPrueba();
     estado.social.retos.push({ id: "r1", tipo: "entrenos", meta: 5, inicio: fechaTexto(3), fin: sumarDias(hoy(), 4) });
     sesionPrueba(fechaTexto(2), [["press-banca", [[50, 10]]]]);
+    estado.ajustes.diasEntreno = [(new Date().getDay() + 6) % 7];
     const m = estadoMascota();
     return (m.accion === "ver-retos" && m.mensaje.indexOf("4 entrenos") >= 0) || JSON.stringify(m);
   }]
@@ -1055,6 +1057,22 @@ const PRUEBAS = [
     return (d.version === VERSION_DATOS && Array.isArray(d.medidas) && d.ajustes.ultimaCopia === "") || "Migración incompleta";
   }]
   ,
+  ["3.1 Apix en día de descanso", "En día de descanso Apix descansa aunque ayer batieras un récord", function () {
+    crearDemo(); estado.modo = "normal"; estado.bienvenidaApix = null;
+    const hoyN = (new Date(hoy() + "T12:00:00").getDay() + 6) % 7;
+    estado.ajustes.diasEntreno = [0, 1, 2, 3, 4, 5, 6].filter(function (d) { return d !== hoyN; }).slice(0, 4);
+    const ult = estado.sesiones[estado.sesiones.length - 1];
+    ult.fecha = sumarDias(hoy(), -1);                          // ayer, con récord
+    if (!ult.prs.length) ult.prs = [ult.ejercicios[0].id];
+    for (const e of ult.ejercicios) e.molestias = false;
+    estado.social.retos = [];
+    const m = estadoMascota();
+    if (m.humor !== "descanso") return "En día de descanso sale «" + m.humor + "»";
+    // Si el récord es de hoy (has entrenado en tu día libre), sí lo celebra
+    ult.fecha = hoy();
+    const m2 = estadoMascota();
+    return m2.humor === "celebra" || m2.humor === "campeon" || "Un récord de hoy no se celebra: " + m2.humor;
+  }],
   ["3.0 Etapas de Apix", "Apix solo evoluciona si cumples entrenos, racha y rango, y nunca baja", function () {
     crearDemo(); estado.modo = "normal"; estado.apixEtapa = 0;
     const d = datosEtapa();

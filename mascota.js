@@ -154,8 +154,13 @@ function estadoMascota() {
   if (ultima && ultima.fecha === hoyF && sesionCompleta(ultima)) {
     return { humor: "campeon", mensaje: mensajeDelDia(MENSAJES_APIX.campeon, hoyF) };
   }
+  // ¿Hoy es día de descanso? (no está en «Mi semana» y no has entrenado hoy)
+  const cal = diasDeEntreno();
+  const hoyN = (new Date(hoyF + "T12:00:00").getDay() + 6) % 7;
+  const esDescanso = cal.length > 0 && !cal.includes(hoyN) && !(ultima && ultima.fecha === hoyF);
   // 2. Récord en los últimos 2 días: felicitar con el ejercicio y el peso
-  if (ultima && diasEntre(ultima.fecha, hoyF) <= 2 && ultima.prs.length) {
+  //    (en día de descanso solo si el récord es de hoy: ese día Apix descansa)
+  if (ultima && diasEntre(ultima.fecha, hoyF) <= 2 && ultima.prs.length && !esDescanso) {
     const id = ultima.prs[0];
     const e = ultima.ejercicios.find(function (x) { return x.id === id; });
     const ej = buscarEj(id);
@@ -166,7 +171,7 @@ function estadoMascota() {
   }
   // 2b. Reto conseguido: felicitar
   const conseguido = retoRecienConseguido();
-  if (conseguido && !(retoUrgente())) {
+  if (conseguido && !(retoUrgente()) && !esDescanso) {
     return { humor: "celebra", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.retoConseguido, hoyF), datosReto(conseguido)), accion: "ver-retos" };
   }
   // 3. Racha perdida esta semana
@@ -175,19 +180,20 @@ function estadoMascota() {
     return { humor: "enfadado", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.enfadado, hoyF), { racha: perdida }) };
   }
   // 3b. Reto personal en marcha: te recuerda lo que falta (si hoy no has entrenado todavía)
+  //     En día de descanso solo si el reto acaba hoy o mañana
   const reto = retoUrgente();
-  if (reto && !(ultima && ultima.fecha === hoyF)) {
+  if (reto && !(ultima && ultima.fecha === hoyF) && (!esDescanso || datosReto(reto).dias <= 1)) {
     const d = datosReto(reto);
     return { humor: "anima", mensaje: rellenar(mensajeDelDia(d.dias <= 1 ? MENSAJES_APIX.retoUltimo : MENSAJES_APIX.reto, hoyF), d), accion: "ver-retos" };
   }
+  // 3c. Día de descanso: Apix descansa contigo
+  if (esDescanso) return { humor: "descanso", mensaje: mensajeDelDia(MENSAJES_APIX.descanso, hoyF) };
   // 4. Hoy ya has entrenado
   if (ultima && ultima.fecha === hoyF) return { humor: "orgulloso", mensaje: mensajeDelDia(MENSAJES_APIX.orgulloso, hoyF) };
   // 5. Hoy toca entrenar (según tu calendario) y aún no lo has hecho
   // 4b. Recuerdo (fecha especial o mejora en tu ejercicio favorito)
   const recuerdo = recuerdoApix(hoyF);
   if (recuerdo) return { humor: "orgulloso", mensaje: recuerdo };
-  const cal = diasDeEntreno();
-  const hoyN = (new Date(hoyF + "T12:00:00").getDay() + 6) % 7;
   if (cal.includes(hoyN)) {
     const dias = diasSinEntrenar();
     if (dias !== null && dias >= 3) return { humor: "anima", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.animaFuerte, hoyF), { dias: dias }) };
