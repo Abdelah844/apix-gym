@@ -360,6 +360,7 @@ function pintarInicio() {
       '</div></div>' + etapaApixHtml();
   }
   h += resumenSemanaApixHtml();
+  h += avisoRangosNuevosHtml();
 
   // Entreno en curso o entreno de hoy
   if (estado.activa) {
@@ -994,21 +995,20 @@ function pintarRangos() {
   const rg = pg === null ? null : rangoDePuntos(pg);
   let h = '<div class="head"><div><p class="label">Clasificación</p><h1>Rangos</h1></div><button class="btn-txt small" data-act="como-rangos">¿Cómo funciona?</button></div><div class="stack">';
 
-  // Global
+  h += avisoRangosNuevosHtml();
+
+  // Global: insignia, cuánto falta para el siguiente y qué hacer para subir
   h += '<div class="card hero stack" style="align-items:center;text-align:center">' +
     '<div class="insignia-brillo"' + (rg === null ? "" : ' style="--c:' + RANGOS[rg].color + '"') + '>' + insignia(rg, "lg") + '</div>' +
-    '<div><p class="label">Rango global</p><h1>' + nombreRango(rg) + '</h1>' + (pg !== null ? '<p class="muted num">' + pg.toFixed(1) + ' puntos</p>' : "") + '</div>';
+    '<div><p class="label">Rango global</p><h1>' + nombreRango(rg) + '</h1></div>';
   if (pg !== null) {
-    h += '<div style="width:100%" class="stack tight"><div class="bar"><i style="width:' + progresoRango(pg) + '%"></i></div>' +
-      '<div class="row between small"><span>' + nombreRango(rg) + '</span><span class="muted">' + (rg < 8 ? progresoRango(pg) + "% · " + RANGOS[rg + 1].nombre : "Máximo") + '</span></div></div>';
-    const cob = coberturaMuscular();
-    h += '<div style="width:100%;text-align:left" class="stack tight"><div class="row between small"><span>Cobertura muscular</span><b class="num">' + cob + ' de ' + GRUPOS_PRINCIPALES.length + '</b></div><div class="bar fire"><i style="width:' + (cob / GRUPOS_PRINCIPALES.length * 100) + '%"></i></div></div>';
-    h += '<p class="muted" style="text-align:left;width:100%">' + esc(consejoGlobal(pg)) + '</p>';
+    h += '<div style="width:100%" class="stack tight"><div class="bar"><i style="width:' + (rg < 8 ? progresoRango(pg) : 100) + '%"></i></div>' +
+      '<p class="muted small">' + (rg < 8 ? "Llevas el " + progresoRango(pg) + " % del camino a " + RANGOS[rg + 1].nombre : "Has llegado al rango máximo") + '</p></div>';
+    h += '<p style="text-align:left;width:100%"><b>' + esc(consejoGlobal(pg)) + '</b></p>';
     const hace4 = puntosGlobal(fechaTexto(28));
-    if (hace4 !== null) {
-      const d = pg - hace4;
-      h += '<p class="small" style="width:100%;text-align:left">Hace 4 semanas: <b class="num">' + hace4.toFixed(1) + '</b> pts · ' +
-        '<span style="color:' + (d >= 0 ? "var(--good)" : "var(--danger)") + ';font-weight:700">' + (d >= 0 ? "+" : "") + d.toFixed(1) + '</span></p>';
+    if (hace4 !== null && Math.abs(pg - hace4) >= 0.5) {
+      const sube = pg > hace4;
+      h += '<p class="small" style="width:100%;text-align:left;color:' + (sube ? "var(--good)" : "var(--warn)") + ';font-weight:700">' + (sube ? "↑ Has mejorado en las últimas 4 semanas" : "↓ Has bajado un poco en las últimas 4 semanas") + '</p>';
     }
   } else h += '<p class="muted">Completa tu primer entreno para obtener rango.</p>';
   h += '</div>';
@@ -1017,22 +1017,22 @@ function pintarRangos() {
   const datosG = [];
   for (const g in GRUPOS) datosG.push({ g: g, p: puntosGrupo(g) });
   const ordenados = datosG.slice().sort(function (a, b) { return (b.p === null ? -1 : b.p) - (a.p === null ? -1 : a.p); });
-  h += '<div class="card"><div class="row between"><h3>Tu ranking por músculo</h3><span class="muted small">Toca para ver detalle</span></div><div class="list">';
+  h += '<div class="card"><div class="row between"><h3>Tus músculos</h3><span class="muted small">De más fuerte a más flojo</span></div><div class="list">';
   ordenados.forEach(function (d, pos) {
     const ri = d.p === null ? null : rangoDePuntos(d.p);
     h += '<button class="item ranking-fila" data-act="ver-grupo" data-a="' + d.g + '"><span class="pos num">' + (d.p === null ? "–" : pos + 1) + '</span>' + insignia(ri, "sm") +
-      '<div class="grow stack tight" style="gap:4px"><div class="row between"><span class="name">' + GRUPOS[d.g] + '</span><span class="small" style="color:' + (ri === null ? "var(--muted)" : RANGOS[ri].color) + ';font-weight:800">' + nombreRango(ri) + (d.p === null ? "" : ' · <span class="num">' + d.p.toFixed(0) + '</span>') + '</span></div>' +
+      '<div class="grow stack tight" style="gap:4px"><div class="row between"><span class="name">' + GRUPOS[d.g] + '</span><span class="small" style="color:' + (ri === null ? "var(--muted)" : RANGOS[ri].color) + ';font-weight:800">' + nombreRango(ri) + '</span></div>' +
       (d.p === null ? '<span class="muted small">Sin datos todavía</span>'
         : '<div class="bar"><i style="width:' + (ri < RANGOS.length - 1 ? progresoRango(d.p) : 100) + '%;background:' + RANGOS[ri].color + '"></i></div>' +
-          '<span class="muted small">' + (ri < RANGOS.length - 1 ? 'Te faltan ' + Math.max(1, Math.ceil(RANGOS[ri + 1].min - d.p)) + ' pts para ' + RANGOS[ri + 1].nombre : "Rango máximo") + '</span>') + '</div></button>';
+          '<span class="muted small">' + (ri < RANGOS.length - 1 ? progresoRango(d.p) + '% hacia ' + RANGOS[ri + 1].nombre : "Rango máximo") + '</span>') + '</div></button>';
   });
-  h += '</div><p class="muted small">Los grupos marcados en el mapa y los 8 principales cuentan para tu rango global.</p></div>';
+  h += '</div></div>';
 
   // Escala de los 9 rangos: el tuyo resaltado, los que aún no tienes atenuados
   h += '<div class="card stack"><div class="row between"><h3>Los 9 rangos</h3><span class="muted small">De principiante a élite</span></div><div class="escala">';
   RANGOS.forEach(function (r, i) {
     const clase = rg === i ? "actual" : (rg !== null && i < rg ? "logrado" : "bloqueado");
-    h += '<div class="escalon ' + clase + '">' + insignia(i, "md") + '<b style="color:' + r.color + '">' + r.nombre + '</b><span class="muted small num">' + r.min + ' pts</span>' + (rg === i ? '<span class="pill up">Tú</span>' : "") + '</div>';
+    h += '<div class="escalon ' + clase + '">' + insignia(i, "md") + '<b style="color:' + r.color + '">' + r.nombre + '</b>' + (rg === i ? '<span class="pill up">Tú</span>' : "") + '</div>';
   });
   h += '</div></div>';
 
@@ -1054,31 +1054,42 @@ function pintarRangos() {
     h += '</div></div>';
 
     // Por ejercicio
-    h += '<div class="card"><h3>Por ejercicio</h3><div class="list">';
+    h += '<details class="card dia-plegado"><summary><h3 class="grow">Rango de cada ejercicio</h3><span class="muted small">' + conDatos.length + '</span><span class="flecha" aria-hidden="true">▾</span></summary><div class="list" style="margin-top:8px">';
     for (const d of conDatos) {
       const ri = rangoDePuntos(d.p);
       h += '<button class="item" data-act="ver-rango-ej" data-a="' + d.id + '">' + insignia(ri, "sm") + '<div class="grow stack tight" style="gap:4px"><div class="row between"><span class="name">' + esc(buscarEj(d.id).nombre) + '</span><span class="muted small">' + RANGOS[ri].nombre + '</span></div><div class="bar"><i style="width:' + progresoRango(d.p) + '%"></i></div></div></button>';
     }
-    h += '</div></div>';
+    h += '</div></details>';
   }
 
   // Historial de ascensos
   h += '<div class="card"><h3>Historial de ascensos</h3><div class="list">';
   if (estado.ascensos.length === 0) h += '<p class="muted" style="padding-top:8px">Cuando subas de rango aparecerá aquí.</p>';
-  for (const a of estado.ascensos.slice().reverse().slice(0, 12)) {
+  for (const a of estado.ascensos.slice().reverse().slice(0, 5)) {
     h += '<div class="item">' + insignia(a.rango, "sm") + '<div class="grow"><span class="name small">' + esc(a.nombre) + ' → ' + RANGOS[a.rango].nombre + '</span><span class="muted small">' + fechaBonita(a.fecha) + '</span></div></div>';
   }
   $("app").innerHTML = h + '</div></div></div>';
 }
 
+// Una frase que dice qué hacer para subir (lo más importante primero)
 function consejoGlobal(pg) {
   const n = sesionesValidas().length;
-  if (n < 5 && pg >= 35) return "Tu rango global está limitado a " + RANGOS[rangoDePuntos(35)].nombre + " hasta completar 5 entrenos válidos (llevas " + n + ").";
-  if (n < 15 && pg >= 67) return "Tu rango global está limitado a " + RANGOS[rangoDePuntos(67)].nombre + " hasta completar 15 entrenos válidos (llevas " + n + ").";
+  if (n < 5 && pg >= 35) return "Completa " + (5 - n) + (5 - n === 1 ? " entreno más" : " entrenos más") + " para poder pasar de " + RANGOS[rangoDePuntos(35)].nombre + ".";
+  if (n < 15 && pg >= 67) return "Completa " + (15 - n) + (15 - n === 1 ? " entreno más" : " entrenos más") + " para poder pasar de " + RANGOS[rangoDePuntos(67)].nombre + ".";
   const sinDatos = GRUPOS_PRINCIPALES.filter(function (g) { return puntosGrupo(g) === null; });
-  if (sinDatos.length) return "Te faltan datos de " + sinDatos.map(function (g) { return GRUPOS[g]; }).join(", ") + ". Cada músculo sin datos cuenta 0 en el global.";
+  if (sinDatos.length) return "Para subir, entrena también: " + sinDatos.map(function (g) { return GRUPOS[g]; }).join(", ");
   const grupos = GRUPOS_PRINCIPALES.map(function (g) { return { g: g, p: puntosGrupo(g) }; }).sort(function (a, b) { return a.p - b.p; });
   return "Para subir, mejora tus músculos más flojos: " + grupos.slice(0, 2).map(function (x) { return GRUPOS[x.g]; }).join(" y ") + ".";
+}
+
+// Aviso (una sola vez) a quien ya tenía entrenos: los rangos ahora son más exigentes
+const FECHA_RANGOS_V3 = "2026-11-15";
+function avisoRangosNuevosHtml() {
+  if (estado.ajustes.rangosV3Visto || estado.modo === "demo") return "";
+  if (!estado.sesiones.some(function (x) { return x.fecha < FECHA_RANGOS_V3; })) return "";
+  return '<div class="card stack tight" style="border-color:var(--accent)"><h3>Los rangos ahora son más exigentes</h3>' +
+    '<p class="small">Antes se llegaba arriba demasiado pronto. Ahora cada rango vale más: Apex es nivel de élite. Si has bajado de rango, tu fuerza es la misma; lo que ha cambiado es la vara de medir, y es igual para todos.</p>' +
+    '<button class="btn-sec small" data-act="cerrar-aviso-rangos">Entendido</button></div>';
 }
 
 function colorGrupo(g) {
@@ -2448,24 +2459,27 @@ function hojaRangoEj(id) {
 
 function hojaComoRangos() {
   let filas = "";
-  RANGOS.forEach(function (r, i) { filas += '<div class="item">' + insignia(i, "sm") + '<span class="grow" style="font-weight:700">' + r.nombre + '</span><span class="muted num small">desde ' + r.min + ' pts</span></div>'; });
+  RANGOS.forEach(function (r, i) { filas += '<div class="item">' + insignia(i, "sm") + '<span class="grow" style="font-weight:700">' + r.nombre + '</span></div>'; });
   const e = buscarEj("press-banca");
   const bw = pesoCorporalActual();
-  const ref = referenciaCorporal(bw);
-  const rm = unaRM(60, 8);
-  const pts = Math.min(100, 75 * rm / (factorEj(e) * ref));
   function f(n) { return (Math.round(n * 10) / 10).toLocaleString(localeApp()); }
+  function kg(puntos) { return Math.round(rmParaPuntos("press-banca", puntos) / (1 + 8 / 30) / 2.5) * 2.5; }   // peso para 8 repeticiones
   function paso(t, txt) { return '<div class="card stack tight"><h3>' + t + '</h3>' + txt + '</div>'; }
-  abrirHoja(cabeceraHoja("Reglas de los rangos", "Algoritmo público · v2") + '<div class="stack">' +
-    paso("1. Fuerza estimada", '<p class="small"><b>1RM = peso × (1 + reps ÷ 30)</b>. Cada repetición extra suma un 3,3 %, hasta 12 repeticiones.</p>') +
-    paso("2. Peso corporal justo", '<p class="small">Referencia = <b>75 × (peso ÷ 75)<sup>0,67</sup></b>. Una persona de 90 kg necesita un 31 % más que una de 60 kg, no un 50 %. Se usa tu peso del día de cada serie.</p>') +
-    paso("3. Puntos de una serie", '<p class="small"><b>75 × 1RM ÷ (factor × referencia)</b>, máximo 100.</p><p class="small">El factor se ajusta a tu sexo: para mujeres, tren superior × 0,6 y tren inferior × 0,75; con «Prefiero no decirlo», un punto intermedio. Así, cada persona se compara con un nivel justo para ella.</p><p class="small muted">Ejemplo con tu peso (' + f(bw) + ' kg): press banca 60 kg × 8 → ' + f(pts) + ' puntos.</p>') +
-    paso("4. Rendimiento habitual, no un día suelto", '<p class="small">La nota de un ejercicio es la <b>media de tus 3 mejores sesiones</b> en las 12 semanas anteriores a tu último registro. Un día excepcional no te sube de rango por sí solo.</p>') +
-    paso("5. Fiabilidad", '<p class="small">Tope según sesiones con el ejercicio: 1 → ' + RANGOS[rangoDePuntos(35)].nombre + ', 2-3 → ' + RANGOS[rangoDePuntos(57)].nombre + ', 4-5 → ' + RANGOS[rangoDePuntos(77)].nombre + ', 6 o más → sin tope. Un grupo con un solo ejercicio distinto tiene tope de ' + RANGOS[rangoDePuntos(77)].nombre + '.</p>') +
-    paso("6. Cuerpo completo", '<p class="small">El global es la media de los <b>8 músculos principales</b>; los que no tienen datos cuentan 0. Antebrazos, abdominales y gemelos tienen rango propio pero no cuentan en el global. Tope: menos de 5 entrenos válidos → ' + RANGOS[rangoDePuntos(35)].nombre + '; menos de 15 → ' + RANGOS[rangoDePuntos(67)].nombre + '.</p>') +
-    paso("7. Datos fiables", '<p class="small">Un entreno solo cuenta si tiene al menos una serie válida. Los pesos imposibles se bloquean y los raros quedan en revisión hasta que los confirmas.</p>') +
-    '<div class="card"><div class="list">' + filas + '</div></div>' +
-    '<p class="muted small">Factores de dificultad: ' + FACTORES_VERSION + '. Mismos registros = mismo rango, siempre.</p></div>');
+  abrirHoja(cabeceraHoja("Cómo funcionan los rangos", "En 3 ideas") + '<div class="stack">' +
+    paso("💪 Cuánto levantas para tu peso", '<p class="small">Tu rango depende de cuánto levantas comparado con lo que pesas. Levantar 60 kg tiene más mérito pesando 60 que pesando 90.</p>') +
+    paso("📅 Lo que haces normalmente", '<p class="small">Cuenta la media de tus 3 mejores entrenos de cada ejercicio, no un día suelto. Hacen falta varias sesiones para subir.</p>') +
+    paso("🧍 Todo el cuerpo", '<p class="small">El rango global es la media de los 8 músculos principales. Si no entrenas alguno, te baja la media.</p>') +
+    paso("Ejemplo con tu peso (" + f(bw) + " kg)", '<p class="small">Press de banca, haciendo 8 repeticiones:</p><div class="list">' +
+      [3, 6, 8].map(function (r) { return '<div class="item" style="padding:6px 0">' + insignia(r, "sm") + '<span class="grow" style="font-weight:700">' + RANGOS[r].nombre + '</span><span class="num small">' + f(kg(RANGOS[r].min)) + ' kg × 8</span></div>'; }).join("") + '</div>') +
+    '<div class="card"><p class="label">Los 9 rangos, de menor a mayor</p><div class="list">' + filas + '</div></div>' +
+    '<details class="card dia-plegado"><summary><h3 class="grow">Ver las reglas exactas</h3><span class="flecha" aria-hidden="true">▾</span></summary><div class="stack tight" style="margin-top:10px">' +
+      '<p class="small"><b>Fuerza estimada:</b> 1RM = peso × (1 + reps ÷ 30), hasta 12 repeticiones.</p>' +
+      '<p class="small"><b>Peso corporal:</b> referencia = 75 × (peso ÷ 75)<sup>0,67</sup>. Se usa tu peso del día de cada serie.</p>' +
+      '<p class="small"><b>Puntos de una serie:</b> ' + ESCALA_RANGOS + ' × 1RM ÷ (factor del ejercicio × referencia), máximo 100. Para mujeres, el factor baja: tren superior × 0,6 y tren inferior × 0,75.</p>' +
+      '<p class="small"><b>Puntos por rango:</b> ' + RANGOS.map(function (r) { return r.nombre + " " + r.min; }).join(" · ") + '.</p>' +
+      '<p class="small"><b>Topes por pocas sesiones:</b> con 1 sesión de un ejercicio, máximo ' + RANGOS[rangoDePuntos(35)].nombre + '; con 2-3, ' + RANGOS[rangoDePuntos(57)].nombre + '; con 4-5, ' + RANGOS[rangoDePuntos(77)].nombre + '. Global: menos de 5 entrenos, ' + RANGOS[rangoDePuntos(35)].nombre + '; menos de 15, ' + RANGOS[rangoDePuntos(67)].nombre + '.</p>' +
+      '<p class="small"><b>Datos fiables:</b> los pesos imposibles se bloquean y los raros quedan en revisión hasta que los confirmas.</p>' +
+      '<p class="muted small">Factores de dificultad: ' + FACTORES_VERSION + '. Mismos registros = mismo rango, siempre.</p></div></details></div>');
 }
 
 // ---------- Crear reto ----------

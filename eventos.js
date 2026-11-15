@@ -656,6 +656,7 @@ const ACCIONES = {
   "tuto-saltar": function () { cerrarTutorial(); },
   "ver-logros": function () { hojaLogros(); },
   "ver-etapas": function () { hojaEtapas(); },
+  "cerrar-aviso-rangos": function () { estado.ajustes.rangosV3Visto = true; guardar(); pintar(); },
   "cerrar-semana-apix": function () { estado.ajustes.resumenSemanaVisto = lunesDe(hoy()); guardar(); pintar(); },
   "ver-tutorial": function () { cerrarHoja(); mostrarTutorial(0); },
   "aviso-descanso": function () {

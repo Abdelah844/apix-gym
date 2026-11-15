@@ -15363,6 +15363,101 @@ const TRADUCCIONES = {
 "Tu as perdu ta série et je suis redevenu Apprenti. 😤 Il faut retrouver la régularité pour que je grandisse à nouveau.",
 "ضيّعتي السلسلة ورجعت متعلم. 😤 خاصك ترجع للاستمرارية باش نكبر من جديد."
 ],
+"Has llegado al rango máximo": [
+"You've reached the top rank",
+"Tu as atteint le rang maximum",
+"وصلتي لأعلى رتبة"
+],
+"↑ Has mejorado en las últimas {n} semanas": [
+"↑ You've improved over the last {n} weeks",
+"↑ Tu as progressé ces {n} dernières semaines",
+"↑ تحسّنتي ف آخر {n} سيمانات"
+],
+"↓ Has bajado un poco en las últimas {n} semanas": [
+"↓ You've dropped a little over the last {n} weeks",
+"↓ Tu as un peu baissé ces {n} dernières semaines",
+"↓ هبطتي شوية ف آخر {n} سيمانات"
+],
+"Tus músculos": [
+"Your muscles",
+"Tes muscles",
+"العضلات ديالك"
+],
+"De más fuerte a más flojo": [
+"From strongest to weakest",
+"Du plus fort au plus faible",
+"من الأقوى للأضعف"
+],
+"Rango de cada ejercicio": [
+"Rank for each exercise",
+"Rang de chaque exercice",
+"الرتبة ديال كل تمرين"
+],
+"Los rangos ahora son más exigentes": [
+"Ranks are now tougher",
+"Les rangs sont maintenant plus exigeants",
+"الرتب ولاو صعاب كثر"
+],
+"Antes se llegaba arriba demasiado pronto. Ahora cada rango vale más: Apex es nivel de élite. Si has bajado de rango, tu fuerza es la misma; lo que ha cambiado es la vara de medir, y es igual para todos.": [
+"It used to be too easy to reach the top. Now every rank is worth more: Apex is elite level. If your rank dropped, your strength is the same; what changed is the yardstick, and it's the same for everyone.",
+"Avant, on arrivait en haut trop vite. Maintenant chaque rang vaut plus : Apex, c'est le niveau élite. Si ton rang a baissé, ta force est la même ; c'est la règle de mesure qui a changé, et elle est la même pour tous.",
+"من قبل كان الواحد كيوصل للفوق بالزربة. دابا كل رتبة عندها قيمة كثر: Apex هو مستوى النخبة. إلا هبطتي ف الرتبة، القوة ديالك هي هي؛ اللي تبدل هو الميزان، وهو نفسو للجميع."
+],
+"Cómo funcionan los rangos": [
+"How ranks work",
+"Comment marchent les rangs",
+"كيفاش خدامين الرتب"
+],
+"En {n} ideas": [
+"In {n} ideas",
+"En {n} idées",
+"ف {n} أفكار"
+],
+"💪 Cuánto levantas para tu peso": [
+"💪 How much you lift for your weight",
+"💪 Ce que tu soulèves par rapport à ton poids",
+"💪 شحال كتهز على حساب الوزن ديالك"
+],
+"Tu rango depende de cuánto levantas comparado con lo que pesas. Levantar {n} kg tiene más mérito pesando {n} que pesando {n}.": [
+"Your rank depends on how much you lift compared with what you weigh. Lifting {n} kg is more impressive at {n} kg than at {n} kg.",
+"Ton rang dépend de ce que tu soulèves par rapport à ton poids. Soulever {n} kg a plus de mérite à {n} kg qu'à {n} kg.",
+"الرتبة ديالك على حساب شحال كتهز مقارنة مع الوزن ديالك. تهز {n} كيلو وانت كتوزن {n} أحسن من وانت كتوزن {n}."
+],
+"📅 Lo que haces normalmente": [
+"📅 What you usually do",
+"📅 Ce que tu fais d'habitude",
+"📅 اللي كتدير ديما"
+],
+"Cuenta la media de tus {n} mejores entrenos de cada ejercicio, no un día suelto. Hacen falta varias sesiones para subir.": [
+"It counts the average of your {n} best workouts for each exercise, not a one-off day. You need several sessions to move up.",
+"C'est la moyenne de tes {n} meilleures séances de chaque exercice qui compte, pas un jour isolé. Il faut plusieurs séances pour monter.",
+"كيتحسب المتوسط ديال أحسن {n} حصص ديال كل تمرين، ماشي نهار واحد. خاصك بزاف ديال الحصص باش تطلع."
+],
+"🧍 Todo el cuerpo": [
+"🧍 The whole body",
+"🧍 Tout le corps",
+"🧍 الجسم كامل"
+],
+"El rango global es la media de los {n} músculos principales. Si no entrenas alguno, te baja la media.": [
+"Your overall rank is the average of the {n} main muscles. If you skip one, your average drops.",
+"Le rang global est la moyenne des {n} muscles principaux. Si tu en oublies un, ta moyenne baisse.",
+"الرتبة العامة هي المتوسط ديال {n} عضلات الأساسية. إلا ما خدّمتيش شي وحدة، المتوسط كيهبط."
+],
+"Press de banca, haciendo {n} repeticiones:": [
+"Bench press, doing {n} reps:",
+"Développé couché, en faisant {n} répétitions :",
+"ديڤلوپي كوشي، ب {n} ريبات:"
+],
+"Los {n} rangos, de menor a mayor": [
+"The {n} ranks, from lowest to highest",
+"Les {n} rangs, du plus bas au plus haut",
+"{n} رتب، من الصغيرة للكبيرة"
+],
+"Ver las reglas exactas": [
+"See the exact rules",
+"Voir les règles exactes",
+"شوف القواعد بالضبط"
+],
 "Social": [
 "Social",
 "Social",
