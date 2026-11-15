@@ -401,7 +401,8 @@ function postDeNube(x, perfilDe) {
   const p = x.autor === yo ? null : perfilDe(x.autor);
   const reacciones = (x.me_gusta || []).map(function (l) { return { u: l.usuario, r: l.reaccion || "♥" }; });
   return { id: x.id, autorId: x.autor, mio: x.autor === yo, autor: x.autor === yo ? (estado ? estado.perfil.usuario : "") : (p ? p.nombre_usuario : "?"),
-    tipo: x.tipo, texto: x.texto, fecha: String(x.creado).slice(0, 10), detalle: x.detalle || null, reacciones: reacciones };
+    tipo: x.tipo, texto: x.texto, fecha: String(x.creado).slice(0, 10), detalle: x.detalle || null, reacciones: reacciones,
+    rango: p ? p.rango : null, apix: p ? (p.apix || 0) : 0 };       // rango y etapa de Apix del autor (para pintar su tarjeta)
 }
 const CAMPOS_POST = "id,autor,tipo,texto,creado,detalle,me_gusta(usuario,reaccion)";
 

@@ -10914,9 +10914,9 @@ const TRADUCCIONES = {
 "تمرن مع ذلك"
 ],
 "Entreno completado": [
-"Workout complete",
+"Workout completed",
 "Séance terminée",
-"الحصة كاملة"
+"الحصة كملات"
 ],
 "Entreno en curso": [
 "Workout in progress",
@@ -14660,7 +14660,7 @@ const TRADUCCIONES = {
 ],
 "entrenos": [
 "workouts",
-"entraînements",
+"séances",
 "حصص"
 ],
 "series efectivas": [
@@ -15477,6 +15477,111 @@ const TRADUCCIONES = {
 "Very high fatigue",
 "Fatigue très élevée",
 "العيا طالع بزاف"
+],
+"Mi perfil": [
+"My profile",
+"Mon profil",
+"البروفيل ديالي"
+],
+"← Social": [
+"← Social",
+"← Social",
+"سوسيال ←"
+],
+"Publicar": [
+"Post",
+"Publier",
+"نشر"
+],
+"Aquí saldrán vuestros entrenos": [
+"Your workouts will show up here",
+"Vos séances apparaîtront ici",
+"هنا غادي يبانو الحصص ديالكم"
+],
+"Cuando tú o tus amigos terminéis un entreno, aparecerá aquí con su tarjeta.": [
+"When you or your friends finish a workout, it will show up here with its card.",
+"Quand toi ou tes amis terminez une séance, elle apparaîtra ici avec sa carte.",
+"ملي نتا ولا صحابك تكملو شي حصة، غادي تبان هنا بالكارطة ديالها."
+],
+"Esto es mejor con amigos": [
+"This is better with friends",
+"C'est mieux entre amis",
+"هادشي أحسن مع الصحاب"
+],
+"Invita a alguien y competid en el ranking. Verás sus entrenos aquí.": [
+"Invite someone and compete in the ranking. You'll see their workouts here.",
+"Invite quelqu'un et affrontez-vous au classement. Tu verras ses séances ici.",
+"عرض على شي واحد وتنافسو ف الترتيب. غادي تشوف الحصص ديالو هنا."
+],
+"Añadir por usuario": [
+"Add by username",
+"Ajouter par nom d'utilisateur",
+"زيد بسمية المستخدم"
+],
+"🏆 Nuevo récord": [
+"🏆 New record",
+"🏆 Nouveau record",
+"🏆 ريكور جديد"
+],
+"🏆 {n} récords": [
+"🏆 {n} records",
+"🏆 {n} records",
+"🏆 {n} ريكورات"
+],
+"ejercicios": [
+"exercises",
+"exercices",
+"تمارين"
+],
+"🏆 Récord": [
+"🏆 Record",
+"🏆 Record",
+"🏆 ريكور"
+],
+"⬆️ Rango": [
+"⬆️ Rank",
+"⬆️ Rang",
+"⬆️ رتبة"
+],
+"{n} reacción": [
+"{n} reaction",
+"{n} réaction",
+"{n} réaction"
+],
+"{n} reacciones": [
+"{n} reactions",
+"{n} réactions",
+"{n} تفاعلات"
+],
+"Toca dos veces la tarjeta para dar ánimo 💪": [
+"Double-tap the card to cheer them on 💪",
+"Touche deux fois la carte pour encourager 💪",
+"ورّك جوج مرات على الكارطة باش تشجع 💪"
+],
+"sem. de racha": [
+"week streak",
+"sem. de série",
+"سيمانات ديال السلسلة"
+],
+"Compartir mi perfil": [
+"Share my profile",
+"Partager mon profil",
+"شارك البروفيل ديالي"
+],
+"Tus mejores marcas": [
+"Your best lifts",
+"Tes meilleures marques",
+"أحسن الأرقام ديالك"
+],
+"Aún no has publicado entrenos. Se publican solos al terminar si tienes activado «Mostrar mis entrenos» en Ajustes.": [
+"You haven't posted any workouts yet. They're posted automatically when you finish if \"Show my workouts\" is on in Settings.",
+"Tu n'as pas encore publié de séances. Elles sont publiées toutes seules à la fin si « Montrer mes séances » est activé dans Réglages.",
+"مازال ما نشرتي حتى حصة. كيتنشرو بوحدهم ملي تكمل إلا كانت «بيّن الحصص ديالي» مفعّلة ف الإعدادات."
+],
+"Ver perfil": [
+"View profile",
+"Voir le profil",
+"شوف البروفيل"
 ],
 "Social": [
 "Social",

@@ -675,7 +675,7 @@ const ACCIONES = {
     });
   },
   "vista-carga": function (v) { vistaCarga = v; pintarProgreso(); },
-  "vista-social": function (v) { vistaSocial = v; confirmar = ""; pintarSocial(); },
+  "vista-social": function (v) { vistaSocial = v; confirmar = ""; window.scrollTo(0, 0); pintarSocial(); entradaSuave(); },
 
   // ---------- Social con cuenta en la nube ----------
   "social-recargar": async function () { socialNube.error = ""; socialNube.cargado = false; pintarSocial(); },
@@ -702,6 +702,7 @@ const ACCIONES = {
     const r = await borrarAmistadNube(id);
     if (!r.ok) { mensaje("No se ha podido quitar", r.msg); return; }
     if (hojaSocial && hojaSocial.id === id) { hojaSocial = null; cerrarHoja(); }
+    if (vistaSocial === "perfil" && perfilSocial === id) vistaSocial = "amigos";
     toast("Amigo quitado", "ok"); await cargarSocialNube(); pintarSocial();
   },
   "social-publicar": async function () {
@@ -724,7 +725,12 @@ const ACCIONES = {
     const r = await reaccionarNube(id, quitar ? "" : emoji);
     if (!r.ok) { toast("No se pudo guardar la reacción"); await cargarSocialNube(); repintarSocial(); }
   },
-  "ver-amigo": function (id) { hojaAmigo(id); },
+  // Abre el perfil (página entera) de un amigo o el tuyo ("yo")
+  "ver-amigo": function (id) {
+    if (estado.modo === "demo" || !conectado()) return;
+    perfilSocial = id; vistaSocial = "perfil"; confirmar = ""; cerrarHoja();
+    tab = "social"; window.scrollTo(0, 0); pintar(); entradaSuave();
+  },
   "ver-post": function (id) { hojaPost(id); },
   "historial-mas": function () { semanasHistorial += 8; pintarProgreso(); },
   "social-borrar-post": async function (id) {
@@ -1480,4 +1486,29 @@ function descansoTrasAnadir() {
 document.addEventListener("input", function (ev) {
   const t = ev.target;
   if (t && t.dataset && t.dataset.horaDia !== undefined && t.parentElement) t.parentElement.classList.toggle("vacia", !t.value);
+});
+
+// Social: dos toques seguidos en la tarjeta de un entreno dan ánimo (💪), como el corazón de Instagram
+let ultimoToque = { id: "", hora: 0 };
+document.addEventListener("click", function (ev) {
+  const v = ev.target.closest ? ev.target.closest("[data-post-visual]") : null;
+  if (!v) return;
+  const id = v.dataset.postVisual, ahora = Date.now();
+  if (ultimoToque.id !== id || ahora - ultimoToque.hora > 350) { ultimoToque = { id: id, hora: ahora }; return; }
+  ultimoToque = { id: "", hora: 0 };
+  const p = postPorId(id);
+  if (!p) return;
+  const yaLaTiene = p.reacciones.some(function (x) { return x.u === nube.id && x.r === "💪"; });
+  const fin = function () {
+    // La pantalla se ha vuelto a pintar: el 💪 grande se pone sobre la tarjeta nueva
+    const nueva = document.querySelector('[data-post-visual="' + CSS.escape(id) + '"]');
+    if (!nueva) return;
+    const s = document.createElement("span");
+    s.className = "animo-grande"; s.textContent = "💪";
+    nueva.appendChild(s);
+    setTimeout(function () { s.remove(); }, 900);
+    if (estado.ajustes.vibracion !== false && navigator.vibrate) navigator.vibrate(30);
+  };
+  if (!yaLaTiene) ACCIONES["social-reaccion"](id, "💪");      // pinta la pantalla al momento y guarda en segundo plano
+  fin();
 });

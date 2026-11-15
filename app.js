@@ -1583,19 +1583,33 @@ function historialSemanasHtml() {
 
 function usuarioDemo(uid) { return USUARIOS_DEMO.find(function (x) { return x.uid === uid; }); }
 
+let perfilSocial = "yo";          // de quién es el perfil abierto ("yo" o el id de un amigo)
+
 function pintarSocial() {
   if (estado.perfil.edad < 16) {
     $("app").innerHTML = '<div class="head"><div><p class="label">Comunidad</p><h1>Social</h1></div></div><div class="card stack tight"><h3>No disponible</h3><p class="muted">La parte social está desactivada para menores de 16 años para proteger tu privacidad. El resto de la app funciona igual.</p></div>';
     return;
   }
   const demo = estado.modo === "demo";
-  const vistas = [["feed", "Actividad"], ["amigos", "Amigos"], ["retos", "Retos"]];
-  let h = '<div class="head"><div><p class="label">Comunidad</p><h1>Social</h1></div>' + (demo ? '<span class="demo-tag">Demo</span>' : "") + '</div><div class="stack">' +
-    (demo ? '<p class="muted small">Los demás usuarios de la demo son ficticios.</p>' : "") +
-    '<div class="seg">' + vistas.map(function (o) { return '<button data-act="vista-social" data-a="' + o[0] + '" class="' + (vistaSocial === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div>';
+  const nube_ = !demo && conectado();
+  if (vistaSocial === "perfil" && !nube_) vistaSocial = "feed";
+  const pendientes = nube_ ? socialNube.recibidas.length : 0;
+  // Cabecera: en el feed, el título y tres iconos (amigos, retos y tu perfil); en lo demás, un botón para volver
+  let h;
+  if (vistaSocial === "feed") {
+    h = '<div class="head"><div><p class="label">Comunidad</p><h1>Social</h1></div><div class="social-iconos">' + (demo ? '<span class="demo-tag">Demo</span>' : "") +
+      '<button class="icono-social" data-act="vista-social" data-a="amigos" aria-label="Amigos">👥' + (pendientes ? '<span class="punto num">' + pendientes + '</span>' : "") + '</button>' +
+      '<button class="icono-social" data-act="vista-social" data-a="retos" aria-label="Retos">🎯</button>' +
+      (nube_ ? '<button class="icono-social" data-act="ver-amigo" data-a="yo" aria-label="Mi perfil">' + avatarColor(estado.perfil.usuario) + '</button>' : "") + '</div></div><div class="stack">';
+  } else {
+    const titulos = { amigos: "Amigos", retos: "Retos", perfil: "Perfil" };
+    h = '<div class="head"><div><button class="btn-txt small volver" data-act="vista-social" data-a="feed">← Social</button><h1>' + titulos[vistaSocial] + '</h1></div></div><div class="stack">';
+  }
+  if (demo && vistaSocial === "feed") h += '<p class="muted small">Los demás usuarios de la demo son ficticios.</p>';
   if (vistaSocial === "retos") h += retosHtml();
   else if (demo) h += vistaSocial === "feed" ? feedHtml() : amigosHtml();
   else if (!conectado()) h += socialSinCuentaHtml();
+  else if (vistaSocial === "perfil") h += perfilSocialHtml(perfilSocial);
   else h += vistaSocial === "feed" ? actividadNubeHtml() : amigosNubeHtml();
   $("app").innerHTML = h + '</div>';
   // Con cuenta, se leen los amigos y la actividad de la nube (y se vuelve a pintar al llegar)
@@ -1669,25 +1683,71 @@ function podioHtml(ranking) {
   return h + '</div>';
 }
 
+// Feed: historias arriba y, debajo, los entrenos tuyos y de tus amigos, uno tras otro
 function actividadNubeHtml() {
-  const ultima = estado.sesiones[estado.sesiones.length - 1];
-  let h = '<div class="card stack tight"><h3>Tu último entreno</h3>';
-  if (!ultima) h += '<p class="muted small">Cuando termines un entreno, tus amigos lo verán aquí.</p>';
-  else {
-    h += '<p class="small">' + esc(textoSesion(ultima)) + '</p><div class="grid2">' +
-      (ultima.publicadaNube ? '<button class="btn-sec" disabled>✓ Compartido</button>' : '<button class="btn-sec" data-act="social-publicar"' + (estado.ajustes.compartir === false ? " disabled" : "") + '>Compartir con mis amigos</button>') +
-      '<button class="btn" data-act="compartir-fuera">Enviar fuera…</button></div>';
-    if (estado.ajustes.compartir === false) h += '<p class="muted small">Tienes desactivado «Mostrar mis entrenos». Actívalo en Ajustes.</p>';
-  }
-  h += '</div>';
   const carga = estadoCargaSocial();
-  if (carga) return h + carga;
-  // En Actividad solo salen TUS entrenos. Los de cada amigo están en su perfil (pestaña Amigos).
-  const posts = socialNube.posts.filter(function (x) { return x.mio; });
-  h += '<div class="card"><h3>Mi actividad</h3><div>';
-  if (posts.length === 0) h += '<p class="muted">Aún no has compartido entrenos. Se comparten solos al terminar si tienes activado «Mostrar mis entrenos» en Ajustes.</p>';
+  if (carga) return carga;
+  let h = historiasHtml();
+  const ultima = estado.sesiones[estado.sesiones.length - 1];
+  if (ultima && !ultima.publicadaNube && estado.ajustes.compartir !== false && diasEntre(ultima.fecha, hoy()) <= 2) {
+    h += '<div class="card row compartir-ultimo"><div class="grow"><p class="label">Tu último entreno</p><p class="small"><b>' + esc(ultima.diaNombre) + '</b> · ' + fechaBonita(ultima.fecha) + '</p></div>' +
+      '<button class="btn small" data-act="social-publicar">Publicar</button></div>';
+  }
+  const posts = socialNube.posts;
   for (const x of posts) h += postNubeHtml(x);
-  return h + '</div></div><button class="btn-txt" data-act="social-recargar">Actualizar</button>';
+  if (!posts.length) {
+    h += '<div class="card stack tight" style="text-align:center;padding:26px 18px">' + apixSVG("anima", "s") + '<h3>Aquí saldrán vuestros entrenos</h3>' +
+      '<p class="muted small">Cuando tú o tus amigos terminéis un entreno, aparecerá aquí con su tarjeta.</p></div>';
+  }
+  if (socialNube.amigos.length < 3) {
+    h += '<div class="card stack tight"><h3>Esto es mejor con amigos</h3><p class="muted small">Invita a alguien y competid en el ranking. Verás sus entrenos aquí.</p>' +
+      '<div class="grid2"><button class="btn" data-act="social-invitar">Invitar a un amigo</button><button class="btn-sec" data-act="vista-social" data-a="amigos">Añadir por usuario</button></div></div>';
+  }
+  return h + '<button class="btn-txt" data-act="social-recargar">Actualizar</button>';
+}
+
+// Historias: tú y tus amigos en círculos. El borde se enciende si esa persona ha entrenado hoy.
+function historiasHtml() {
+  const hoyF = hoy();
+  const deHoy = function (id) { return socialNube.posts.find(function (x) { return x.autorId === id && x.fecha === hoyF && x.detalle; }); };
+  const yo = deHoy(nube.id);
+  let h = '<div class="historias">' +
+    '<button class="historia' + (yo ? " activa" : "") + '" data-act="' + (yo ? "ver-post" : "ver-amigo") + '" data-a="' + (yo ? esc(yo.id) : "yo") + '">' + avatarColor(estado.perfil.usuario, "grande") + '<span class="small">Tú</span></button>';
+  const amigos = socialNube.amigos.slice().sort(function (a, b) { return (deHoy(b.id) ? 1 : 0) - (deHoy(a.id) ? 1 : 0); });
+  for (const a of amigos) {
+    const p = deHoy(a.id);
+    h += '<button class="historia' + (p ? " activa" : "") + '" data-act="' + (p ? "ver-post" : "ver-amigo") + '" data-a="' + esc(p ? p.id : a.id) + '">' + avatarColor(a.usuario, "grande") + '<span class="small" data-no-traducir>' + esc(a.usuario || "?") + '</span></button>';
+  }
+  h += '<button class="historia" data-act="social-invitar"><span class="avatar de-color grande mas">+</span><span class="small">Invitar</span></button>';
+  return h + '</div>';
+}
+
+// La tarjeta visual de un entreno: se pinta sola con el color del rango de su autor y su Apix
+function tarjetaEntreno(x, mini) {
+  const rango = x.mio ? (puntosGlobal() === null ? null : rangoDePuntos(puntosGlobal())) : x.rango;
+  const color = rango === null || rango === undefined ? "#8A5CFF" : RANGOS[rango].color;
+  const etapa = x.mio ? etapaApix() : (x.apix || 0);
+  const d = x.detalle;
+  if (mini) {
+    return '<button class="tarjeta-entreno mini" style="--c:' + color + '" data-act="ver-post" data-a="' + esc(x.id) + '">' +
+      '<span class="t-titulo">' + esc(d ? d.n : x.texto) + '</span>' + (d && d.p && d.p.length ? '<span class="t-record">🏆 ' + d.p.length + '</span>' : "") +
+      '<span class="t-fecha">' + fechaBonita(x.fecha) + '</span></button>';
+  }
+  let h = '<div class="tarjeta-entreno post-visual" style="--c:' + color + '" data-post-visual="' + esc(x.id) + '">';
+  if (d && d.e) {
+    const records = (d.p || []).length;
+    h += '<div class="t-arriba"><div><span class="t-tipo">' + (records ? "🏆 " + (records === 1 ? "Nuevo récord" : records + " récords") : "Entreno completado") + '</span>' +
+      '<h2 class="t-titulo">' + esc(d.n) + '</h2></div><div class="t-apix">' + apixSVG(records ? "celebra" : "orgulloso", "", etapa) + '</div></div>' +
+      '<div class="t-cifras"><div><b class="num">' + d.d + '</b><span>min</span></div><div><b class="num">' + d.e.length + '</b><span>ejercicios</span></div><div><b class="num">' + miles(pesoVista(d.v)) + '</b><span>' + unidadPeso() + '</span></div></div>' +
+      '<div class="t-lista">' + d.e.slice(0, 3).map(function (e) {
+        const ej = buscarEj(e.i), m = mejorDeLista(e.s);
+        return '<div><span>' + ((d.p || []).indexOf(e.i) >= 0 ? '<i aria-hidden="true" style="font-style:normal">🏆 </i>' : "") + '<span>' + esc(ej ? ej.nombre : e.i) + '</span></span><span class="num">' + (m ? String(m[0]).replace(".", ",") + ' × ' + m[1] : "") + '</span></div>';
+      }).join("") + (d.e.length > 3 ? '<div class="t-mas"><span>+ ' + (d.e.length - 3) + '</span></div>' : "") + '</div>';
+  } else {
+    h += '<div class="t-arriba"><div><span class="t-tipo">' + { record: "🏆 Récord", rango: "⬆️ Rango", entreno: "Entreno" }[x.tipo] + '</span><h2 class="t-titulo t-texto">' + esc(x.texto) + '</h2></div>' +
+      '<div class="t-apix">' + apixSVG("celebra", "", etapa) + '</div></div>';
+  }
+  return h + '<span class="t-marca">APIX GYM</span></div>';
 }
 
 // Cada usuario tiene siempre el mismo color (sale de las letras de su nombre)
@@ -1701,26 +1761,57 @@ function avatarColor(nombre, extra) {
 }
 
 // Una publicación de la nube: autor, resumen del entreno y reacciones
+// Una publicación como en Instagram: quién, la tarjeta grande, las reacciones y el pie
 function postNubeHtml(x) {
-  let h = '<div class="post"><div class="row">' +
-    '<button class="avatar de-color" style="background:' + colorUsuario(x.autor) + '" ' + (x.mio ? "" : 'data-act="ver-amigo" data-a="' + esc(x.autorId) + '" aria-label="Ver perfil"') + '>' + esc((x.autor || "?")[0]).toUpperCase() + '</button>' +
-    '<div class="grow">' + (x.mio ? '<span class="name small">@' + esc(x.autor) + ' (tú)</span>' : '<button class="link-nombre name small" data-act="ver-amigo" data-a="' + esc(x.autorId) + '">@' + esc(x.autor) + '</button>') +
-    '<span class="muted small">' + fechaBonita(x.fecha) + '</span></div>' +
-    '<span class="pill ' + (x.tipo === "record" ? "pr" : (x.tipo === "rango" ? "up" : "keep")) + '">' + { record: "Récord", rango: "Rango", entreno: "Entreno" }[x.tipo] + '</span></div>';
-  const d = x.detalle;
-  if (d && d.e) {
-    h += '<p class="post-titulo"><b>' + esc(d.n) + '</b></p><div class="post-datos"><span>⏱ ' + d.d + ' min</span><span>🏋️ ' + d.e.length + ' ejercicios</span><span class="num">' + miles(d.v) + ' kg</span>' +
-      (d.p && d.p.length ? '<span class="con-record">🏆 ' + d.p.length + ' récord(s)</span>' : "") + '</div>' +
-      '<p class="small">' + esc(d.e.slice(0, 3).map(function (e) { const ej = buscarEj(e.i); return (ej ? ej.nombre : e.i); }).join(" · ")) + (d.e.length > 3 ? " …" : "") + '</p>' +
-      '<button class="btn-sec small" data-act="ver-post" data-a="' + esc(x.id) + '">Ver entreno completo</button>';
-  } else h += '<p>' + esc(x.texto) + '</p>';
-  h += '<div class="acts reacciones">' + REACCIONES.map(function (r) {
-    const n = x.reacciones.filter(function (y) { return y.r === r; }).length;
-    const mia = x.reacciones.some(function (y) { return y.u === nube.id && y.r === r; });
-    return '<button class="reaccion' + (mia ? " on" : "") + '" data-act="social-reaccion" data-a="' + esc(x.id) + '" data-b="' + r + '" aria-label="Reaccionar ' + r + '"><span class="emoji">' + r + '</span>' + (n ? '<span class="num">' + n + '</span>' : "") + '</button>';
-  }).join("") +
-    (x.mio ? '<button data-act="social-borrar-post" data-a="' + esc(x.id) + '">' + (confirmar === "social-borrar-post" + x.id ? "Pulsa otra vez" : "Eliminar") + '</button>'
-           : '<button data-act="social-denunciar" data-a="' + esc(x.id) + '">Denunciar</button>') + '</div></div>';
+  const idPerfil = x.mio ? "yo" : x.autorId;
+  const rango = x.mio ? (puntosGlobal() === null ? null : rangoDePuntos(puntosGlobal())) : x.rango;
+  const total = x.reacciones.length;
+  let h = '<article class="insta"><div class="insta-cab"><button class="row" data-act="ver-amigo" data-a="' + esc(idPerfil) + '" aria-label="Ver perfil">' + avatarColor(x.autor) +
+    '<span class="grow" style="text-align:left"><span class="name small" data-no-traducir>' + esc(x.autor) + '</span><span class="muted small" style="display:block">' + nombreRango(rango) + ' · ' + fechaBonita(x.fecha) + '</span></span></button>' +
+    (x.mio ? '<button class="btn-txt small" data-act="social-borrar-post" data-a="' + esc(x.id) + '">' + (confirmar === "social-borrar-post" + x.id ? "Pulsa otra vez" : "Eliminar") + '</button>'
+           : '<button class="btn-txt small" data-act="social-denunciar" data-a="' + esc(x.id) + '">Denunciar</button>') + '</div>' +
+    tarjetaEntreno(x) +
+    '<div class="insta-acciones">' + REACCIONES.map(function (r) {
+      const n = x.reacciones.filter(function (y) { return y.r === r; }).length;
+      const mia = x.reacciones.some(function (y) { return y.u === nube.id && y.r === r; });
+      return '<button class="reaccion' + (mia ? " on" : "") + '" data-act="social-reaccion" data-a="' + esc(x.id) + '" data-b="' + r + '" aria-label="Reaccionar ' + r + '"><span class="emoji">' + r + '</span>' + (n ? '<span class="num">' + n + '</span>' : "") + '</button>';
+    }).join("") + '</div>' +
+    '<div class="insta-pie">' + (total ? '<p class="small"><b>' + (total === 1 ? "1 reacción" : total + " reacciones") + '</b></p>' : '<p class="muted small">Toca dos veces la tarjeta para dar ánimo 💪</p>') +
+    (x.detalle && x.detalle.e ? '<button class="btn-txt small" data-act="ver-post" data-a="' + esc(x.id) + '">Ver entreno completo</button>' : "") + '</div></article>';
+  return h;
+}
+
+// ---------- Perfil (el tuyo o el de un amigo): página entera ----------
+function perfilSocialHtml(id) {
+  const mio = id === "yo";
+  const a = mio ? null : socialNube.amigos.find(function (x) { return x.id === id; });
+  if (!mio && !a) { vistaSocial = "feed"; return actividadNubeHtml(); }
+  const t = mio ? miTarjeta() : null;
+  const p = mio ? { rango: t.rango, racha: t.racha, entrenos: t.entrenos, marcas: t.records } : (a.perfil || {});
+  const usuario = mio ? estado.perfil.usuario : (a.usuario || "?");
+  const etapa = mio ? etapaApix() : etapaAmigo(p);
+  const color = p.rango === null || p.rango === undefined ? "#8A5CFF" : RANGOS[p.rango].color;
+  let h = '<div class="card perfil-cab" style="--c:' + color + '"><div class="perfil-apix">' + apixSVG("contento", "", etapa) + '</div>' +
+    '<h2 data-no-traducir>@' + esc(usuario) + '</h2><p class="muted small">Apix ' + ETAPAS_APIX[etapa].nombre + '</p>' +
+    '<div class="perfil-cifras"><div><b class="num">' + (p.entrenos || 0) + '</b><span>entrenos</span></div><div><b class="num">' + (p.racha || 0) + '</b><span>sem. de racha</span></div>' +
+    '<div>' + insignia(p.rango, "sm") + '<span>' + nombreRango(p.rango) + '</span></div></div>' +
+    (mio ? '<button class="btn-sec small full" data-act="social-invitar">Compartir mi perfil</button>' : "") + '</div>';
+  const marcas = p.marcas || [];
+  if (marcas.length) h += '<div class="card"><h3>' + (mio ? "Tus mejores marcas" : "Sus mejores marcas") + '</h3><div class="list">' + marcas.map(function (r) {
+    return '<div class="item"><div class="grow"><span class="name small">' + esc(r.n) + '</span></div><span class="num">' + String(r.p).replace(".", ",") + ' kg × ' + r.r + '</span></div>';
+  }).join("") + '</div></div>';
+  // Cuadrícula con sus entrenos publicados
+  const lista = mio ? socialNube.posts.filter(function (x) { return x.mio; }) : postsAmigo[id];
+  h += '<h3 style="margin-top:4px">Entrenos</h3>';
+  if (lista === undefined) h += '<p class="muted">Cargando…</p>';
+  else if (lista === null) h += '<p class="err small">No se han podido cargar. Prueba otra vez más tarde.</p>';
+  else if (!lista.length) h += '<p class="muted small">' + (mio ? "Aún no has publicado entrenos. Se publican solos al terminar si tienes activado «Mostrar mis entrenos» en Ajustes." : "Todavía no ha compartido ningún entreno.") + '</p>';
+  else h += '<div class="perfil-rejilla">' + lista.map(function (x) { return tarjetaEntreno(x, true); }).join("") + '</div>';
+  if (!mio) h += '<button class="btn-txt small btn-danger" data-act="social-quitar" data-a="' + esc(id) + '">' + (confirmar === "social-quitar" + id ? "¿Seguro?" : "Quitar de amigos") + '</button>';
+  if (!mio && lista === undefined) cargarPostsDe(id).then(function (r) {
+    postsAmigo[id] = r;
+    if (tab === "social" && vistaSocial === "perfil" && perfilSocial === id) pintarSocial();
+  });
   return h;
 }
 
@@ -2920,6 +3011,7 @@ function pintar() {
 
 function irA(nuevo) {
   const cambia = nuevo !== tab;
+  if (nuevo === "social" && cambia) vistaSocial = "feed";        // Social siempre se abre en el feed
   tab = nuevo; confirmar = ""; window.scrollTo(0, 0); pintar();
   if (cambia) entradaSuave();
 }
