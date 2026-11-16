@@ -1065,6 +1065,20 @@ const PRUEBAS = [
     return (d.version === VERSION_DATOS && Array.isArray(d.medidas) && d.ajustes.ultimaCopia === "") || "Migración incompleta";
   }]
   ,
+  ["3.2 Días de racha", "Los días de racha se cuentan desde el primer entreno de la racha actual", function () {
+    estadoPrueba();
+    if (diasDeRacha() !== 0) return "Sin entrenos debería ser 0";
+    const esta = lunesDe(hoy());
+    // Dos semanas completas antes de esta (lunes y miércoles): la racha empezó el lunes de hace 2 semanas
+    for (const s of [2, 1]) for (const d of [0, 2]) sesionPrueba(sumarDias(esta, -s * 7 + d), [["press-banca", [[60, 8]]]]);
+    if (rachaSemanas() !== 2) return "La racha debería ser de 2 semanas, es " + rachaSemanas();
+    const esperado = diasEntre(sumarDias(esta, -14), hoy()) + 1;
+    if (diasDeRacha() !== esperado) return "Deberían ser " + esperado + " días y salen " + diasDeRacha();
+    // Un entreno suelto de hace 2 meses no cuenta: no pertenece a la racha actual
+    sesionPrueba(sumarDias(esta, -60), [["press-banca", [[60, 8]]]]);
+    estado.sesiones.sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; });
+    return diasDeRacha() === esperado || "Cuenta entrenos de antes de la racha";
+  }],
   ["3.1 Apix en día de descanso", "En día de descanso Apix descansa aunque ayer batieras un récord", function () {
     crearDemo(); estado.modo = "normal"; estado.bienvenidaApix = null;
     const hoyN = (new Date(hoy() + "T12:00:00").getDay() + 6) % 7;

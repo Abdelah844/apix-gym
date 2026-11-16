@@ -519,6 +519,18 @@ function rachaSemanas() {
   return racha;
 }
 
+// Días que llevas en racha: desde el primer entreno de la racha actual hasta hoy (contando los de descanso)
+function diasDeRacha() {
+  const semanas = rachaSemanas();
+  if (!semanas) return 0;
+  const mapa = sesionesPorSemana();
+  const actual = lunesDe(hoy());
+  const cuentaEsta = (mapa[actual] || 0) >= minimoSemanal();
+  const inicio = sumarDias(actual, -7 * (cuentaEsta ? semanas - 1 : semanas));     // lunes de la primera semana de la racha
+  const primera = sesionesValidas().find(function (s) { return s.fecha >= inicio; });
+  return primera ? diasEntre(primera.fecha, hoy()) + 1 : 0;
+}
+
 // =====================================================
 // LOGROS
 // Medallas que se consiguen entrenando. Cada logro tiene una meta (un número) y una forma de medirla.
