@@ -15703,6 +15703,16 @@ const TRADUCCIONES = {
 "Tu montes de rang !",
 "طلعتي ف الرتبة!"
 ],
+"✓ Hoy ya has entrenado": [
+"✓ You've trained today",
+"✓ Tu t'es déjà entraîné aujourd'hui",
+"✓ اليوم تمرنتي"
+],
+"Entrenar otra vez hoy": [
+"Train again today",
+"S'entraîner encore aujourd'hui",
+"تمرن مرة أخرى اليوم"
+],
 "Social": [
 "Social",
 "Social",

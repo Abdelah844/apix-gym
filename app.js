@@ -375,11 +375,14 @@ function pintarInicio() {
     const cal = diasDeEntreno();
     const hoyN = (new Date().getDay() + 6) % 7;
     const descanso = cal.length > 0 && !cal.includes(hoyN);
+    // ¿Ya has entrenado hoy? Entonces lo que se enseña es el próximo entreno, no «el de hoy»
+    const hechoHoy = estado.sesiones.some(function (x) { return x.fecha === hoy(); });
     let proximo = "";
-    if (descanso) { for (let k = 1; k <= 7; k++) { const d = (hoyN + k) % 7; if (cal.includes(d)) { proximo = NOMBRES_DIAS_SEMANA[d].toLowerCase(); break; } } }
-    h += '<div class="card hero stack tight"><div class="row between"><p class="label" style="color:var(--accent)">' + (descanso ? "Hoy toca descanso · próximo: " + proximo : "Entreno de hoy") + '</p><span class="muted small">' + dia.ejercicios.length + ' ejercicios</span></div>' +
+    if (descanso || hechoHoy) { for (let k = 1; k <= 7; k++) { const d = (hoyN + k) % 7; if (cal.includes(d)) { proximo = NOMBRES_DIAS_SEMANA[d].toLowerCase(); break; } } }
+    const titulo = hechoHoy ? "✓ Hoy ya has entrenado" + (proximo ? " · próximo: " + proximo : "") : (descanso ? "Hoy toca descanso · próximo: " + proximo : "Entreno de hoy");
+    h += '<div class="card hero stack tight"><div class="row between"><p class="label" style="color:' + (hechoHoy ? "var(--good)" : "var(--accent)") + '">' + titulo + '</p><span class="muted small">' + dia.ejercicios.length + ' ejercicios</span></div>' +
       '<h2>' + esc(dia.nombre) + '</h2>' + fotosDelDia(dia) +
-      '<button class="' + (descanso ? "btn-sec full" : "btn") + '" data-act="empezar-dia" data-a="' + idx + '">' + (descanso ? "Entrenar igualmente" : "Empezar entrenamiento") + '</button></div>';
+      '<button class="' + (descanso || hechoHoy ? "btn-sec full" : "btn") + '" data-act="empezar-dia" data-a="' + idx + '">' + (hechoHoy ? "Entrenar otra vez hoy" : (descanso ? "Entrenar igualmente" : "Empezar entrenamiento")) + '</button></div>';
 
     // Siguiente paso recomendado (primer ejercicio del día)
     if (dia.ejercicios.length > 0) {

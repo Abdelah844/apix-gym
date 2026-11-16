@@ -58,6 +58,7 @@ const PATRONES = [
   ["La que viene, a por lo mismo: {x} días.", "Next week, same again: {x} days.", "La semaine prochaine, pareil : {x} jours.", "السيمانة الجاية، نفس الشي: {x} أيام."],
   ["Para la que viene: {x} días. ¡Tú puedes!", "For next week: {x} days. You can do it!", "Pour la semaine prochaine : {x} jours. Tu peux le faire !", "للسيمانة الجاية: {x} أيام. تقدر!"],
   ["Apix {x}", "Apix {x}", "Apix {x}", "Apix {x}"],
+  ["✓ Hoy ya has entrenado · próximo: {x}", "✓ You've trained today · next: {x}", "✓ Tu t'es déjà entraîné aujourd'hui · prochain : {x}", "✓ اليوم تمرنتي · الجاي: {x}"],
   ["Siguiente: {x} →", "Next: {x} →", "Suivant : {x} →", "الجاي: {x} ←"],
   ["{x} entrenos", "{x} workouts", "{x} séances", "{x} حصص"],
   ["Racha de {x} semanas", "{x}-week streak", "Série de {x} semaines", "سلسلة ديال {x} سيمانات"],
