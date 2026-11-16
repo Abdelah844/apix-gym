@@ -679,9 +679,10 @@ const ACCIONES = {
   "editar-perfil-social": function () { hojaEditarPerfil(true); },
   "perfil-color": function (c) { leerPerfilEd(); perfilEd.color = perfilEd.color === c ? "" : c; hojaEditarPerfil(); },
   "perfil-icono": function (e) { leerPerfilEd(); perfilEd.icono = e; hojaEditarPerfil(); },
+  "perfil-quitar-foto": function () { leerPerfilEd(); perfilEd.foto = ""; hojaEditarPerfil(); },
   "guardar-perfil-social": async function () {
     leerPerfilEd();
-    estado.ajustes.perfilSocial = { bio: perfilEd.bio, color: perfilEd.color, icono: perfilEd.icono, marcas: perfilEd.marcas };
+    estado.ajustes.perfilSocial = { bio: perfilEd.bio, color: perfilEd.color, icono: perfilEd.icono, marcas: perfilEd.marcas, foto: perfilEd.foto || "" };
     perfilEd = null;
     guardar(); cerrarHoja(); pintar(); toast("✓ Perfil guardado", "ok");
     await actualizarPerfilPublico();                 // tus amigos lo verán la próxima vez que entren
@@ -1156,6 +1157,16 @@ document.addEventListener("change", function (ev) {
   const t = ev.target, d = t.dataset;
   // Foto de progreso nueva elegida en el móvil
   if (t.hasAttribute("data-foto-nueva")) { anadirFotoProgreso(t.files && t.files[0]); t.value = ""; return; }
+  // Foto de perfil: se recorta y se enseña en la ventana; se guarda al pulsar «Guardar»
+  if (t.hasAttribute("data-foto-perfil")) {
+    const archivo = t.files && t.files[0];
+    t.value = "";
+    if (!archivo) return;
+    leerPerfilEd();
+    fotoDePerfil(archivo).then(function (f) { perfilEd.foto = f; hojaEditarPerfil(); })
+      .catch(function () { toast("No se ha podido usar esa foto. Prueba con otra.", "error"); });
+    return;
+  }
   if (d.in === "peso" || d.in === "reps" || d.in === "rpe") {
     copiaSesion();
     const e = estado.activa.ejercicios[d.e];

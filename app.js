@@ -1792,6 +1792,7 @@ function avatarColor(nombre, extra, de) {
   let est = null;
   if (de === "yo" || (de && typeof nube !== "undefined" && de === nube.id)) est = miPerfilSocial();
   else if (de) { const a = socialNube.amigos.find(function (x) { return x.id === de; }); est = a && a.perfil ? a.perfil : null; }
+  if (est && fotoValida(est.foto)) return '<span class="avatar de-color con-foto' + (extra ? " " + extra : "") + '"><img src="' + est.foto + '" alt=""></span>';
   const color = est && COLORES_PERFIL.includes(est.color) ? est.color : colorUsuario(nombre);
   const dentro = est && ICONOS_PERFIL.includes(est.icono) ? est.icono : esc((nombre || "?")[0]).toUpperCase();
   return '<span class="avatar de-color' + (extra ? " " + extra : "") + '" style="background:' + color + '" data-no-traducir>' + dentro + '</span>';
@@ -1823,7 +1824,12 @@ function hojaEditarPerfil(nueva) {
   const usuario = estado.perfil.usuario;
   const colorVista = perfilEd.color || colorUsuario(usuario);
   let h = cabeceraHoja("Editar perfil", "@" + esc(usuario)) + '<div class="stack">' +
-    '<div class="editar-vista"><span class="avatar de-color grande" style="background:' + colorVista + '" data-no-traducir>' + (perfilEd.icono || esc(usuario[0]).toUpperCase()) + '</span></div>' +
+    '<div class="editar-vista">' + (perfilEd.foto ? '<span class="avatar de-color con-foto grande"><img src="' + perfilEd.foto + '" alt=""></span>'
+      : '<span class="avatar de-color grande" style="background:' + colorVista + '" data-no-traducir>' + (perfilEd.icono || esc(usuario[0]).toUpperCase()) + '</span>') + '</div>' +
+    '<div class="card stack tight"><h3>Foto de perfil</h3><div class="grid2">' +
+      '<label class="btn-sec small boton-foto">📷 ' + (perfilEd.foto ? "Cambiar foto" : "Elegir o hacer foto") + '<input type="file" accept="image/*" data-foto-perfil hidden></label>' +
+      (perfilEd.foto ? '<button class="btn-sec small" data-act="perfil-quitar-foto">Quitar foto</button>' : '<span></span>') + '</div>' +
+      '<p class="muted small">Solo la ven tus amigos. Con foto, el color y el icono no se usan. No subas fotos de otras personas.</p></div>' +
     '<div class="card stack tight"><h3>Color</h3><div class="elegir-color">' + COLORES_PERFIL.map(function (c) {
       return '<button class="' + (perfilEd.color === c ? "on" : "") + '" style="background:' + c + '" data-act="perfil-color" data-a="' + c + '" aria-label="Color"></button>'; }).join("") + '</div></div>' +
     '<div class="card stack tight"><h3>Icono</h3><div class="elegir-icono"><button class="' + (!perfilEd.icono ? "on" : "") + '" data-act="perfil-icono" data-a="" data-no-traducir>' + esc(usuario[0]).toUpperCase() + '</button>' +
@@ -2782,7 +2788,7 @@ function hojaPoliticaNueva() {
   abrirHoja(cabeceraHoja("Política de privacidad actualizada", "Aviso") + '<div class="stack">' +
     '<p>Hemos actualizado la política de privacidad. Lo más importante:</p>' +
     '<ul class="small" style="padding-left:20px;margin:0">' +
-      '<li>Ahora contamos cuánta gente abre la app cada día. Es anónimo: no se envía tu nombre, tu correo ni tus entrenos.</li>' +
+      '<li>Puedes poner una foto de perfil (opcional). Se guarda en la nube y solo la ven tus amigos. Puedes quitarla cuando quieras.</li>' +
     '</ul>' +
     '<p class="muted small">Tus datos se siguen usando igual: solo para que la app funcione.</p>' +
     '<button class="btn-sec full" data-act="abrir-privacidad">Leer la política</button>' +

@@ -318,8 +318,33 @@ function miPerfilSocial() {
     bio: typeof p.bio === "string" ? p.bio.slice(0, 80) : "",
     color: COLORES_PERFIL.includes(p.color) ? p.color : "",
     icono: ICONOS_PERFIL.includes(p.icono) ? p.icono : "",
-    marcas: p.marcas !== false
+    marcas: p.marcas !== false,
+    foto: fotoValida(p.foto) ? p.foto : ""
   };
+}
+// Solo se acepta una foto JPEG pequeña en formato de texto (así no se puede colar nada raro en la página)
+function fotoValida(f) {
+  return typeof f === "string" && f.length <= 40000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(f);
+}
+// Recorta la foto elegida en un cuadrado del centro y la reduce a 160 × 160 (unos 10 KB)
+function fotoDePerfil(archivo) {
+  return new Promise(function (resolver, rechazar) {
+    if (!archivo || !/^image\//.test(archivo.type || "image/")) { rechazar(new Error("tipo")); return; }
+    const url = URL.createObjectURL(archivo);
+    const img = new Image();
+    img.onload = function () {
+      const lado = Math.min(img.naturalWidth, img.naturalHeight);
+      const c = document.createElement("canvas");
+      c.width = c.height = 160;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - lado) / 2, (img.naturalHeight - lado) / 2, lado, lado, 0, 0, 160, 160);
+      URL.revokeObjectURL(url);
+      let calidad = 0.8, txt = c.toDataURL("image/jpeg", calidad);
+      while (txt.length > 38000 && calidad > 0.3) { calidad -= 0.15; txt = c.toDataURL("image/jpeg", calidad); }
+      if (fotoValida(txt)) resolver(txt); else rechazar(new Error("grande"));
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); rechazar(new Error("leer")); };
+    img.src = url;
+  });
 }
 
 // Sube tu rango, racha, entrenos y 3 mejores marcas para que los vean tus amigos
@@ -330,7 +355,7 @@ async function actualizarPerfilPublico() {
   const datos = {
     usuario: nube.id, rango: t.rango, puntos: pg === null ? null : Math.round(pg * 10) / 10,
     racha: t.racha, entrenos: t.entrenos, marcas: miPerfilSocial().marcas ? t.records : [], apix: etapaApix(),
-    bio: miPerfilSocial().bio, color: miPerfilSocial().color, icono: miPerfilSocial().icono,
+    bio: miPerfilSocial().bio, color: miPerfilSocial().color, icono: miPerfilSocial().icono, foto: miPerfilSocial().foto,
     // Menores de 16: la parte social está desactivada, así que su perfil es siempre privado
     privacidad: estado.perfil.edad < 16 ? "privado" : (estado.ajustes.privacidad || "amigos"), actualizado: new Date().toISOString()
   };
@@ -452,7 +477,7 @@ async function cargarSocialNube() {
     for (const x of am.datos) otros.push(x.de === yo ? x.a : x.de);
     let perfiles = [];
     if (otros.length) {
-      const pr = await pedirNube("/rest/v1/perfiles?select=usuario,nombre_usuario,rango,puntos,racha,entrenos,marcas,apix,bio,color,icono,actualizado&usuario=in.(" + otros.join(",") + ")", "GET");
+      const pr = await pedirNube("/rest/v1/perfiles?select=usuario,nombre_usuario,rango,puntos,racha,entrenos,marcas,apix,bio,color,icono,foto,actualizado&usuario=in.(" + otros.join(",") + ")", "GET");
       if (pr.ok) perfiles = pr.datos;
     }
     const perfilDe = function (id) { return perfiles.find(function (p) { return p.usuario === id; }) || null; };

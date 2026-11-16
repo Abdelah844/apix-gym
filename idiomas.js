@@ -15658,6 +15658,41 @@ const TRADUCCIONES = {
 "✏️ Modifier",
 "✏️ بدّل"
 ],
+"Foto de perfil": [
+"Profile photo",
+"Photo de profil",
+"تصويرة البروفيل"
+],
+"Cambiar foto": [
+"Change photo",
+"Changer de photo",
+"بدّل التصويرة"
+],
+"Elegir o hacer foto": [
+"Choose or take a photo",
+"Choisir ou prendre une photo",
+"ختار ولا صوّر تصويرة"
+],
+"Quitar foto": [
+"Remove photo",
+"Retirer la photo",
+"حيّد التصويرة"
+],
+"Solo la ven tus amigos. Con foto, el color y el icono no se usan. No subas fotos de otras personas.": [
+"Only your friends can see it. With a photo, the colour and icon aren't used. Don't upload photos of other people.",
+"Seuls tes amis la voient. Avec une photo, la couleur et l'icône ne sont pas utilisées. Ne publie pas de photos d'autres personnes.",
+"غير صحابك اللي كيشوفوها. بالتصويرة، اللون والأيقونة ما كيتخدموش. ما تطلعش تصاور ديال ناس آخرين."
+],
+"No se ha podido usar esa foto. Prueba con otra.": [
+"That photo couldn't be used. Try another one.",
+"Impossible d'utiliser cette photo. Essaie avec une autre.",
+"ما قدرناش نستعملو هاد التصويرة. جرب وحدة أخرى."
+],
+"Puedes poner una foto de perfil (opcional). Se guarda en la nube y solo la ven tus amigos. Puedes quitarla cuando quieras.": [
+"You can add a profile photo (optional). It's stored in the cloud and only your friends can see it. You can remove it whenever you want.",
+"Tu peux mettre une photo de profil (facultatif). Elle est enregistrée dans le cloud et seuls tes amis la voient. Tu peux la retirer quand tu veux.",
+"تقدر تحط تصويرة ف البروفيل (اختياري). كتتحفظ ف السحابة وغير صحابك اللي كيشوفوها. تقدر تحيّدها فاش ما بغيتي."
+],
 "Social": [
 "Social",
 "Social",
