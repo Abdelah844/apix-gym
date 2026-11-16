@@ -643,26 +643,52 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 .insta-pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .insta-pie p { margin: 0; }
 .insta + .insta { margin-top: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
-/* Tarjeta del entreno: se pinta con el color del rango de quien la publica */
-.tarjeta-entreno { position: relative; overflow: hidden; border-radius: 22px; padding: 20px 18px 30px; color: #fff; display: flex; flex-direction: column; gap: 16px; user-select: none; -webkit-user-select: none;
-  background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c) 85%, #fff 0%) 0%, transparent 60%), linear-gradient(155deg, color-mix(in srgb, var(--c) 62%, #0B0A10) 0%, #14121C 78%); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
-.t-arriba { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.t-tipo { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; background: rgba(0, 0, 0, .28); padding: 5px 10px; border-radius: 99px; display: inline-block; }
-.t-titulo { font-family: var(--display); font-size: 1.55rem; line-height: 1.1; margin-top: 10px; color: #fff; text-shadow: 0 2px 10px rgba(0, 0, 0, .35); }
-.t-titulo.t-texto { font-size: 1.15rem; font-family: inherit; font-weight: 700; text-transform: none; }
-.t-apix .apix { width: 96px; height: 96px; display: block; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .45)); }
-.t-cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.t-cifras > div { background: rgba(0, 0, 0, .26); border-radius: 14px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
-.t-cifras b { font-family: var(--display); font-size: 1.3rem; }
-.t-cifras span { font-size: .7rem; opacity: .8; }
-.t-lista { display: flex; flex-direction: column; gap: 6px; font-size: .88rem; }
+/* Tarjeta del entreno, compacta: se pinta con el color del rango de quien la publica */
+.tarjeta-entreno { position: relative; overflow: hidden; border-radius: 18px; padding: 12px 14px; color: #fff; display: flex; flex-direction: column; gap: 8px; user-select: none; -webkit-user-select: none; cursor: pointer;
+  background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--c) 80%, transparent) 0%, transparent 62%), linear-gradient(120deg, color-mix(in srgb, var(--c) 48%, #0B0A10) 0%, #14121C 85%); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
+.t-arriba { display: flex; align-items: center; gap: 12px; }
+.t-arriba .grow { min-width: 0; }
+.t-tipo { font-size: .62rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
+.t-titulo { font-family: var(--display); font-size: 1.08rem; line-height: 1.15; margin: 1px 0 2px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.t-titulo.t-texto { font-size: .98rem; font-family: inherit; font-weight: 700; text-transform: none; white-space: normal; }
+.t-linea { margin: 0; font-size: .8rem; opacity: .85; }
+.t-linea .num { font-weight: 800; opacity: 1; }
+.t-apix .apix { width: 62px; height: 62px; display: block; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .45)); }
+.t-flecha { opacity: .7; transition: transform .15s; }
+.tarjeta-entreno.abierta .t-flecha { transform: rotate(180deg); }
+.t-lista { display: flex; flex-direction: column; gap: 5px; font-size: .84rem; background: rgba(0, 0, 0, .24); border-radius: 12px; padding: 8px 10px; }
+.t-lista:empty { display: none; }
 .t-lista > div { display: flex; justify-content: space-between; gap: 10px; }
 .t-lista > div > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .t-lista .num { font-weight: 800; white-space: nowrap; }
-.t-mas { opacity: .7; }
-.t-marca { position: absolute; bottom: 10px; right: 16px; font-family: var(--display); font-size: .62rem; letter-spacing: .18em; opacity: .55; }
-.animo-grande { position: absolute; inset: 0; display: grid; place-items: center; font-size: 6rem; pointer-events: none; animation: animo-salta .85s ease-out forwards; }
+.animo-grande { position: absolute; inset: 0; display: grid; place-items: center; font-size: 4.5rem; pointer-events: none; animation: animo-salta .85s ease-out forwards; }
 @keyframes animo-salta { 0% { transform: scale(.2); opacity: 0; } 25% { transform: scale(1.25); opacity: 1; } 45% { transform: scale(1); } 80% { opacity: 1; } 100% { transform: scale(1.1); opacity: 0; } }
+.insta-acciones .ver-todo { margin-left: auto; margin-inline-start: auto; }
+.insta-acciones .reaccion { padding: 6px 11px; min-width: 46px; min-height: 38px; }
+.insta-acciones .reaccion .emoji { font-size: 1.05rem; }
+.insta { gap: 8px; }
+.insta + .insta { margin-top: 4px; padding-top: 14px; }
+/* Esta semana: quién ha entrenado más */
+.semana-amigos { display: flex; flex-direction: column; gap: 8px; }
+.sa-fila { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0; }
+.avatar.de-color.mini { width: 26px; height: 26px; font-size: .72rem; }
+.sa-nombre { width: 84px; text-align: start; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.sa-barra { flex: 1; height: 8px; border-radius: 99px; background: var(--surface3); overflow: hidden; }
+.sa-barra i { display: block; height: 100%; border-radius: 99px; background: var(--muted); }
+.sa-barra i.yo { background: var(--accent); }
+/* Editar perfil */
+.editar-vista { display: grid; place-items: center; padding: 6px 0; }
+.editar-vista .avatar { width: 84px; height: 84px; font-size: 2.2rem; }
+.elegir-color { display: flex; flex-wrap: wrap; gap: 10px; }
+.elegir-color button { width: 38px; height: 38px; border-radius: 50%; padding: 0; border: 3px solid transparent; }
+.elegir-color button.on { border-color: var(--fg); box-shadow: 0 0 0 2px var(--bg) inset; }
+.elegir-icono { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px; }
+.elegir-icono button { height: 44px; border-radius: 12px; background: var(--surface2); font-size: 1.3rem; padding: 0; font-weight: 800; border: 2px solid transparent; }
+.elegir-icono button.on { border-color: var(--accent); background: var(--accent-soft); }
+.perfil-apix { position: relative; }
+.perfil-avatar { position: absolute; right: -6px; bottom: 4px; }
+.perfil-avatar .avatar { width: 40px; height: 40px; font-size: 1.1rem; box-shadow: 0 0 0 3px var(--surface); }
+.perfil-bio { font-weight: 600; max-width: 30ch; }
 /* Tarjeta pequeña (cuadrícula del perfil) */
 .tarjeta-entreno.mini { aspect-ratio: 1; padding: 10px; border-radius: 14px; gap: 4px; justify-content: space-between; text-align: left; align-items: flex-start; }
 .tarjeta-entreno.mini .t-titulo { font-size: .8rem; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

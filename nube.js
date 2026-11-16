@@ -309,6 +309,19 @@ async function datosUsuarioNube() {
 // Lo último que se ha leído de la nube (se vuelve a leer al entrar en Social)
 let socialNube = { cargado: false, cargando: false, error: "", amigos: [], recibidas: [], enviadas: [], posts: [] };
 
+// Cómo has personalizado tu perfil social (frase, color e icono del avatar, y si enseñas tus marcas)
+const COLORES_PERFIL = ["#8A5CFF", "#FF4D8D", "#FF8A3D", "#F2B01E", "#2ECC8F", "#22B8CF", "#4A7DFF", "#8D99AE"];
+const ICONOS_PERFIL = ["💪", "🔥", "🏋️", "⚡", "👑", "🦁", "🐺", "🦍", "🐯", "🦅", "🐉", "🥷", "🤖", "🚀", "🎯", "🧠"];
+function miPerfilSocial() {
+  const p = (estado && estado.ajustes.perfilSocial) || {};
+  return {
+    bio: typeof p.bio === "string" ? p.bio.slice(0, 80) : "",
+    color: COLORES_PERFIL.includes(p.color) ? p.color : "",
+    icono: ICONOS_PERFIL.includes(p.icono) ? p.icono : "",
+    marcas: p.marcas !== false
+  };
+}
+
 // Sube tu rango, racha, entrenos y 3 mejores marcas para que los vean tus amigos
 async function actualizarPerfilPublico() {
   if (!conectado() || !estado || estado.modo === "demo" || !(await tokenAlDia())) return { ok: false };
@@ -316,7 +329,8 @@ async function actualizarPerfilPublico() {
   const pg = puntosGlobal();
   const datos = {
     usuario: nube.id, rango: t.rango, puntos: pg === null ? null : Math.round(pg * 10) / 10,
-    racha: t.racha, entrenos: t.entrenos, marcas: t.records, apix: etapaApix(),
+    racha: t.racha, entrenos: t.entrenos, marcas: miPerfilSocial().marcas ? t.records : [], apix: etapaApix(),
+    bio: miPerfilSocial().bio, color: miPerfilSocial().color, icono: miPerfilSocial().icono,
     // Menores de 16: la parte social está desactivada, así que su perfil es siempre privado
     privacidad: estado.perfil.edad < 16 ? "privado" : (estado.ajustes.privacidad || "amigos"), actualizado: new Date().toISOString()
   };
@@ -438,7 +452,7 @@ async function cargarSocialNube() {
     for (const x of am.datos) otros.push(x.de === yo ? x.a : x.de);
     let perfiles = [];
     if (otros.length) {
-      const pr = await pedirNube("/rest/v1/perfiles?select=usuario,nombre_usuario,rango,puntos,racha,entrenos,marcas,apix,actualizado&usuario=in.(" + otros.join(",") + ")", "GET");
+      const pr = await pedirNube("/rest/v1/perfiles?select=usuario,nombre_usuario,rango,puntos,racha,entrenos,marcas,apix,bio,color,icono,actualizado&usuario=in.(" + otros.join(",") + ")", "GET");
       if (pr.ok) perfiles = pr.datos;
     }
     const perfilDe = function (id) { return perfiles.find(function (p) { return p.usuario === id; }) || null; };

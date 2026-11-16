@@ -1600,7 +1600,7 @@ function pintarSocial() {
     h = '<div class="head"><div><p class="label">Comunidad</p><h1>Social</h1></div><div class="social-iconos">' + (demo ? '<span class="demo-tag">Demo</span>' : "") +
       '<button class="icono-social" data-act="vista-social" data-a="amigos" aria-label="Amigos">👥' + (pendientes ? '<span class="punto num">' + pendientes + '</span>' : "") + '</button>' +
       '<button class="icono-social" data-act="vista-social" data-a="retos" aria-label="Retos">🎯</button>' +
-      (nube_ ? '<button class="icono-social" data-act="ver-amigo" data-a="yo" aria-label="Mi perfil">' + avatarColor(estado.perfil.usuario) + '</button>' : "") + '</div></div><div class="stack">';
+      (nube_ ? '<button class="icono-social" data-act="ver-amigo" data-a="yo" aria-label="Mi perfil">' + avatarColor(estado.perfil.usuario, "", "yo") + '</button>' : "") + '</div></div><div class="stack">';
   } else {
     const titulos = { amigos: "Amigos", retos: "Retos", perfil: "Perfil" };
     h = '<div class="head"><div><button class="btn-txt small volver" data-act="vista-social" data-a="feed">← Social</button><h1>' + titulos[vistaSocial] + '</h1></div></div><div class="stack">';
@@ -1693,6 +1693,7 @@ function actividadNubeHtml() {
     h += '<div class="card row compartir-ultimo"><div class="grow"><p class="label">Tu último entreno</p><p class="small"><b>' + esc(ultima.diaNombre) + '</b> · ' + fechaBonita(ultima.fecha) + '</p></div>' +
       '<button class="btn small" data-act="social-publicar">Publicar</button></div>';
   }
+  h += semanaAmigosHtml();
   const posts = socialNube.posts;
   for (const x of posts) h += postNubeHtml(x);
   if (!posts.length) {
@@ -1712,17 +1713,40 @@ function historiasHtml() {
   const deHoy = function (id) { return socialNube.posts.find(function (x) { return x.autorId === id && x.fecha === hoyF && x.detalle; }); };
   const yo = deHoy(nube.id);
   let h = '<div class="historias">' +
-    '<button class="historia' + (yo ? " activa" : "") + '" data-act="' + (yo ? "ver-post" : "ver-amigo") + '" data-a="' + (yo ? esc(yo.id) : "yo") + '">' + avatarColor(estado.perfil.usuario, "grande") + '<span class="small">Tú</span></button>';
+    '<button class="historia' + (yo ? " activa" : "") + '" data-act="' + (yo ? "ver-post" : "ver-amigo") + '" data-a="' + (yo ? esc(yo.id) : "yo") + '">' + avatarColor(estado.perfil.usuario, "grande", "yo") + '<span class="small">Tú</span></button>';
   const amigos = socialNube.amigos.slice().sort(function (a, b) { return (deHoy(b.id) ? 1 : 0) - (deHoy(a.id) ? 1 : 0); });
   for (const a of amigos) {
     const p = deHoy(a.id);
-    h += '<button class="historia' + (p ? " activa" : "") + '" data-act="' + (p ? "ver-post" : "ver-amigo") + '" data-a="' + esc(p ? p.id : a.id) + '">' + avatarColor(a.usuario, "grande") + '<span class="small" data-no-traducir>' + esc(a.usuario || "?") + '</span></button>';
+    h += '<button class="historia' + (p ? " activa" : "") + '" data-act="' + (p ? "ver-post" : "ver-amigo") + '" data-a="' + esc(p ? p.id : a.id) + '">' + avatarColor(a.usuario, "grande", a.id) + '<span class="small" data-no-traducir>' + esc(a.usuario || "?") + '</span></button>';
   }
   h += '<button class="historia" data-act="social-invitar"><span class="avatar de-color grande mas">+</span><span class="small">Invitar</span></button>';
   return h + '</div>';
 }
 
-// La tarjeta visual de un entreno: se pinta sola con el color del rango de su autor y su Apix
+// «Esta semana»: quién ha entrenado más desde el lunes (tú y tus amigos)
+function semanaAmigosHtml() {
+  if (!socialNube.amigos.length) return "";
+  const lunes = lunesDe(hoy());
+  const filas = [{ id: "yo", nombre: estado.perfil.usuario, n: sesionesValidas().filter(function (x) { return x.fecha >= lunes; }).length, yo: true }];
+  for (const a of socialNube.amigos) {
+    filas.push({ id: a.id, nombre: a.usuario || "?", n: socialNube.posts.filter(function (x) { return x.autorId === a.id && x.fecha >= lunes && x.detalle; }).length, yo: false });
+  }
+  filas.sort(function (a, b) { return b.n - a.n; });
+  const max = Math.max(1, filas[0].n);
+  let h = '<div class="card semana-amigos"><div class="row between"><p class="label">🔥 Esta semana</p><span class="muted small">entrenos</span></div>';
+  filas.slice(0, 5).forEach(function (f) {
+    h += '<button class="sa-fila" data-act="ver-amigo" data-a="' + esc(f.id) + '">' + avatarColor(f.nombre, "mini", f.id) +
+      '<span class="sa-nombre small" data-no-traducir>' + (f.yo ? tr("Tú") : esc(f.nombre)) + '</span>' +
+      '<span class="sa-barra"><i style="width:' + Math.round(f.n / max * 100) + '%"' + (f.yo ? ' class="yo"' : "") + '></i></span><b class="num">' + f.n + '</b></button>';
+  });
+  return h + '</div>';
+}
+
+// Publicaciones abiertas (al tocar la tarjeta se despliega la lista de ejercicios)
+const postsAbiertos = {};
+
+// La tarjeta de un entreno, compacta: Apix, título, cifras en una línea y lo más destacado.
+// Se pinta con el color del rango de su autor. Al tocarla se despliegan todos los ejercicios.
 function tarjetaEntreno(x, mini) {
   const rango = x.mio ? (puntosGlobal() === null ? null : rangoDePuntos(puntosGlobal())) : x.rango;
   const color = rango === null || rango === undefined ? "#8A5CFF" : RANGOS[rango].color;
@@ -1733,21 +1757,27 @@ function tarjetaEntreno(x, mini) {
       '<span class="t-titulo">' + esc(d ? d.n : x.texto) + '</span>' + (d && d.p && d.p.length ? '<span class="t-record">🏆 ' + d.p.length + '</span>' : "") +
       '<span class="t-fecha">' + fechaBonita(x.fecha) + '</span></button>';
   }
-  let h = '<div class="tarjeta-entreno post-visual" style="--c:' + color + '" data-post-visual="' + esc(x.id) + '">';
+  const abierto = !!postsAbiertos[x.id];
+  let h = '<div class="tarjeta-entreno post-visual' + (abierto ? " abierta" : "") + '" style="--c:' + color + '" data-post-visual="' + esc(x.id) + '">';
   if (d && d.e) {
     const records = (d.p || []).length;
-    h += '<div class="t-arriba"><div><span class="t-tipo">' + (records ? "🏆 " + (records === 1 ? "Nuevo récord" : records + " récords") : "Entreno completado") + '</span>' +
-      '<h2 class="t-titulo">' + esc(d.n) + '</h2></div><div class="t-apix">' + apixSVG(records ? "celebra" : "orgulloso", "", etapa) + '</div></div>' +
-      '<div class="t-cifras"><div><b class="num">' + d.d + '</b><span>min</span></div><div><b class="num">' + d.e.length + '</b><span>ejercicios</span></div><div><b class="num">' + miles(pesoVista(d.v)) + '</b><span>' + unidadPeso() + '</span></div></div>' +
-      '<div class="t-lista">' + d.e.slice(0, 3).map(function (e) {
-        const ej = buscarEj(e.i), m = mejorDeLista(e.s);
-        return '<div><span>' + ((d.p || []).indexOf(e.i) >= 0 ? '<i aria-hidden="true" style="font-style:normal">🏆 </i>' : "") + '<span>' + esc(ej ? ej.nombre : e.i) + '</span></span><span class="num">' + (m ? String(m[0]).replace(".", ",") + ' × ' + m[1] : "") + '</span></div>';
-      }).join("") + (d.e.length > 3 ? '<div class="t-mas"><span>+ ' + (d.e.length - 3) + '</span></div>' : "") + '</div>';
+    const fila = function (e) {
+      const ej = buscarEj(e.i), m = mejorDeLista(e.s);
+      return '<div><span>' + ((d.p || []).indexOf(e.i) >= 0 ? '<i aria-hidden="true" style="font-style:normal">🏆 </i>' : "") + '<span>' + esc(ej ? ej.nombre : e.i) + '</span></span><span class="num">' + (m ? String(m[0]).replace(".", ",") + ' × ' + m[1] : "") + '</span></div>';
+    };
+    // Lo más destacado: el primer récord; si no hay, el primer ejercicio
+    const destacado = d.e.find(function (e) { return (d.p || []).indexOf(e.i) >= 0; }) || d.e[0];
+    h += '<div class="t-arriba"><div class="t-apix">' + apixSVG(records ? "celebra" : "orgulloso", "", etapa) + '</div>' +
+      '<div class="grow"><span class="t-tipo">' + (records ? "🏆 " + (records === 1 ? "Nuevo récord" : records + " récords") : "Entreno completado") + '</span>' +
+      '<h2 class="t-titulo">' + esc(d.n) + '</h2>' +
+      '<p class="t-linea"><span class="num">' + d.d + '</span> min · <span class="num">' + d.e.length + '</span> ' + tr("ejercicios") + ' · <span class="num">' + miles(pesoVista(d.v)) + '</span> ' + unidadPeso() + '</p></div>' +
+      '<span class="t-flecha" aria-hidden="true">▾</span></div>' +
+      '<div class="t-lista">' + (abierto ? d.e.map(fila).join("") : (destacado ? fila(destacado) : "")) + '</div>';
   } else {
-    h += '<div class="t-arriba"><div><span class="t-tipo">' + { record: "🏆 Récord", rango: "⬆️ Rango", entreno: "Entreno" }[x.tipo] + '</span><h2 class="t-titulo t-texto">' + esc(x.texto) + '</h2></div>' +
-      '<div class="t-apix">' + apixSVG("celebra", "", etapa) + '</div></div>';
+    h += '<div class="t-arriba"><div class="t-apix">' + apixSVG("celebra", "", etapa) + '</div><div class="grow"><span class="t-tipo">' + { record: "🏆 Récord", rango: "⬆️ Rango", entreno: "Entreno" }[x.tipo] + '</span>' +
+      '<h2 class="t-titulo t-texto">' + esc(x.texto) + '</h2></div></div>';
   }
-  return h + '<span class="t-marca">APIX GYM</span></div>';
+  return h + '</div>';
 }
 
 // Cada usuario tiene siempre el mismo color (sale de las letras de su nombre)
@@ -1756,17 +1786,23 @@ function colorUsuario(nombre) {
   for (const c of String(nombre || "?")) n = (n * 31 + c.charCodeAt(0)) % 360;
   return "hsl(" + n + " 62% 52%)";
 }
-function avatarColor(nombre, extra) {
-  return '<span class="avatar de-color' + (extra ? " " + extra : "") + '" style="background:' + colorUsuario(nombre) + '">' + esc((nombre || "?")[0]).toUpperCase() + '</span>';
+// Avatar de una persona: su color e icono si los ha elegido; si no, su inicial con un color fijo.
+// "de" es "yo", el id de un amigo, o nada (solo el nombre).
+function avatarColor(nombre, extra, de) {
+  let est = null;
+  if (de === "yo" || (de && typeof nube !== "undefined" && de === nube.id)) est = miPerfilSocial();
+  else if (de) { const a = socialNube.amigos.find(function (x) { return x.id === de; }); est = a && a.perfil ? a.perfil : null; }
+  const color = est && COLORES_PERFIL.includes(est.color) ? est.color : colorUsuario(nombre);
+  const dentro = est && ICONOS_PERFIL.includes(est.icono) ? est.icono : esc((nombre || "?")[0]).toUpperCase();
+  return '<span class="avatar de-color' + (extra ? " " + extra : "") + '" style="background:' + color + '" data-no-traducir>' + dentro + '</span>';
 }
 
 // Una publicación de la nube: autor, resumen del entreno y reacciones
-// Una publicación como en Instagram: quién, la tarjeta grande, las reacciones y el pie
+// Una publicación: quién, la tarjeta compacta y una fila con las reacciones
 function postNubeHtml(x) {
   const idPerfil = x.mio ? "yo" : x.autorId;
   const rango = x.mio ? (puntosGlobal() === null ? null : rangoDePuntos(puntosGlobal())) : x.rango;
-  const total = x.reacciones.length;
-  let h = '<article class="insta"><div class="insta-cab"><button class="row" data-act="ver-amigo" data-a="' + esc(idPerfil) + '" aria-label="Ver perfil">' + avatarColor(x.autor) +
+  let h = '<article class="insta"><div class="insta-cab"><button class="row" data-act="ver-amigo" data-a="' + esc(idPerfil) + '" aria-label="Ver perfil">' + avatarColor(x.autor, "", idPerfil) +
     '<span class="grow" style="text-align:left"><span class="name small" data-no-traducir>' + esc(x.autor) + '</span><span class="muted small" style="display:block">' + nombreRango(rango) + ' · ' + fechaBonita(x.fecha) + '</span></span></button>' +
     (x.mio ? '<button class="btn-txt small" data-act="social-borrar-post" data-a="' + esc(x.id) + '">' + (confirmar === "social-borrar-post" + x.id ? "Pulsa otra vez" : "Eliminar") + '</button>'
            : '<button class="btn-txt small" data-act="social-denunciar" data-a="' + esc(x.id) + '">Denunciar</button>') + '</div>' +
@@ -1775,10 +1811,29 @@ function postNubeHtml(x) {
       const n = x.reacciones.filter(function (y) { return y.r === r; }).length;
       const mia = x.reacciones.some(function (y) { return y.u === nube.id && y.r === r; });
       return '<button class="reaccion' + (mia ? " on" : "") + '" data-act="social-reaccion" data-a="' + esc(x.id) + '" data-b="' + r + '" aria-label="Reaccionar ' + r + '"><span class="emoji">' + r + '</span>' + (n ? '<span class="num">' + n + '</span>' : "") + '</button>';
-    }).join("") + '</div>' +
-    '<div class="insta-pie">' + (total ? '<p class="small"><b>' + (total === 1 ? "1 reacción" : total + " reacciones") + '</b></p>' : '<p class="muted small">Toca dos veces la tarjeta para dar ánimo 💪</p>') +
-    (x.detalle && x.detalle.e ? '<button class="btn-txt small" data-act="ver-post" data-a="' + esc(x.id) + '">Ver entreno completo</button>' : "") + '</div></article>';
+    }).join("") +
+    (x.detalle && x.detalle.e ? '<button class="btn-txt small ver-todo" data-act="ver-post" data-a="' + esc(x.id) + '">Ver todo</button>' : "") + '</div></article>';
   return h;
+}
+
+// Ventana para personalizar tu perfil: avatar (color e icono), frase y qué enseñas
+let perfilEd = null;
+function hojaEditarPerfil(nueva) {
+  if (nueva || !perfilEd) perfilEd = miPerfilSocial();
+  const usuario = estado.perfil.usuario;
+  const colorVista = perfilEd.color || colorUsuario(usuario);
+  let h = cabeceraHoja("Editar perfil", "@" + esc(usuario)) + '<div class="stack">' +
+    '<div class="editar-vista"><span class="avatar de-color grande" style="background:' + colorVista + '" data-no-traducir>' + (perfilEd.icono || esc(usuario[0]).toUpperCase()) + '</span></div>' +
+    '<div class="card stack tight"><h3>Color</h3><div class="elegir-color">' + COLORES_PERFIL.map(function (c) {
+      return '<button class="' + (perfilEd.color === c ? "on" : "") + '" style="background:' + c + '" data-act="perfil-color" data-a="' + c + '" aria-label="Color"></button>'; }).join("") + '</div></div>' +
+    '<div class="card stack tight"><h3>Icono</h3><div class="elegir-icono"><button class="' + (!perfilEd.icono ? "on" : "") + '" data-act="perfil-icono" data-a="" data-no-traducir>' + esc(usuario[0]).toUpperCase() + '</button>' +
+      ICONOS_PERFIL.map(function (e) { return '<button class="' + (perfilEd.icono === e ? "on" : "") + '" data-act="perfil-icono" data-a="' + e + '" data-no-traducir>' + e + '</button>'; }).join("") + '</div></div>' +
+    '<div class="card stack tight"><label class="f">Tu frase <span class="muted small">(opcional, 80 letras)</span><input id="perfilBio" maxlength="80" value="' + esc(perfilEd.bio) + '" placeholder="Ej.: A por los 100 kg en banca"></label>' +
+      '<p class="muted small">La ven tus amigos en tu perfil. No pongas datos personales.</p></div>' +
+    '<div class="card stack tight"><label class="check"><input type="checkbox" id="perfilMarcas"' + (perfilEd.marcas ? " checked" : "") + '>Enseñar mis mejores marcas</label>' +
+      '<p class="muted small">Para cambiar tu nombre de usuario o quién puede ver tu perfil, ve a Ajustes.</p></div>' +
+    '<button class="btn" data-act="guardar-perfil-social">Guardar</button></div>';
+  abrirHoja(h);
 }
 
 // ---------- Perfil (el tuyo o el de un amigo): página entera ----------
@@ -1791,11 +1846,13 @@ function perfilSocialHtml(id) {
   const usuario = mio ? estado.perfil.usuario : (a.usuario || "?");
   const etapa = mio ? etapaApix() : etapaAmigo(p);
   const color = p.rango === null || p.rango === undefined ? "#8A5CFF" : RANGOS[p.rango].color;
-  let h = '<div class="card perfil-cab" style="--c:' + color + '"><div class="perfil-apix">' + apixSVG("contento", "", etapa) + '</div>' +
+  const bio = mio ? miPerfilSocial().bio : (typeof p.bio === "string" ? p.bio.slice(0, 80) : "");
+  let h = '<div class="card perfil-cab" style="--c:' + color + '"><div class="perfil-apix">' + apixSVG("contento", "", etapa) + '<span class="perfil-avatar">' + avatarColor(usuario, "", mio ? "yo" : id) + '</span></div>' +
     '<h2 data-no-traducir>@' + esc(usuario) + '</h2><p class="muted small">Apix ' + ETAPAS_APIX[etapa].nombre + '</p>' +
+    (bio ? '<p class="perfil-bio" data-no-traducir>' + esc(bio) + '</p>' : (mio ? '<p class="muted small">Añade una frase a tu perfil con «Editar perfil».</p>' : "")) +
     '<div class="perfil-cifras"><div><b class="num">' + (p.entrenos || 0) + '</b><span>entrenos</span></div><div><b class="num">' + (p.racha || 0) + '</b><span>sem. de racha</span></div>' +
     '<div>' + insignia(p.rango, "sm") + '<span>' + nombreRango(p.rango) + '</span></div></div>' +
-    (mio ? '<button class="btn-sec small full" data-act="social-invitar">Compartir mi perfil</button>' : "") + '</div>';
+    (mio ? '<div class="grid2" style="width:100%"><button class="btn small" data-act="editar-perfil-social">✏️ Editar</button><button class="btn-sec small" data-act="social-invitar">Compartir</button></div>' : "") + '</div>';
   const marcas = p.marcas || [];
   if (marcas.length) h += '<div class="card"><h3>' + (mio ? "Tus mejores marcas" : "Sus mejores marcas") + '</h3><div class="list">' + marcas.map(function (r) {
     return '<div class="item"><div class="grow"><span class="name small">' + esc(r.n) + '</span></div><span class="num">' + String(r.p).replace(".", ",") + ' kg × ' + r.r + '</span></div>';

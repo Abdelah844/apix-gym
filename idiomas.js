@@ -1806,7 +1806,7 @@ const TRADUCCIONES = {
 "Compartir": [
 "Share",
 "Partager",
-"بارطاجي"
+"شارك"
 ],
 "Completa al menos una serie para poder terminar": [
 "Complete at least one set to finish",
@@ -15582,6 +15582,81 @@ const TRADUCCIONES = {
 "View profile",
 "Voir le profil",
 "شوف البروفيل"
+],
+"🔥 Esta semana": [
+"🔥 This week",
+"🔥 Cette semaine",
+"🔥 هاد السيمانة"
+],
+"Ver todo": [
+"See all",
+"Tout voir",
+"شوف كلشي"
+],
+"✏️ Editar perfil": [
+"✏️ Edit profile",
+"✏️ Modifier le profil",
+"✏️ بدّل البروفيل"
+],
+"Añade una frase a tu perfil con «Editar perfil».": [
+"Add a line to your profile with \"Edit profile\".",
+"Ajoute une phrase à ton profil avec « Modifier le profil ».",
+"زيد جملة ف البروفيل ديالك ب «بدّل البروفيل»."
+],
+"Editar perfil": [
+"Edit profile",
+"Modifier le profil",
+"بدّل البروفيل"
+],
+"Color": [
+"Colour",
+"Couleur",
+"اللون"
+],
+"Icono": [
+"Icon",
+"Icône",
+"الأيقونة"
+],
+"Tu frase": [
+"Your line",
+"Ta phrase",
+"الجملة ديالك"
+],
+"(opcional, {n} letras)": [
+"(optional, {n} characters)",
+"(facultatif, {n} caractères)",
+"(اختياري، {n} حرف)"
+],
+"Ej.: A por los {n} kg en banca": [
+"E.g. Going for a {n} kg bench",
+"Ex. : Objectif {n} kg au développé couché",
+"مثلا: غادي ل {n} كيلو ف البانش"
+],
+"La ven tus amigos en tu perfil. No pongas datos personales.": [
+"Your friends see it on your profile. Don't include personal details.",
+"Tes amis la voient sur ton profil. N'y mets pas de données personnelles.",
+"كيشوفوها صحابك ف البروفيل ديالك. ما تحطش معلومات شخصية."
+],
+"Enseñar mis mejores marcas": [
+"Show my best lifts",
+"Montrer mes meilleures marques",
+"بيّن أحسن الأرقام ديالي"
+],
+"Para cambiar tu nombre de usuario o quién puede ver tu perfil, ve a Ajustes.": [
+"To change your username or who can see your profile, go to Settings.",
+"Pour changer ton nom d'utilisateur ou qui peut voir ton profil, va dans Réglages.",
+"باش تبدل سمية المستخدم ولا شكون يشوف البروفيل ديالك، سير للإعدادات."
+],
+"✓ Perfil guardado": [
+"✓ Profile saved",
+"✓ Profil enregistré",
+"✓ البروفيل تحفظ"
+],
+"✏️ Editar": [
+"✏️ Edit",
+"✏️ Modifier",
+"✏️ بدّل"
 ],
 "Social": [
 "Social",

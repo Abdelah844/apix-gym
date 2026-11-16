@@ -675,6 +675,17 @@ const ACCIONES = {
     });
   },
   "vista-carga": function (v) { vistaCarga = v; pintarProgreso(); },
+  // ---------- Editar mi perfil social ----------
+  "editar-perfil-social": function () { hojaEditarPerfil(true); },
+  "perfil-color": function (c) { leerPerfilEd(); perfilEd.color = perfilEd.color === c ? "" : c; hojaEditarPerfil(); },
+  "perfil-icono": function (e) { leerPerfilEd(); perfilEd.icono = e; hojaEditarPerfil(); },
+  "guardar-perfil-social": async function () {
+    leerPerfilEd();
+    estado.ajustes.perfilSocial = { bio: perfilEd.bio, color: perfilEd.color, icono: perfilEd.icono, marcas: perfilEd.marcas };
+    perfilEd = null;
+    guardar(); cerrarHoja(); pintar(); toast("✓ Perfil guardado", "ok");
+    await actualizarPerfilPublico();                 // tus amigos lo verán la próxima vez que entren
+  },
   "vista-social": function (v) { vistaSocial = v; confirmar = ""; window.scrollTo(0, 0); pintarSocial(); entradaSuave(); },
 
   // ---------- Social con cuenta en la nube ----------
@@ -1488,27 +1499,41 @@ document.addEventListener("input", function (ev) {
   if (t && t.dataset && t.dataset.horaDia !== undefined && t.parentElement) t.parentElement.classList.toggle("vacia", !t.value);
 });
 
-// Social: dos toques seguidos en la tarjeta de un entreno dan ánimo (💪), como el corazón de Instagram
-let ultimoToque = { id: "", hora: 0 };
+// Lo escrito en «Editar perfil» se recoge antes de volver a pintar la ventana
+function leerPerfilEd() {
+  if ($("perfilBio")) perfilEd.bio = $("perfilBio").value.trim().slice(0, 80);
+  if ($("perfilMarcas")) perfilEd.marcas = $("perfilMarcas").checked;
+}
+
+// Social: un toque en la tarjeta despliega o pliega sus ejercicios; dos toques seguidos dan ánimo (💪)
+let ultimoToque = { id: "", hora: 0, reloj: null };
 document.addEventListener("click", function (ev) {
   const v = ev.target.closest ? ev.target.closest("[data-post-visual]") : null;
   if (!v) return;
   const id = v.dataset.postVisual, ahora = Date.now();
-  if (ultimoToque.id !== id || ahora - ultimoToque.hora > 350) { ultimoToque = { id: id, hora: ahora }; return; }
-  ultimoToque = { id: "", hora: 0 };
+  if (ultimoToque.id !== id || ahora - ultimoToque.hora > 320) {
+    // Primer toque: se espera un momento por si llega el segundo
+    clearTimeout(ultimoToque.reloj);
+    ultimoToque = { id: id, hora: ahora, reloj: setTimeout(function () {
+      const p = postPorId(id);
+      if (!p || !p.detalle || !p.detalle.e || p.detalle.e.length < 2) return;
+      postsAbiertos[id] = !postsAbiertos[id];
+      repintarSocial();
+    }, 330) };
+    return;
+  }
+  clearTimeout(ultimoToque.reloj);
+  ultimoToque = { id: "", hora: 0, reloj: null };
   const p = postPorId(id);
   if (!p) return;
   const yaLaTiene = p.reacciones.some(function (x) { return x.u === nube.id && x.r === "💪"; });
-  const fin = function () {
-    // La pantalla se ha vuelto a pintar: el 💪 grande se pone sobre la tarjeta nueva
-    const nueva = document.querySelector('[data-post-visual="' + CSS.escape(id) + '"]');
-    if (!nueva) return;
-    const s = document.createElement("span");
-    s.className = "animo-grande"; s.textContent = "💪";
-    nueva.appendChild(s);
-    setTimeout(function () { s.remove(); }, 900);
-    if (estado.ajustes.vibracion !== false && navigator.vibrate) navigator.vibrate(30);
-  };
   if (!yaLaTiene) ACCIONES["social-reaccion"](id, "💪");      // pinta la pantalla al momento y guarda en segundo plano
-  fin();
+  // La pantalla se ha vuelto a pintar: el 💪 grande se pone sobre la tarjeta nueva
+  const nueva = document.querySelector('[data-post-visual="' + CSS.escape(id) + '"]');
+  if (!nueva) return;
+  const s = document.createElement("span");
+  s.className = "animo-grande"; s.textContent = "💪";
+  nueva.appendChild(s);
+  setTimeout(function () { s.remove(); }, 900);
+  if (estado.ajustes.vibracion !== false && navigator.vibrate) navigator.vibrate(30);
 });
