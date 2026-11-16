@@ -160,7 +160,8 @@ function estadoMascota() {
   const esDescanso = cal.length > 0 && !cal.includes(hoyN) && !(ultima && ultima.fecha === hoyF);
   // 2. Récord en los últimos 2 días: felicitar con el ejercicio y el peso
   //    (en día de descanso solo si el récord es de hoy: ese día Apix descansa)
-  if (ultima && diasEntre(ultima.fecha, hoyF) <= 2 && ultima.prs.length && !esDescanso) {
+  // Solo el mismo día del entreno: al día siguiente Apix ya piensa en el próximo
+  if (ultima && ultima.fecha === hoyF && ultima.prs.length) {
     const id = ultima.prs[0];
     const e = ultima.ejercicios.find(function (x) { return x.id === id; });
     const ej = buscarEj(id);

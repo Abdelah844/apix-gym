@@ -683,10 +683,18 @@ const PRUEBAS = [
   ["Mascota", "Felicita al superar un peso que antes no podías, nombrando el ejercicio y el peso", function () {
     estadoPrueba();
     sesionPrueba(fechaTexto(8), [["press-banca", [[60, 8]]]]);
-    sesionPrueba(fechaTexto(1), [["press-banca", [[65, 8]]]]);
-    estado.ajustes.diasEntreno = [(new Date().getDay() + 6) % 7];        // hoy toca entrenar (si no, Apix descansa)
+    sesionPrueba(fechaTexto(0), [["press-banca", [[65, 8]]]]);
+    estado.ajustes.diasEntreno = [(new Date().getDay() + 6) % 7];        // hoy toca entrenar
     const k = estadoMascota();
-    return (k.humor === "celebra" && k.mensaje.indexOf("65 kg") >= 0 && k.mensaje.indexOf("press de banca") >= 0) || k.humor + ": " + k.mensaje;
+    // (si hizo todas las series, celebra como «campeón»; si no, con el récord)
+    estado.sesiones[estado.sesiones.length - 1].ejercicios[0].series.push({ peso: 70, reps: 8, hecha: false });
+    if (!(k.humor === "campeon" || (k.humor === "celebra" && k.mensaje.indexOf("65 kg") >= 0 && k.mensaje.indexOf("press de banca") >= 0))) return k.humor + ": " + k.mensaje;
+    const k2 = estadoMascota();
+    if (!(k2.humor === "celebra" && k2.mensaje.indexOf("65 kg") >= 0)) return "Sin todas las series: " + k2.humor + ": " + k2.mensaje;
+    // Al día siguiente, si toca entrenar, ya no celebra: te anima a ir
+    estado.sesiones[estado.sesiones.length - 1].fecha = fechaTexto(1);
+    const m = estadoMascota();
+    return m.humor === "anima" || "Al día siguiente sigue celebrando: " + m.humor;
   }],
   ["Mascota", "Se enfada cuando pierdes la racha y dice cuántas semanas tenías", function () {
     estadoPrueba();
