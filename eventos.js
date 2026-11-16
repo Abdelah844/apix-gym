@@ -564,7 +564,9 @@ const ACCIONES = {
     if (!pideConfirmar("cancelar-sesion", pintarSesion)) return;
     estado.activa = null; pilaDeshacer = []; pararDescanso(); guardar(); pintar();
   },
-  "ver-resumen": function () { $("celebra").hidden = true; hojaResumen(window._resumen); },
+  "ver-resumen": function () { $("celebra").hidden = true; celebracion = null; hojaResumen(window._resumen); },
+  "celebra-sig": function () { if (celebracion && celebracion.i < celebracion.pasos.length - 1) { celebracion.i++; pintarAscenso(); } },
+  "sin-accion": function () { },
   "compartir-sesion": function (id, x, y, boton) {
     const s = estado.sesiones.find(function (z) { return z.id === id; });
     if (!s) return;

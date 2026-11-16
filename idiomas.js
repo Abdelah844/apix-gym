@@ -15693,6 +15693,16 @@ const TRADUCCIONES = {
 "Tu peux mettre une photo de profil (facultatif). Elle est enregistrée dans le cloud et seuls tes amis la voient. Tu peux la retirer quand tu veux.",
 "تقدر تحط تصويرة ف البروفيل (اختياري). كتتحفظ ف السحابة وغير صحابك اللي كيشوفوها. تقدر تحيّدها فاش ما بغيتي."
 ],
+"¡Subes de rango global!": [
+"Your overall rank is up!",
+"Ton rang global monte !",
+"طلعتي ف الرتبة العامة!"
+],
+"¡Subes de rango!": [
+"Rank up!",
+"Tu montes de rang !",
+"طلعتي ف الرتبة!"
+],
 "Social": [
 "Social",
 "Social",

@@ -828,10 +828,10 @@ function fotoRangos() {
 function compararRangos(antes, despues) {
   const lista = [];
   if (despues.global !== null && (antes.global === null || despues.global > antes.global)) {
-    lista.push({ tipo: "global", nombre: "Rango global", rango: despues.global });
+    lista.push({ tipo: "global", nombre: "Rango global", rango: despues.global, antes: antes.global });
   }
   for (const g in despues.grupos) {
-    if (antes.grupos[g] !== undefined && despues.grupos[g] > antes.grupos[g]) lista.push({ tipo: "grupo", nombre: GRUPOS[g], rango: despues.grupos[g] });
+    if (antes.grupos[g] !== undefined && despues.grupos[g] > antes.grupos[g]) lista.push({ tipo: "grupo", nombre: GRUPOS[g], rango: despues.grupos[g], antes: antes.grupos[g], grupo: g });
   }
   for (const id in despues.ej) {
     if (antes.ej[id] !== undefined && despues.ej[id] > antes.ej[id]) lista.push({ tipo: "ejercicio", nombre: buscarEj(id).nombre, rango: despues.ej[id] });

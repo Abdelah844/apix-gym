@@ -2831,7 +2831,15 @@ function hojaExportar() {
 // CELEBRACIÓN (récord o ascenso)
 // =====================================================
 
+// Al terminar un entreno: si subes de rango, una pantalla por cada subida (global y músculos);
+// si solo hay récords, una pantalla con ellos.
+let celebracion = null;            // { pasos: [...], i: paso actual }
 function celebrar(resultado) {
+  window._resumen = resultado;
+  // Primero los músculos y, al final, el rango global (lo más importante se deja para el final)
+  const pasos = resultado.ascensos.filter(function (a) { return a.tipo === "grupo"; }).concat(resultado.ascensos.filter(function (a) { return a.tipo === "global"; }));
+  if (pasos.length) { celebracion = { pasos: pasos, i: 0 }; pintarAscenso(); return; }
+  // Sin subida de músculo ni global: récords (o subida solo en un ejercicio)
   const asc = resultado.ascensos[0];
   const s = resultado.sesion;
   const rango = asc ? asc.rango : (puntosGlobal() !== null ? rangoDePuntos(puntosGlobal()) : 0);
@@ -2843,8 +2851,34 @@ function celebrar(resultado) {
     '<p class="muted">' + (s.prs.length ? s.prs.map(function (id) { return esc(buscarEj(id).nombre); }).join(" · ") : "") + '</p>' +
     '<button class="btn" data-act="ver-resumen" style="margin-top:8px">Ver resumen</button>';
   $("celebra").hidden = false;
-  window._resumen = resultado;
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) destello(RANGOS[rango].color);
+}
+
+// Una subida de rango: la insignia vieja tiembla y se rompe, y aparece la nueva con rayos de luz.
+// Si es de un músculo, debajo se ilumina ese músculo en el cuerpo.
+function pintarAscenso() {
+  const c = celebracion, a = c.pasos[c.i];
+  const color = RANGOS[a.rango].color;
+  const ultimo = c.i === c.pasos.length - 1;
+  const habia = a.antes !== null && a.antes !== undefined;
+  let h = '<p class="label" style="color:' + color + '">' + (a.tipo === "global" ? "¡Subes de rango global!" : "¡Subes de rango!") +
+    (c.pasos.length > 1 ? ' <span class="num" data-no-traducir>' + (c.i + 1) + ' / ' + c.pasos.length + '</span>' : "") + '</p>' +
+    '<div class="ascenso-insignias' + (habia ? "" : " sola") + '" style="--c:' + color + '"><span class="rayos" aria-hidden="true"></span>' +
+      (habia ? '<div class="insignia-vieja">' + insignia(a.antes, "xl") + '</div>' : "") +
+      '<div class="insignia-nueva">' + insignia(a.rango, "xl") + '</div></div>' +
+    '<h1 class="ascenso-nombre">' + esc(a.nombre) + '</h1>' +
+    '<p class="ascenso-cambio">' + (habia ? '<span class="muted">' + RANGOS[a.antes].nombre + '</span> <span aria-hidden="true" data-no-traducir>→</span> ' : "") + '<b style="color:' + color + '">' + RANGOS[a.rango].nombre + '</b></p>';
+  if (a.tipo === "grupo" && a.grupo) {
+    h += '<div class="ascenso-mapa">' + mapaCorporal(function (g) { return g === a.grupo ? color : "var(--surface3)"; }, "sin-accion") + '</div>';
+  }
+  h += '<button class="btn ascenso-boton" data-act="' + (ultimo ? "ver-resumen" : "celebra-sig") + '" style="margin-top:6px;min-width:200px">' + (ultimo ? "Ver resumen" : "Siguiente") + '</button>';
+  const msg = $("celebraMsg");
+  msg.innerHTML = h;
+  msg.style.animation = "none"; void msg.offsetWidth; msg.style.animation = "";      // repite la entrada en cada paso
+  $("celebra").hidden = false;
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(function () { if (!$("celebra").hidden) destello(color); }, habia ? 950 : 100);
+  if (c.i > 0) sonar("rango");
+  if (estado.ajustes.vibracion !== false && navigator.vibrate) setTimeout(function () { navigator.vibrate([40, 60, 90]); }, habia ? 950 : 100);
 }
 
 // Anillos de luz y chispas dibujados en un canvas

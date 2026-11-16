@@ -706,6 +706,28 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 .perfil-cifras span { font-size: .74rem; color: var(--muted); }
 .perfil-rejilla { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .racha-dias { margin-inline-start: 6px; background: color-mix(in srgb, var(--fire) 16%, transparent); color: var(--fire); border-radius: 99px; padding: 3px 10px; font-size: .82rem; font-weight: 700; white-space: nowrap; }
+/* Subida de rango: la insignia vieja se rompe y aparece la nueva */
+.ascenso-insignias { position: relative; width: 230px; height: 190px; display: grid; place-items: center; }
+.ascenso-insignias > div { grid-area: 1 / 1; }
+.ascenso-insignias .rayos { position: absolute; inset: -30px; border-radius: 50%; opacity: 0;
+  background: repeating-conic-gradient(from 0deg, var(--c) 0deg 8deg, transparent 8deg 24deg);
+  -webkit-mask: radial-gradient(circle, #000 0%, transparent 68%); mask: radial-gradient(circle, #000 0%, transparent 68%);
+  animation: rayos-giran 9s linear infinite, rayos-salen .6s ease-out .95s forwards; }
+.insignia-vieja { animation: vieja-rompe 1s ease-in forwards; }
+.insignia-nueva { opacity: 0; animation: nueva-llega .9s cubic-bezier(.2, 1.5, .4, 1) .95s forwards; }
+.insignia-nueva .badge { filter: drop-shadow(0 0 20px var(--c)); }
+.ascenso-insignias.sola .rayos { animation-delay: 0s, .1s; }
+.ascenso-insignias.sola .insignia-nueva { animation-delay: .1s; }
+.ascenso-nombre { opacity: 0; animation: sube-texto .5s ease-out 1.25s forwards; }
+.ascenso-cambio { opacity: 0; font-size: 1.1rem; margin: 0; animation: sube-texto .5s ease-out 1.4s forwards; }
+.ascenso-mapa { width: 190px; opacity: 0; animation: sube-texto .6s ease-out 1.6s forwards; }
+.ascenso-mapa .mapa { width: 100%; height: auto; pointer-events: none; }
+.ascenso-boton { opacity: 0; animation: sube-texto .4s ease-out 1.8s forwards; }
+@keyframes vieja-rompe { 0% { transform: scale(1) rotate(0); opacity: 1; } 15% { transform: rotate(-7deg); } 30% { transform: rotate(7deg); } 45% { transform: rotate(-9deg) scale(1.04); } 60% { transform: rotate(9deg) scale(1.08); } 75% { transform: rotate(-6deg) scale(1.12); opacity: 1; filter: brightness(1.6); } 100% { transform: scale(1.9); opacity: 0; filter: brightness(3) blur(6px); } }
+@keyframes nueva-llega { 0% { transform: scale(.15) rotate(-30deg); opacity: 0; } 60% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes rayos-salen { to { opacity: .5; } }
+@keyframes sube-texto { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .insignia-vieja { display: none; } .insignia-nueva, .ascenso-nombre, .ascenso-cambio, .ascenso-mapa, .ascenso-boton, .ascenso-insignias .rayos { animation: none !important; opacity: 1; } .ascenso-insignias .rayos { opacity: .4; } }
 .logros-inicio { display: flex; align-items: center; gap: 14px; width: 100%; }
 .logro-ico { font-size: 1.7rem; line-height: 1; flex: none; width: 40px; text-align: center; }
 .barra-logro { height: 6px; border-radius: 99px; background: var(--surface3); overflow: hidden; }
