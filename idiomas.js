@@ -7011,7 +7011,7 @@ const TRADUCCIONES = {
 "Quitar": [
 "Remove",
 "Retirer",
-"حيّد"
+"حيد"
 ],
 "Quién ve tu perfil": [
 "Who sees your profile",
@@ -15877,6 +15877,206 @@ const TRADUCCIONES = {
 "Replace exercise",
 "Remplacer l'exercice",
 "بدل التمرين"
+],
+"Cardio": [
+"Cardio",
+"Cardio",
+"كارديو"
+],
+"Cinta, bici, elíptica, correr… cuenta para tu racha": [
+"Treadmill, bike, elliptical, running… counts for your streak",
+"Tapis, vélo, elliptique, course… compte pour ta série",
+"التابي، البيسكليت، الإليبتيك، الجري… كيتحسب ف السلسلة ديالك"
+],
+"Añadir cardio": [
+"Add cardio",
+"Ajouter du cardio",
+"زيد الكارديو"
+],
+"Apuntar cardio": [
+"Log cardio",
+"Noter du cardio",
+"سجل الكارديو"
+],
+"Al final del entreno": [
+"At the end of the workout",
+"À la fin de la séance",
+"ف اللخر ديال الحصة"
+],
+"Entreno de cardio": [
+"Cardio workout",
+"Séance de cardio",
+"حصة كارديو"
+],
+"Correr en cinta": [
+"Treadmill run",
+"Course sur tapis",
+"الجري ف التابي"
+],
+"Andar en cinta": [
+"Treadmill walk",
+"Marche sur tapis",
+"المشي ف التابي"
+],
+"Bici estática": [
+"Stationary bike",
+"Vélo d'appartement",
+"البيسكليت الثابتة"
+],
+"Elíptica": [
+"Elliptical",
+"Elliptique",
+"الإليبتيك"
+],
+"Remo (máquina)": [
+"Rowing machine",
+"Rameur",
+"الرامور"
+],
+"Escaladora": [
+"Stair climber",
+"Stepper",
+"الدروج (ماشينة)"
+],
+"Comba": [
+"Jump rope",
+"Corde à sauter",
+"الحبل"
+],
+"Correr fuera": [
+"Outdoor run",
+"Course dehors",
+"الجري برا"
+],
+"Caminar": [
+"Walk",
+"Marche",
+"المشي"
+],
+"Nadar": [
+"Swim",
+"Natation",
+"العوم"
+],
+"HIIT / circuito": [
+"HIIT / circuit",
+"HIIT / circuit",
+"HIIT / سيركوي"
+],
+"La última vez:": [
+"Last time:",
+"La dernière fois :",
+"آخر مرة:"
+],
+"Minutos": [
+"Minutes",
+"Minutes",
+"دقايق"
+],
+"Km (opcional)": [
+"Km (optional)",
+"Km (facultatif)",
+"كلم (اختياري)"
+],
+"Nivel (opcional)": [
+"Level (optional)",
+"Niveau (facultatif)",
+"المستوى (اختياري)"
+],
+"Inclinación % (opcional)": [
+"Incline % (optional)",
+"Inclinaison % (facultatif)",
+"الميلان % (اختياري)"
+],
+"Añadir al entreno": [
+"Add to workout",
+"Ajouter à la séance",
+"زيد للحصة"
+],
+"Guardar cardio": [
+"Save cardio",
+"Enregistrer le cardio",
+"سجل الكارديو"
+],
+"Cuenta como entreno para tu racha y para Apix. No cambia tus rangos de fuerza.": [
+"Counts as a workout for your streak and for Apix. It doesn't change your strength ranks.",
+"Compte comme séance pour ta série et pour Apix. Ne change pas tes rangs de force.",
+"كيتحسب حصة ف السلسلة وعند Apix. ما كيبدلش الرتب ديال القوة."
+],
+"Elige qué has hecho.": [
+"Choose what you did.",
+"Choisis ce que tu as fait.",
+"ختار شنو درتي."
+],
+"🏃 {n} min": [
+"🏃 {n} min",
+"🏃 {n} min",
+"🏃 {n} دقيقة"
+],
+"{n} km": [
+"{n} km",
+"{n} km",
+"{n} كلم"
+],
+"nivel {n}": [
+"level {n}",
+"niveau {n}",
+"المستوى {n}"
+],
+"Distancia": [
+"Distance",
+"Distance",
+"المسافة"
+],
+"🏃 Cardio": [
+"🏃 Cardio",
+"🏃 Cardio",
+"🏃 كارديو"
+],
+"Hizo {n} min de cardio": [
+"Did {n} min of cardio",
+"A fait {n} min de cardio",
+"دار {n} دقيقة ديال الكارديو"
+],
+"{n} minutos de cardio. ¡Tu racha te lo agradece!": [
+"{n} minutes of cardio. Your streak thanks you!",
+"{n} minutes de cardio. Ta série te remercie !",
+"{n} دقيقة ديال الكارديو. السلسلة ديالك كتشكرك!"
+],
+"Cardio añadido al entreno": [
+"Cardio added to the workout",
+"Cardio ajouté à la séance",
+"الكارديو تزاد للحصة"
+],
+"Cardio quitado. Puedes deshacerlo arriba.": [
+"Cardio removed. You can undo it above.",
+"Cardio retiré. Tu peux l'annuler en haut.",
+"الكارديو تحيد. تقدر ترجعو من الفوق."
+],
+"Elige una actividad.": [
+"Choose an activity.",
+"Choisis une activité.",
+"ختار نشاط."
+],
+"Pon los minutos (de {n} a {n}).": [
+"Enter the minutes ({n} to {n}).",
+"Indique les minutes (de {n} à {n}).",
+"كتب الدقايق (من {n} ل {n})."
+],
+"Los km tienen que estar entre {n} y {n}.": [
+"Km must be between {n} and {n}.",
+"Les km doivent être entre {n} et {n}.",
+"الكيلومترات خاصهم يكونو بين {n} و {n}."
+],
+"El nivel tiene que estar entre {n} y {n}.": [
+"Level must be between {n} and {n}.",
+"Le niveau doit être entre {n} et {n}.",
+"المستوى خاصو يكون بين {n} و {n}."
+],
+"La inclinación tiene que estar entre {n} y {n} %.": [
+"Incline must be between {n} and {n} %.",
+"L'inclinaison doit être entre {n} et {n} %.",
+"الميلان خاصو يكون بين {n} و {n} %."
 ],
 "Social": [
 "Social",

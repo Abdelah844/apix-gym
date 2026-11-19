@@ -533,7 +533,7 @@ const ACCIONES = {
   },
   "terminar": function () {
     if (!estado.activa) return;
-    if (!estado.activa.ejercicios.some(function (x) { return x.series.some(function (y) { return y.hecha; }); })) { toast("Completa al menos una serie para poder terminar"); return; }
+    if (!estado.activa.ejercicios.some(function (x) { return x.series.some(function (y) { return y.hecha; }); }) && !totalCardio(estado.activa).min) { toast("Completa al menos una serie para poder terminar"); return; }
     hojaTerminar();
   },
   "terminar-si": function () {
@@ -884,6 +884,49 @@ const ACCIONES = {
   },
   "abrir-importar": function () { confirmar = ""; hojaImportar(); },
   "abrir-otra-app": function () { hojaOtraApp(); },
+  // ----- Cardio -----
+  "abrir-cardio": function (destino) { hojaCardio(destino); },
+  "cardio-tipo": function (id) {
+    const min = $("cMin") ? $("cMin").value : "";      // que no se pierdan los minutos ya escritos
+    formCardio.id = id; hojaCardio();
+    if ($("cMin")) { $("cMin").value = min; if (!min) $("cMin").focus(); }
+  },
+  "guardar-cardio": function () {
+    const leer = function (id) { return $(id) ? $(id).value : ""; };
+    const c = crearCardio(formCardio.id, leer("cMin"), leer("cKm"), leer("cNivel"), leer("cInc"));
+    const error = errorCardio(c);
+    if (error) { $("cardioError").textContent = tr(error); return; }
+    estado.ajustes.ultimoCardio = c.id;
+    if (formCardio.destino === "sesion" && estado.activa) {
+      copiaSesion();
+      estado.activa.cardio = (estado.activa.cardio || []).concat([c]);
+      guardar(); cerrarHoja(); pintarSesion();
+      toast("Cardio añadido al entreno");
+      return;
+    }
+    // Entreno solo de cardio: se guarda ya, como un entreno terminado
+    revisarLogros();
+    const etapaAntes = etapaApix();
+    const sesion = guardarCardioSuelto(c);
+    const r = { sesion: sesion, anterior: null, ascensos: [], logros: revisarLogros(), etapaNueva: etapaApix() > etapaAntes ? etapaApix() : null };
+    guardar(); sincronizarAvisosPush();
+    tab = "inicio"; pintar();
+    sonar("fin");
+    hojaResumen(r);
+    compartirConAmigosAlTerminar(sesion);
+  },
+  "quitar-cardio": function (i) {
+    copiaSesion(); estado.activa.cardio.splice(Number(i), 1);
+    guardar(); pintarSesion(); toast("Cardio quitado. Puedes deshacerlo arriba.");
+  },
+  "quitar-cardio-sesion": function (id, i) {
+    const s = estado.sesiones.find(function (x) { return x.id === id; });
+    if (!s || !s.cardio) return;
+    s.cardio.splice(Number(i), 1);
+    if (!s.cardio.length) delete s.cardio;
+    else if (soloCardio(s)) s.duracion = Math.min(300, totalCardio(s).min);
+    recalcularHistorial(); guardar(); hojaSesion(id); pintar();
+  },
   "importar-otra-app": function () {
     if (!otraApp) return;
     const r = sesionesDeOtraApp(otraApp.leido, otraApp.mapa, otraApp.libras);

@@ -1110,6 +1110,36 @@ const PRUEBAS = [
     if (Math.abs(kg - 102) > 0.5) return "225 lb deberían ser ~102 kg, salen " + kg;
     return leerOtraApp("hola,adios\n1,2").ok === false || "Acepta un CSV que no es de Hevy ni Strong";
   }],
+  ["3.4 Cardio", "Un cardio se valida y solo guarda los datos que usa esa actividad", function () {
+    estadoPrueba();
+    const c = crearCardio("bici", "25", "8,5", "6", "4");
+    if (c.min !== 25 || c.km !== 8.5 || c.nivel !== 6 || c.inc !== null) return "Campos mal: " + JSON.stringify(c);
+    if (errorCardio(c)) return "Debería ser válido: " + errorCardio(c);
+    if (!errorCardio(crearCardio("bici", "", "", "", ""))) return "Sin minutos no debería valer";
+    if (!errorCardio(crearCardio("cinta-correr", "20", "500", "", ""))) return "500 km no debería valer";
+    if (!errorCardio(crearCardio("nada", "20"))) return "Actividad inventada no debería valer";
+    return textoCardio(crearCardio("cinta-correr", "20", "3.1", "", "8")) === "Correr en cinta · 20 min · 3,1 km · 8 %" || "Texto mal: " + textoCardio(crearCardio("cinta-correr", "20", "3.1", "", "8"));
+  }],
+  ["3.4 Cardio", "Un día solo de cardio cuenta como entreno, se junta en uno por día y no cambia el día de la rutina", function () {
+    estadoPrueba();
+    const antes = sesionesValidas().length, siguiente = indiceSiguienteDia();
+    const s1 = guardarCardioSuelto(crearCardio("cinta-andar", "30", "2", "", "10"));
+    if (sesionesValidas().length !== antes + 1) return "El cardio no cuenta como entreno";
+    guardarCardioSuelto(crearCardio("bici", "15", "", "", ""));
+    const hoyCardio = estado.sesiones.filter(function (x) { return x.fecha === hoy() && soloCardio(x); });
+    if (hoyCardio.length !== 1 || hoyCardio[0].cardio.length !== 2 || hoyCardio[0].duracion !== 45) return "No junta el cardio del mismo día";
+    if (indiceSiguienteDia() !== siguiente) return "El cardio ha cambiado el siguiente día de la rutina";
+    return (validarEsquema(estado).length === 0 && s1.diaNombre === "Cardio") || "Datos no válidos: " + validarEsquema(estado)[0];
+  }],
+  ["3.4 Cardio", "Un entreno con solo cardio se puede terminar y lo guarda", function () {
+    estadoPrueba();
+    estado.activa = { inicio: Date.now() - 20 * 60000, diaIndex: null, diaNombre: "Entreno libre", ejercicios: [], cardio: [crearCardio("eliptica", "20", "", "5", "")] };
+    const r = terminarSesion();
+    if (r.vacio) return "Lo da por vacío";
+    if (!r.sesion.cardio || r.sesion.cardio[0].id !== "eliptica") return "No guarda el cardio";
+    estado.sesiones[estado.sesiones.length - 1].cardio = [{ id: "bici", min: 999, km: null, nivel: null, inc: null }];
+    return validarEsquema(estado).length > 0 || "Acepta un cardio de 999 min";
+  }],
   ["3.2 Días de racha", "Los días de racha se cuentan desde el primer entreno de la racha actual", function () {
     estadoPrueba();
     if (diasDeRacha() !== 0) return "Sin entrenos debería ser 0";

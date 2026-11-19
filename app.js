@@ -446,7 +446,7 @@ function pintarInicio() {
   }
   if (ultima) {
     h += '<div class="card stack tight"><button class="stack tight" data-act="ver-sesion" data-a="' + ultima.id + '" style="text-align:left;width:100%;padding:0"><div class="row between"><p class="label">Último entreno</p><span class="muted small">' + fechaBonita(ultima.fecha) + '</span></div>' +
-      '<h3>' + esc(ultima.diaNombre) + '</h3><p class="muted num">' + ultima.duracion + ' min · ' + ultima.seriesEfectivas + ' series efectivas' +
+      '<h3>' + esc(ultima.diaNombre) + '</h3><p class="muted num">' + lineaSesion(ultima) +
       (ultima.prs.length ? ' · <span style="color:var(--pr);font-weight:700">' + ultima.prs.length + ' récord' + (ultima.prs.length > 1 ? "s" : "") + '</span>' : "") + '</p></button>';
     if (prs.length) {
       h += '<div class="row between" style="border-top:1px solid var(--line);padding-top:10px"><p class="label">Récords recientes</p><button class="btn-txt small" data-tab="progreso">Ver progreso</button></div><div class="list">';
@@ -494,6 +494,7 @@ function pintarEntrenar() {
     h += '<div class="grid2 acciones-entreno"><button class="accion-grande" data-act="abrir-generador"><span class="ico">✨</span><b>' + (estado.rutina ? "Nueva rutina" : "Generar rutina") + '</b><span class="muted small">En 3 pasos, a tu medida</span></button>' +
       '<button class="accion-grande" data-act="empezar-libre"><span class="ico">⚡</span><b>Entreno libre</b><span class="muted small">Eliges sobre la marcha</span></button></div>' +
       '<button class="accion-grande fila" data-act="abrir-famosas"><span class="ico">🏆</span><span><b>Rutinas famosas</b><span class="muted small" style="display:block">5×5, PPL, torso-pierna… listas para usar</span></span></button>' +
+      '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>' +
       '<div class="grid2"><button class="btn-sec small" data-act="abrir-biblioteca">Ejercicios</button><button class="btn-sec small" data-act="abrir-gimnasio">Mi gimnasio</button></div>';
   }
 
@@ -536,6 +537,7 @@ function pintarEntrenar() {
       }
     });
     h += '<button class="btn-txt" data-act="anadir-dia">+ Añadir día</button>';
+    h += '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>';
     // Herramientas: debajo de la rutina
     h += '<p class="label" style="margin-top:6px">Más opciones</p>' +
       '<div class="grid2"><button class="btn-sec small" data-act="empezar-libre">⚡ Entreno libre</button><button class="btn-sec small" data-act="abrir-generador">✨ Nueva rutina</button></div>' +
@@ -543,6 +545,64 @@ function pintarEntrenar() {
       '<button class="btn-sec small full" data-act="abrir-gimnasio">Mi gimnasio</button>';
   }
   $("app").innerHTML = h + '</div>';
+}
+
+// ---------- Cardio ----------
+// En el entreno: lo que llevas de cardio y el botón para añadir más
+function cardioSesionHtml(a) {
+  const lista = a.cardio || [];
+  let h = '<div class="card stack tight cardio-sesion"><div class="row between"><p class="label">🏃 Cardio</p>' +
+    (lista.length ? '<span class="muted small num">' + totalCardio(a).min + ' min</span>' : "") + '</div>';
+  lista.forEach(function (c, i) {
+    h += '<div class="row between"><span class="small">' + cardioHtml(c) + '</span><button class="icon-btn sm" data-act="quitar-cardio" data-a="' + i + '" aria-label="Quitar">' + I.cerrar + '</button></div>';
+  });
+  return h + '<button class="btn-reemplazar" data-act="abrir-cardio" data-a="sesion" style="margin-top:2px">＋<span>Añadir cardio</span></button></div>';
+}
+
+// Hoja para apuntar un cardio. destino: "sesion" (al entreno en curso) o "suelto" (entreno solo de cardio)
+let formCardio = { destino: "suelto", id: "" };
+function hojaCardio(destino) {
+  if (destino) formCardio = { destino: destino, id: estado.ajustes.ultimoCardio || "" };
+  const tipo = buscarCardio(formCardio.id);
+  let h = cabeceraHoja("Apuntar cardio", formCardio.destino === "sesion" ? "Al final del entreno" : "Entreno de cardio") + '<div class="stack">' +
+    '<div class="cardio-tipos">' + CARDIO.map(function (c) {
+      return '<button class="cardio-tipo' + (c.id === formCardio.id ? " on" : "") + '" data-act="cardio-tipo" data-a="' + c.id + '"><span class="ico">' + c.icono + '</span><span>' + c.nombre + '</span></button>';
+    }).join("") + '</div>';
+  if (tipo) {
+    const anterior = ultimoCardio(tipo.id);
+    h += '<div class="card stack tight"><p class="label">' + tipo.icono + ' <span>' + tipo.nombre + '</span></p>' +
+      (anterior ? '<p class="muted small">La última vez: <span class="num">' + cardioHtml(anterior) + '</span></p>' : "") +
+      '<div class="grid2"><label class="f">Minutos<input id="cMin" type="number" inputmode="numeric" min="1" max="300" placeholder="' + (anterior ? anterior.min : 20) + '"></label>' +
+      (tipo.km ? '<label class="f">Km (opcional)<input id="cKm" type="text" inputmode="decimal" placeholder="' + (anterior && anterior.km ? String(anterior.km).replace(".", ",") : "—") + '"></label>' : "") +
+      (tipo.nivel ? '<label class="f">Nivel (opcional)<input id="cNivel" type="number" inputmode="numeric" min="1" max="30" placeholder="' + (anterior && anterior.nivel ? anterior.nivel : "—") + '"></label>' : "") +
+      (tipo.inc ? '<label class="f">Inclinación % (opcional)<input id="cInc" type="text" inputmode="decimal" placeholder="' + (anterior && anterior.inc ? String(anterior.inc).replace(".", ",") : "—") + '"></label>' : "") +
+      '</div><p class="err" id="cardioError"></p>' +
+      '<button class="btn" data-act="guardar-cardio">' + (formCardio.destino === "sesion" ? "Añadir al entreno" : "Guardar cardio") + '</button></div>';
+    if (formCardio.destino === "suelto") h += '<p class="muted small">Cuenta como entreno para tu racha y para Apix. No cambia tus rangos de fuerza.</p>';
+  } else {
+    h += '<p class="muted small">Elige qué has hecho.</p>';
+  }
+  abrirHoja(h + '</div>');
+}
+
+// El último cardio de ese tipo (para poner de ejemplo lo que hiciste)
+function ultimoCardio(id) {
+  for (let i = estado.sesiones.length - 1; i >= 0; i--) {
+    const lista = estado.sesiones[i].cardio || [];
+    for (let k = lista.length - 1; k >= 0; k--) if (lista[k].id === id) return lista[k];
+  }
+  return null;
+}
+
+// "52 min · 15 series efectivas · 🏃 20 min" → cada trozo en su <span> para que se traduzca bien
+function lineaSesion(s) {
+  const partes = ['<span>' + s.duracion + ' min</span>'];
+  if (s.ejercicios.length) partes.push('<span>' + s.seriesEfectivas + ' series efectivas</span>');
+  const c = totalCardio(s);
+  if (c.min && s.ejercicios.length) partes.push('<span>🏃 ' + c.min + ' min</span>');
+  if (c.min && !s.ejercicios.length) partes.push('<span>' + (s.cardio || []).map(function (x) { return tr(buscarCardio(x.id).nombre); }).join(", ") + '</span>');
+  if (c.km) partes.push('<span>' + String(c.km).replace(".", ",") + ' km</span>');
+  return partes.join(" · ");
 }
 
 // ---------- Sesión en curso ----------
@@ -799,7 +859,7 @@ function pintarSesion() {
     (sesionRecuperada && !sesionAntigua() ? '<div class="card" style="margin-bottom:12px;border-color:var(--good)"><p class="small"><b>Entreno recuperado.</b> Seguía guardado.</p></div>' : "") +
     '<div class="head"><div class="grow"><p class="label">Entreno en curso' + (hora ? ' · <span style="color:var(--good)">guardado ' + hora + '</span>' : "") + '</p><h1 style="font-size:1.4rem">' + esc(a.diaNombre) + '</h1></div>' +
     '<button class="icon-btn" data-act="deshacer" aria-label="Deshacer"' + (pilaDeshacer.length ? "" : " disabled") + '>' + I.deshacer + '</button>' +
-    '<button class="btn auto btn-terminar" data-act="terminar"' + (hechas ? "" : " disabled") + '>Terminar</button></div>';
+    '<button class="btn auto btn-terminar" data-act="terminar"' + (hechas || totalCardio(a).min ? "" : " disabled") + '>Terminar</button></div>';
 
   // Progreso del entreno y salto rápido entre ejercicios
   const pct = total ? Math.round(hechas / total * 100) : 0;
@@ -820,7 +880,7 @@ function pintarSesion() {
     h += tarjetaEjercicio(ei);
   }
 
-  h += '<button class="btn-sec full" data-act="anadir-a-sesion" style="padding:14px;margin-top:12px">+ Añadir ejercicio</button>' +
+  h += '<button class="btn-sec full" data-act="anadir-a-sesion" style="padding:14px;margin-top:12px">+ Añadir ejercicio</button>' + cardioSesionHtml(a) +
     '<button class="btn-txt btn-danger" data-act="cancelar-sesion" style="margin-top:6px">' + (confirmar === "cancelar-sesion" ? "Pulsa otra vez para descartar" : "Descartar entreno") + '</button>';
   $("app").innerHTML = h;
   serieMarcada = "";
@@ -1456,9 +1516,20 @@ function pintarProgreso() {
   if (ejerciciosHechos().length) h += '<button class="btn-sec small full" data-act="ver-evolucion">📈 Ver la gráfica de otro ejercicio</button>';
   h += mapaProgresoHtml(cuenta, semanas, olvidados);
   h += calendarioConstanciaHtml();
+  h += cardioProgresoHtml(ses);
   h += pesoTotalHtml(ses);
 
   $("app").innerHTML = h + '</div>';
+}
+
+// Cardio del periodo elegido (solo si has hecho alguno)
+function cardioProgresoHtml(ses) {
+  const c = cardioDeSesiones(ses);
+  if (!c.min) return "";
+  return '<div class="card stack tight"><p class="label">🏃 Cardio</p><div class="grid3">' +
+    '<div><div class="big-num num">' + c.min + '</div><p class="muted small">min</p></div>' +
+    '<div><div class="big-num num">' + (c.km ? String(c.km).replace(".", ",") : "—") + '</div><p class="muted small">km</p></div>' +
+    '<div><div class="big-num num">' + c.veces + '</div><p class="muted small">' + (c.veces === 1 ? "día" : "días") + '</p></div></div></div>';
 }
 
 // Ventana: evolución de un ejercicio (se abre al tocar un ejercicio clave)
@@ -1572,7 +1643,7 @@ function historialSemanasHtml() {
     h += '<div class="semana"><div class="row between semana-cab"><span class="name small">' + titulo + '</span><span class="muted small num">' +
       lista.length + (lista.length === 1 ? ' entreno · ' : ' entrenos · ') + series + ' series · ' + miles(kg) + ' kg' + (prs ? ' · 🏆 ' + prs : "") + '</span></div><div class="list">';
     for (const s of lista) {
-      h += '<button class="item" data-act="ver-sesion" data-a="' + s.id + '"><div class="grow"><span class="name">' + esc(s.diaNombre) + '</span><span class="muted small num">' + fechaBonita(s.fecha) + ' · ' + s.duracion + ' min · ' + s.seriesEfectivas + ' series efectivas</span></div>' +
+      h += '<button class="item" data-act="ver-sesion" data-a="' + s.id + '"><div class="grow"><span class="name">' + esc(s.diaNombre) + '</span><span class="muted small num"><span>' + fechaBonita(s.fecha) + '</span> · ' + lineaSesion(s) + '</span></div>' +
         (s.prs.length ? '<span class="pill pr">' + s.prs.length + ' PR</span>' : "") + '</button>';
     }
     h += '</div></div>';
@@ -1776,9 +1847,14 @@ function tarjetaEntreno(x, mini) {
     h += '<div class="t-arriba"><div class="t-apix">' + apixSVG(records ? "celebra" : "orgulloso", "", etapa) + '</div>' +
       '<div class="grow"><span class="t-tipo">' + (records ? "🏆 " + (records === 1 ? "Nuevo récord" : records + " récords") : "Entreno completado") + '</span>' +
       '<h2 class="t-titulo">' + esc(d.n) + '</h2>' +
-      '<p class="t-linea"><span class="num">' + d.d + '</span> min · <span class="num">' + d.e.length + '</span> ' + tr("ejercicios") + ' · <span class="num">' + miles(pesoVista(d.v)) + '</span> ' + unidadPeso() + '</p></div>' +
+      '<p class="t-linea"><span class="num">' + d.d + '</span> min' + (d.e.length ? ' · <span class="num">' + d.e.length + '</span> ' + tr("ejercicios") + ' · <span class="num">' + miles(pesoVista(d.v)) + '</span> ' + unidadPeso() : "") + '</p></div>' +
       '<span class="t-flecha" aria-hidden="true">▾</span></div>' +
-      '<div class="t-lista">' + (abierto ? d.e.map(fila).join("") : (destacado ? fila(destacado) : "")) + '</div>';
+      '<div class="t-lista">' + (abierto ? d.e.map(fila).join("") : (destacado ? fila(destacado) : "")) +
+      // Cardio del entreno: [id, minutos, km]
+      ((abierto || !d.e.length) && d.c ? d.c.map(function (c) {
+        const t = buscarCardio(c[0]);
+        return t ? '<div><span>' + t.icono + ' <span>' + t.nombre + '</span></span><span class="num">' + c[1] + ' min' + (c[2] ? ' · ' + String(c[2]).replace(".", ",") + ' km' : "") + '</span></div>' : "";
+      }).join("") : "") + '</div>';
   } else {
     h += '<div class="t-arriba"><div class="t-apix">' + apixSVG("celebra", "", etapa) + '</div><div class="grow"><span class="t-tipo">' + { record: "🏆 Récord", rango: "⬆️ Rango", entreno: "Entreno" }[x.tipo] + '</span>' +
       '<h2 class="t-titulo t-texto">' + esc(x.texto) + '</h2></div></div>';
@@ -2414,10 +2490,22 @@ function hojaMiGimnasio() {
 function hojaSesion(id) {
   const s = estado.sesiones.find(function (x) { return x.id === id; });
   if (!s) return;
-  let h = cabeceraHoja(esc(s.diaNombre), fechaBonita(s.fecha)) + '<div class="stack"><div class="grid3">' +
-    '<div class="card"><p class="label">Duración</p><div class="big-num num">' + s.duracion + '</div><p class="muted small">min</p></div>' +
-    '<div class="card"><p class="label">Series efectivas</p><div class="big-num num">' + s.seriesEfectivas + '</div>' + (s.enRevision ? '<p class="muted small">+' + s.enRevision + ' en revisión</p>' : "") + '</div>' +
-    '<div class="card"><p class="label">Tonelaje externo</p><div class="big-num num">' + miles(pesoVista(s.volumen)) + '</div><p class="muted small">' + unidadPeso() + ' (sin peso corporal)</p></div></div>';
+  const tc = totalCardio(s);
+  let h = cabeceraHoja(esc(s.diaNombre), fechaBonita(s.fecha)) + '<div class="stack">';
+  if (s.ejercicios.length) {
+    h += '<div class="grid3"><div class="card"><p class="label">Duración</p><div class="big-num num">' + s.duracion + '</div><p class="muted small">min</p></div>' +
+      '<div class="card"><p class="label">Series efectivas</p><div class="big-num num">' + s.seriesEfectivas + '</div>' + (s.enRevision ? '<p class="muted small">+' + s.enRevision + ' en revisión</p>' : "") + '</div>' +
+      '<div class="card"><p class="label">Tonelaje externo</p><div class="big-num num">' + miles(pesoVista(s.volumen)) + '</div><p class="muted small">' + unidadPeso() + ' (sin peso corporal)</p></div></div>';
+  } else {
+    h += '<div class="grid2"><div class="card"><p class="label">Cardio</p><div class="big-num num">' + tc.min + '</div><p class="muted small">min</p></div>' +
+      '<div class="card"><p class="label">Distancia</p><div class="big-num num">' + (tc.km ? String(tc.km).replace(".", ",") : "—") + '</div><p class="muted small">km</p></div></div>';
+  }
+  if (tc.min) {
+    h += '<div class="card stack tight"><h3>🏃 Cardio</h3>' + s.cardio.map(function (c, i) {
+      return '<div class="row between small"><span>' + cardioHtml(c) + '</span>' +
+        (s.ejercicios.length || s.cardio.length > 1 ? '<button class="btn-txt small btn-danger" data-act="quitar-cardio-sesion" data-a="' + s.id + '" data-b="' + i + '">Quitar</button>' : "") + '</div>';
+    }).join("") + '</div>';
+  }
   for (const e of s.ejercicios) {
     h += '<div class="card stack tight"><div class="row between"><h3>' + esc(buscarEj(e.id).nombre) + '</h3>' + (s.prs.includes(e.id) ? '<span class="pill pr">Récord</span>' : "") + '</div>';
     e.series.forEach(function (x, i) {
@@ -2427,8 +2515,10 @@ function hojaSesion(id) {
     if (e.nota) h += '<p class="muted small">Nota: ' + esc(e.nota) + '</p>';
     h += '</div>';
   }
-  h += '<button class="btn full" data-act="compartir-imagen" data-a="' + s.id + '">📸 Compartir imagen del entreno</button>';
-  h += '<button class="btn-sec full" data-act="editar-sesion" data-a="' + s.id + '">Corregir este entreno</button>';
+  if (s.ejercicios.length) {
+    h += '<button class="btn full" data-act="compartir-imagen" data-a="' + s.id + '">📸 Compartir imagen del entreno</button>';
+    h += '<button class="btn-sec full" data-act="editar-sesion" data-a="' + s.id + '">Corregir este entreno</button>';
+  }
   h += '<button class="btn-txt btn-danger" data-act="borrar-sesion" data-a="' + s.id + '">' + (confirmar === "borrar-sesion" ? "Pulsa otra vez para eliminar" : "Eliminar esta sesión") + '</button></div>';
   abrirHoja(h);
 }
@@ -2578,6 +2668,7 @@ function humorResumen(s) {
 function textoResumenApix(s, totalSeries) {
   let texto = "";
   if (s.prs.length) texto = s.prs.length + (s.prs.length > 1 ? " récords nuevos." : " récord nuevo.") + " ";
+  if (!s.ejercicios.length) return totalCardio(s).min + " minutos de cardio. ¡Tu racha te lo agradece!";
   if (sesionCompleta(s)) return texto + "Has hecho todas las series: ¡mira qué color me has puesto!";
   if (s.prs.length) return texto + "¡Eres una máquina!";
   return totalSeries + " series hechas. Si la próxima vez acabas todas, me pondré amarillo.";
@@ -2588,12 +2679,14 @@ function hojaResumen(r) {
   let h = cabeceraHoja("Entreno completado", esc(s.diaNombre)) + '<div class="stack">' +
     (estado.ajustes.mascota !== false ? '<div class="apix-resumen">' + apixSVG(humorResumen(s)) + '<div class="confeti" aria-hidden="true">' + "<i></i>".repeat(14) + '</div>' +
       '<p><b>¡Entreno completado!</b> ' + textoResumenApix(s, totalSeries) + '</p></div>' : "") +
-    '<div class="grid2">' +
+    (s.ejercicios.length ? '<div class="grid2">' +
     '<div class="card"><p class="label">Duración</p><div class="big-num num">' + s.duracion + ' min</div></div>' +
     '<div class="card"><p class="label">Ejercicios</p><div class="big-num num">' + s.ejercicios.filter(function (e) { return e.series.some(function (x) { return x.hecha; }); }).length + '</div></div>' +
     '<div class="card"><p class="label">Series efectivas</p><div class="big-num num">' + s.seriesEfectivas + '</div></div>' +
-    '<div class="card"><p class="label">Tonelaje externo</p><div class="big-num num">' + miles(pesoVista(s.volumen)) + '</div><p class="muted small">' + unidadPeso() + ' (sin peso corporal)</p></div></div>';
-  if (r.anterior) {
+    '<div class="card"><p class="label">Tonelaje externo</p><div class="big-num num">' + miles(pesoVista(s.volumen)) + '</div><p class="muted small">' + unidadPeso() + ' (sin peso corporal)</p></div></div>' : "") +
+    (totalCardio(s).min ? '<div class="card stack tight"><div class="row between"><h3>🏃 Cardio</h3><span class="muted small num">' + totalCardio(s).min + ' min</span></div>' +
+      s.cardio.map(function (c) { return '<p class="small">' + cardioHtml(c) + '</p>'; }).join("") + '</div>' : "");
+  if (r.anterior && s.ejercicios.length) {
     const ds = s.seriesEfectivas - r.anterior.seriesEfectivas;
     h += '<div class="card"><p class="label">Frente a la última vez (' + fechaBonita(r.anterior.fecha) + ')</p><p class="num"><b style="color:' + (ds >= 0 ? "var(--good)" : "var(--danger)") + '">' + (ds >= 0 ? "+" : "") + ds + '</b> series efectivas</p>' +
       '<p class="muted small">El tonelaje solo se compara ejercicio a ejercicio (en Progreso), porque un kilo en prensa no equivale a un kilo en curl.</p></div>';
@@ -2616,8 +2709,8 @@ function hojaResumen(r) {
   h += '<div class="card stack tight"><h3>Compartir</h3><div class="grid2">' +
     (s.compartida ? '<button class="btn-sec" disabled>✓ En tu diario</button>' : '<button class="btn-sec" data-act="compartir-sesion" data-a="' + s.id + '">Guardar en mi diario</button>') +
     '<button class="btn" data-act="compartir-fuera" data-a="' + s.id + '">Enviar a amigos</button></div>' +
-    '<button class="btn full" data-act="compartir-imagen" data-a="' + s.id + '">📸 Compartir imagen del entreno</button>' +
-    '<p class="muted small">Crea una imagen con tu entreno, tu rango y Apix para subirla a Instagram, TikTok o WhatsApp.</p></div>' +
+    (s.ejercicios.length ? '<button class="btn full" data-act="compartir-imagen" data-a="' + s.id + '">📸 Compartir imagen del entreno</button>' +
+    '<p class="muted small">Crea una imagen con tu entreno, tu rango y Apix para subirla a Instagram, TikTok o WhatsApp.</p>' : "") + '</div>' +
     '<button class="btn-sec full" data-act="cerrar-hoja">Cerrar</button></div>';
   abrirHoja(h);
 }
@@ -3218,6 +3311,7 @@ function pideConfirmar(clave, repintar) {
 }
 
 function textoSesion(s) {
+  if (!s.ejercicios.length) return "Hizo " + totalCardio(s).min + " min de cardio";
   return "Completó " + s.diaNombre + " · " + s.seriesEfectivas + " series efectivas" + (s.prs.length ? " · " + s.prs.length + " récord(s)" : "");
 }
 

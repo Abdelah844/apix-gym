@@ -435,6 +435,11 @@ input, select, textarea { font-size: 16px; }
   background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: .85rem; }
 .btn-reemplazar svg { width: 16px; height: 16px; }
 .btn-reemplazar:active { transform: scale(.97); }
+.cardio-tipos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cardio-tipo { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px; border-radius: 14px; background: var(--surface2); border: 1px solid transparent; font-size: .78rem; font-weight: 700; text-align: center; line-height: 1.2; }
+.cardio-tipo .ico { font-size: 1.5rem; }
+.cardio-tipo.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.cardio-sesion { margin-top: 12px; }
 
 /* Temporizador */
 #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 30; max-width: min(92vw, 480px);
@@ -831,6 +836,7 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 <script src="datos.js"></script>
 <script src="logica.js"></script>
 <script src="importar.js"></script>
+<script src="cardio.js"></script>
 <script src="academia.js"></script>
 <script src="mascota.js"></script>
 <script src="imagen.js"></script>

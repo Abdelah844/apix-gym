@@ -405,7 +405,8 @@ function detalleSesion(s) {
     n: String(s.diaNombre || "").slice(0, 60), d: s.duracion || 0, v: Math.round(s.volumen || 0), p: (s.prs || []).slice(0, 20),
     e: s.ejercicios.slice(0, 20).map(function (e) {
       return { i: e.id, s: e.series.filter(function (x) { return x.hecha; }).slice(0, 12).map(function (x) { return [x.peso, x.reps]; }) };
-    }).filter(function (e) { return e.s.length; })
+    }).filter(function (e) { return e.s.length; }),
+    c: (s.cardio || []).filter(cardioValido).slice(0, 6).map(function (c) { return [c.id, c.min, c.km || 0]; })
   };
 }
 

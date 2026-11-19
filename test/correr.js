@@ -18,7 +18,7 @@ const contexto = { console: console, localStorage: new AlmacenFalso(), Math: Mat
 vm.createContext(contexto);
 
 const raiz = path.join(__dirname, "..");
-for (const archivo of ["idiomas.js", "traductor.js", "datos.js", "logica.js", "importar.js", "academia.js", "mascota.js", "sonidos.js", "nube.js", "pruebas.js"]) {
+for (const archivo of ["idiomas.js", "traductor.js", "datos.js", "logica.js", "importar.js", "cardio.js", "academia.js", "mascota.js", "sonidos.js", "nube.js", "pruebas.js"]) {
   vm.runInContext(fs.readFileSync(path.join(raiz, archivo), "utf8"), contexto, { filename: archivo });
 }
 

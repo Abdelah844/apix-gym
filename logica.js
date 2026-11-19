@@ -279,6 +279,10 @@ function validarEsquema(d) {
       }
       if (mal) break;
     }
+    if (!mal && s.cardio !== undefined) {
+      if (!Array.isArray(s.cardio)) mal = "Cardio mal guardado en " + s.fecha;
+      else for (const c of s.cardio) { if (!cardioValido(c)) { mal = s.fecha + ": " + (errorCardio(c) || "cardio no válido."); break; } }
+    }
     if (mal) { err.push(mal); break; }
   }
 
@@ -420,7 +424,8 @@ function serieValida(s) {
 
 // Una sesión cuenta solo si tiene al menos una serie válida (un entreno vacío no cuenta para nada)
 function sesionValida(s) {
-  return s.ejercicios.some(function (e) { return e.series.some(serieValida); });
+  // Un entreno solo de cardio también cuenta (para la racha y Apix)
+  return s.ejercicios.some(function (e) { return e.series.some(serieValida); }) || totalCardio(s).min > 0;
 }
 
 function sesionesValidas(hastaFecha) {
@@ -1148,9 +1153,10 @@ function redondearA(kg, paso) { return Math.max(0, Math.round(kg / paso) * paso)
 
 function indiceSiguienteDia() {
   if (!estado.rutina || estado.rutina.dias.length === 0) return 0;
-  const validas = sesionesValidas();
-  const ultima = validas[validas.length - 1];
-  if (!ultima || ultima.diaIndex === undefined || ultima.diaIndex === null) return 0;
+  // El último entreno de la rutina: los libres, de cardio o importados no cambian el orden
+  const deRutina = sesionesValidas().filter(function (s) { return s.diaIndex !== undefined && s.diaIndex !== null && s.diaIndex < estado.rutina.dias.length; });
+  const ultima = deRutina[deRutina.length - 1];
+  if (!ultima) return 0;
   return (ultima.diaIndex + 1) % estado.rutina.dias.length;
 }
 
@@ -1631,7 +1637,7 @@ function sesionAntigua() {
 }
 
 function hayAlgoValido(a) {
-  return a.ejercicios.some(function (e) { return e.series.some(serieValida); });
+  return a.ejercicios.some(function (e) { return e.series.some(serieValida); }) || totalCardio(a).min > 0;
 }
 
 // Termina la sesión. Devuelve el resumen, { duplicado } o { vacio }.
@@ -1645,7 +1651,9 @@ function terminarSesion() {
   });
 
   const ultima = estado.sesiones[estado.sesiones.length - 1];
-  if (ultima && ultima.fecha === fecha && ultima.diaNombre === a.diaNombre && JSON.stringify(ultima.ejercicios) === JSON.stringify(ejercicios)) {
+  const cardio = (a.cardio || []).filter(cardioValido);
+  if (ultima && ultima.fecha === fecha && ultima.diaNombre === a.diaNombre && JSON.stringify(ultima.ejercicios) === JSON.stringify(ejercicios) &&
+      JSON.stringify(ultima.cardio || []) === JSON.stringify(cardio)) {
     estado.activa = null; guardar();
     return { duplicado: true, sesion: ultima };
   }
@@ -1653,6 +1661,7 @@ function terminarSesion() {
   const antes = fotoRangos();
   const sesion = { id: "s" + Date.now(), fecha: fecha, diaIndex: a.diaIndex, diaNombre: a.diaNombre,
     duracion: duracionSesion(a), ejercicios: ejercicios, prs: [] };
+  if (cardio.length) sesion.cardio = cardio;
 
   let anterior = null;
   for (let i = estado.sesiones.length - 1; i >= 0; i--) {
