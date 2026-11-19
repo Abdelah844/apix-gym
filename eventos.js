@@ -1232,6 +1232,8 @@ document.addEventListener("change", function (ev) {
     lector.readAsText(t.files[0]);
   }
   if ((d.cambio === "otra-mapa" || d.cambio === "otra-unidad") && otraApp) {
+    const desplegado = $("hojaContenido").querySelector("[data-reconocidos]");
+    otraApp.verReconocidos = !!(desplegado && desplegado.open);   // que no se cierre al repintar
     if (d.cambio === "otra-mapa") otraApp.mapa[otraApp.leido.nombres[Number(d.a)]] = t.value;
     else otraApp.libras = t.value === "lb";
     // Se vuelve a pintar la hoja sin perder por dónde ibas

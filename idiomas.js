@@ -15863,6 +15863,16 @@ const TRADUCCIONES = {
 "Séance importée",
 "تمرين مستورد"
 ],
+"Si alguno no es el que hacías, cámbialo.": [
+"If any of them isn't the one you did, change it.",
+"Si l'un d'eux n'est pas celui que tu faisais, change-le.",
+"إلا شي واحد ماشي هو لي كنتي كدير، بدلو."
+],
+"✓ Ver o cambiar los {n} reconocidos": [
+"✓ See or change the {n} recognised",
+"✓ Voir ou changer les {n} reconnus",
+"✓ شوف ولا بدل {n} لي تعرفو"
+],
 "Social": [
 "Social",
 "Social",

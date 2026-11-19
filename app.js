@@ -2475,6 +2475,13 @@ function hojaOtraApp(error) {
     '<p class="muted small">Se añaden a los entrenos que ya tienes. No se borra nada.</p></div>');
 }
 
+// Desplegable para elegir a qué ejercicio de Apix corresponde un nombre del archivo
+function selectorOtraApp(nombre, lista) {
+  const i = otraApp.leido.nombres.indexOf(nombre);
+  return '<label class="f">' + esc(nombre) + '<select data-cambio="otra-mapa" data-a="' + i + '"><option value="">No importar</option>' +
+    lista.map(function (e) { return '<option value="' + e.id + '"' + (otraApp.mapa[nombre] === e.id ? " selected" : "") + '>' + e.nombre + '</option>'; }).join("") + '</select></label>';
+}
+
 function hojaRevisarOtraApp() {
   const l = otraApp.leido;
   const reconocidos = l.nombres.filter(function (n) { return otraApp.mapa[n]; });
@@ -2492,17 +2499,15 @@ function hojaRevisarOtraApp() {
   if (dudosos.length) {
     h += '<div class="card stack tight"><p class="label">No los conozco: elige cuál es en Apix</p>' +
       '<p class="muted small">Si lo dejas en «No importar», ese ejercicio se salta.</p>';
-    dudosos.forEach(function (n) {
-      const i = l.nombres.indexOf(n);
-      h += '<label class="f">' + esc(n) + '<select data-cambio="otra-mapa" data-a="' + i + '"><option value="">No importar</option>' +
-        lista.map(function (e) { return '<option value="' + e.id + '"' + (otraApp.mapa[n] === e.id ? " selected" : "") + '>' + e.nombre + '</option>'; }).join("") + '</select></label>';
-    });
+    dudosos.forEach(function (n) { h += selectorOtraApp(n, lista); });
     h += '</div>';
   }
   const auto = l.nombres.filter(function (n) { return ejercicioDeOtraApp(n); });
   if (auto.length) {
-    h += '<details class="card"><summary class="small">✓ Ver los ' + auto.length + ' reconocidos solos</summary><div class="stack tight" style="margin-top:8px">' +
-      auto.map(function (n) { return '<p class="small">' + esc(n) + ' → <b>' + buscarEj(otraApp.mapa[n]).nombre + '</b></p>'; }).join("") + '</div></details>';
+    // Los reconocidos también se pueden cambiar (por si Apix ha elegido otro parecido)
+    h += '<details class="card"' + (otraApp.verReconocidos ? " open" : "") + ' data-reconocidos><summary class="small">✓ Ver o cambiar los ' + auto.length + ' reconocidos</summary>' +
+      '<div class="stack tight" style="margin-top:8px"><p class="muted small">Si alguno no es el que hacías, cámbialo.</p>' +
+      auto.map(function (n) { return selectorOtraApp(n, lista); }).join("") + '</div></details>';
   }
   if (r.saltados) h += '<p class="muted small">' + r.saltados + ' entreno(s) ya estaban en Apix: no se repiten.</p>';
   h += r.sesiones.length
