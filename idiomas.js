@@ -16078,6 +16078,36 @@ const TRADUCCIONES = {
 "L'inclinaison doit être entre {n} et {n} %.",
 "الميلان خاصو يكون بين {n} و {n} %."
 ],
+"Cambiar el orden": [
+"Change the order",
+"Changer l'ordre",
+"بدل الترتيب"
+],
+"↕ Cambiar el orden": [
+"↕ Change the order",
+"↕ Changer l'ordre",
+"↕ بدل الترتيب"
+],
+"Mantén pulsado ⠿ y arrastra el ejercicio a su sitio.": [
+"Hold ⠿ and drag the exercise into place.",
+"Maintiens ⠿ et fais glisser l'exercice à sa place.",
+"ضغط على ⠿ وجر التمرين لبلاصتو."
+],
+"Guardar orden": [
+"Save order",
+"Enregistrer l'ordre",
+"سجل الترتيب"
+],
+"Orden cambiado. Puedes deshacerlo arriba.": [
+"Order changed. You can undo it above.",
+"Ordre modifié. Tu peux l'annuler en haut.",
+"الترتيب تبدل. تقدر ترجعو من الفوق."
+],
+"Arrastrar": [
+"Drag",
+"Faire glisser",
+"جر"
+],
 "Social": [
 "Social",
 "Social",

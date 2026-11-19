@@ -189,6 +189,36 @@ const ACCIONES = {
     cuadrarCalendario(estado.rutina);
     guardar(); hojaEditarDia(estado.rutina.dias.length - 1);
   },
+  "ordenar-dia": function (i) {
+    i = parseInt(i);
+    const lista = estado.rutina.dias[i].ejercicios;
+    hojaOrdenar("Cambiar el orden", estado.rutina.dias[i].nombre, lista.map(function (o) { return o.id; }),
+      function (orden) {
+        estado.rutina.dias[i].ejercicios = orden.map(function (k) { return lista[k]; });
+        guardar(); hojaEditarDia(i);
+      },
+      function () { hojaEditarDia(i); });
+  },
+  "ordenar-sesion": function () {
+    const a = estado.activa;
+    hojaOrdenar("Cambiar el orden", a.diaNombre, a.ejercicios.map(function (e) { return e.id; }),
+      function (orden) {
+        copiaSesion();
+        const antes = a.ejercicios, actual = antes[a.actual];
+        const siguiente = antes.map(function (e, k) { return antes[k + 1]; });   // con quién iba cada superserie
+        a.ejercicios = orden.map(function (k) { return antes[k]; });
+        // Una superserie solo sigue si su pareja sigue justo detrás
+        a.ejercicios.forEach(function (e, k) {
+          if (e.superserie && a.ejercicios[k + 1] !== siguiente[antes.indexOf(e)]) e.superserie = false;
+        });
+        a.actual = Math.max(0, a.ejercicios.indexOf(actual));
+        guardar(); cerrarHoja(); pintarSesion();
+        toast("Orden cambiado. Puedes deshacerlo arriba.");
+      },
+      function () { cerrarHoja(); });
+  },
+  "orden-guardar": function () { if (ordenTemp) ordenTemp.alGuardar(ordenTemp.orden); },
+  "orden-cancelar": function () { if (ordenTemp) ordenTemp.alCancelar(); },
   "dia-mover": function (i, k, dir) {
     const lista = estado.rutina.dias[i].ejercicios;
     k = parseInt(k); const j = k + parseInt(dir);

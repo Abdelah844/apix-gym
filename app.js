@@ -1010,8 +1010,7 @@ function tarjetaEjercicio(ei) {
     '<button class="btn-sec small" data-act="guia-series">¿Cómo se apunta?</button>' +
     '<button class="btn-sec small" data-act="serie-menos" data-a="' + ei + '"' + (e.series.length > 1 ? "" : " disabled") + '>− Quitar última serie</button>' +
     (ei < a.ejercicios.length - 1 ? '<button class="btn-sec small" data-act="superserie" data-a="' + ei + '">' + (e.superserie ? "Quitar superserie" : "Superserie con el siguiente") + '</button>' : "") +
-    '<button class="icon-btn sm" data-act="mover-ej" data-a="' + ei + '" data-b="-1" aria-label="Mover antes"' + (ei > 0 ? "" : " disabled") + '>' + I.arriba + '</button>' +
-    '<button class="icon-btn sm" data-act="mover-ej" data-a="' + ei + '" data-b="1" aria-label="Mover después"' + (ei < a.ejercicios.length - 1 ? "" : " disabled") + '>' + I.abajo + '</button>' +
+    (a.ejercicios.length > 1 ? '<button class="btn-sec small" data-act="ordenar-sesion">↕ Cambiar el orden</button>' : "") +
     '<button class="icon-btn sm btn-danger" data-act="quitar-ej" data-a="' + ei + '" aria-label="Quitar">' + I.borrar + '</button></div>' +
     '<div class="tools"><label class="check small" style="padding:7px 10px"><input type="checkbox" data-in="molestias" data-e="' + ei + '"' + (e.molestias ? " checked" : "") + '>Molestias</label>' +
     '<label class="check small" style="padding:7px 10px"><input type="checkbox" data-in="cambio" data-e="' + ei + '"' + (e.cambio ? " checked" : "") + '>Otra máquina o técnica</label></div>' +
@@ -2272,6 +2271,76 @@ function hojaFamosas() {
   abrirHoja(h + '</div>');
 }
 
+// ---------- Cambiar el orden arrastrando ----------
+// Lista compacta: se mantiene pulsado el asa ⠿ y se arrastra. "orden" guarda las posiciones originales.
+let ordenTemp = null;   // { titulo, sub, ids, orden, alGuardar, alCancelar }
+function hojaOrdenar(titulo, sub, ids, alGuardar, alCancelar) {
+  ordenTemp = { titulo: titulo, sub: sub, ids: ids, orden: ids.map(function (x, k) { return k; }), alGuardar: alGuardar, alCancelar: alCancelar };
+  abrirHoja(cabeceraHoja(titulo, sub) + '<div class="stack">' +
+    '<p class="muted small">Mantén pulsado ⠿ y arrastra el ejercicio a su sitio.</p>' +
+    '<div class="lista-orden" id="listaOrden"></div>' +
+    '<button class="btn" data-act="orden-guardar">Guardar orden</button>' +
+    '<button class="btn-sec full" data-act="orden-cancelar">Cancelar</button></div>');
+  pintarListaOrden();
+}
+
+function pintarListaOrden() {
+  $("listaOrden").innerHTML = ordenTemp.orden.map(function (k, pos) {
+    const ej = buscarEj(ordenTemp.ids[k]);
+    const fotos = fotosDe(ej.id);
+    return '<div class="fila-orden"><span class="orden num">' + (pos + 1) + '</span>' +
+      (fotos ? '<img class="foto-mini" src="' + fotos[0] + '" alt="">' : "") +
+      '<span class="grow"><b class="small">' + esc(ej.nombre) + '</b><span class="muted small" style="display:block">' + GRUPOS[ej.grupo] + '</span></span>' +
+      '<span class="asa" aria-label="Arrastrar">⠿</span></div>';
+  }).join("");
+  $("listaOrden").querySelectorAll(".asa").forEach(function (asa) { asa.addEventListener("pointerdown", empezarArrastre); });
+}
+
+function empezarArrastre(ev) {
+  ev.preventDefault();
+  const asa = ev.currentTarget;
+  const fila = asa.closest(".fila-orden");
+  const filas = Array.prototype.slice.call($("listaOrden").children);
+  const desde = filas.indexOf(fila);
+  // Lo que ocupa cada fila (con el hueco entre filas)
+  const alto = filas.length > 1 ? filas[1].offsetTop - filas[0].offsetTop : fila.offsetHeight;
+  const y0 = ev.clientY + window.scrollY;
+  let destino = desde;
+  fila.classList.add("arrastrando");
+  try { asa.setPointerCapture(ev.pointerId); } catch (e) { /* algunos navegadores no lo permiten */ }
+
+  function mover(e) {
+    const dy = e.clientY + window.scrollY - y0;
+    fila.style.transform = "translateY(" + dy + "px)";
+    destino = Math.max(0, Math.min(filas.length - 1, desde + Math.round(dy / alto)));
+    // Las demás filas se apartan para dejar el hueco
+    filas.forEach(function (f, k) {
+      if (f === fila) return;
+      let hueco = 0;
+      if (desde < destino && k > desde && k <= destino) hueco = -alto;
+      if (desde > destino && k < desde && k >= destino) hueco = alto;
+      f.style.transform = hueco ? "translateY(" + hueco + "px)" : "";
+    });
+    // Cerca del borde de la pantalla, se desplaza sola
+    if (e.clientY < 90) window.scrollBy(0, -12);
+    else if (e.clientY > window.innerHeight - 90) window.scrollBy(0, 12);
+  }
+  function soltar() {
+    asa.removeEventListener("pointermove", mover);
+    asa.removeEventListener("pointerup", soltar);
+    asa.removeEventListener("pointercancel", soltar);
+    if (destino !== desde) {
+      const k = ordenTemp.orden.splice(desde, 1)[0];
+      ordenTemp.orden.splice(destino, 0, k);
+      if (navigator.vibrate) navigator.vibrate(10);
+    }
+    pintarListaOrden();
+  }
+  asa.addEventListener("pointermove", mover);
+  asa.addEventListener("pointerup", soltar);
+  asa.addEventListener("pointercancel", soltar);
+}
+
 // ---------- Editor de un día ----------
 function hojaEditarDia(i) {
   const d = estado.rutina.dias[i];
@@ -2279,15 +2348,14 @@ function hojaEditarDia(i) {
     '<label class="f">Nombre del día<input data-in="nombre-dia" data-e="' + i + '" value="' + esc(d.nombre) + '" maxlength="40"></label>' +
     '<p class="muted small">Los cambios se guardan solos. ~' + duracionDia(d, factorDuracion()) + ' min con ' + d.ejercicios.length + ' ejercicios.</p>';
   if (!d.ejercicios.length) h += '<div class="card" style="text-align:center"><p class="muted">Este día no tiene ejercicios.</p></div>';
+  if (d.ejercicios.length > 1) h += '<button class="btn-reemplazar" data-act="ordenar-dia" data-a="' + i + '" style="margin-top:0">↕<span>Cambiar el orden</span></button>';
   d.ejercicios.forEach(function (o, k) {
     const ej = buscarEj(o.id);
     const fotos = fotosDe(o.id);
     const resaltar = cambioEditor === i + "-" + k ? " recien" : "";
     h += '<div class="card editar-ej' + resaltar + '"><div class="row" style="gap:10px">' +
       '<span class="orden num">' + (k + 1) + '</span>' + (fotos ? '<img class="foto-mini" src="' + fotos[0] + '" alt="" style="width:44px;height:44px">' : "") +
-      '<div class="grow"><b class="small">' + esc(ej.nombre) + '</b><p class="muted small">' + GRUPOS[ej.grupo] + ' · ' + EQUIPOS[ej.equipo] + '</p></div>' +
-      '<div class="stack tight" style="gap:4px"><button class="icon-btn sm" data-act="dia-mover" data-a="' + i + '" data-b="' + k + '" data-c="-1" aria-label="Subir"' + (k ? "" : " disabled") + '>' + I.arriba + '</button>' +
-      '<button class="icon-btn sm" data-act="dia-mover" data-a="' + i + '" data-b="' + k + '" data-c="1" aria-label="Bajar"' + (k < d.ejercicios.length - 1 ? "" : " disabled") + '>' + I.abajo + '</button></div></div>' +
+      '<div class="grow"><b class="small">' + esc(ej.nombre) + '</b><p class="muted small">' + GRUPOS[ej.grupo] + ' · ' + EQUIPOS[ej.equipo] + '</p></div></div>' +
       '<div class="steppers">' + [["series", "Series", 1], ["repMin", "Reps mín.", 1], ["repMax", "Reps máx.", 1], ["descanso", "Desc. (s)", 15]].map(function (c) {
         return '<div class="stepper"><span class="muted small">' + c[1] + '</span><div class="row"><button data-act="dia-paso" data-a="' + i + '" data-b="' + k + '" data-c="' + c[0] + ':-' + c[2] + '" aria-label="Menos">−</button>' +
           '<b class="num">' + o[c[0]] + '</b><button data-act="dia-paso" data-a="' + i + '" data-b="' + k + '" data-c="' + c[0] + ':' + c[2] + '" aria-label="Más">+</button></div></div>';
