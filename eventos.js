@@ -883,6 +883,15 @@ const ACCIONES = {
     guardar(); hojaPiloto();
   },
   "abrir-importar": function () { confirmar = ""; hojaImportar(); },
+  "abrir-otra-app": function () { hojaOtraApp(); },
+  "importar-otra-app": function () {
+    if (!otraApp) return;
+    const r = sesionesDeOtraApp(otraApp.leido, otraApp.mapa, otraApp.libras);
+    estado.sesiones = estado.sesiones.concat(r.sesiones);
+    recalcularHistorial(); guardar();
+    otraApp = null; cerrarHoja(); tab = "inicio"; pintar();
+    mensaje("¡Entrenos importados!", "Se han traído " + r.sesiones.length + " entrenos. Tus rangos, récords y racha ya los tienen en cuenta.");
+  },
   "importar": function () {
     const r = validarImport($("importTxt").value);
     if (!r.ok) { $("importError").textContent = r.msg; return; }
@@ -1209,6 +1218,26 @@ document.addEventListener("change", function (ev) {
     const lector = new FileReader();
     lector.onload = function () { $("importTxt").value = lector.result; toast("Archivo cargado. Pulsa «Importar» para restaurar."); };
     lector.readAsText(t.files[0]);
+  }
+  if (t.id === "otraAppArchivo" && t.files && t.files[0]) {
+    const lector = new FileReader();
+    lector.onload = function () {
+      const l = leerOtraApp(lector.result);
+      if (!l.ok) { hojaOtraApp(l.msg); return; }
+      const mapa = {};
+      for (const n of l.nombres) mapa[n] = ejercicioDeOtraApp(n);
+      otraApp = { leido: l, mapa: mapa, libras: l.unidad === "lb" };
+      hojaRevisarOtraApp();
+    };
+    lector.readAsText(t.files[0]);
+  }
+  if ((d.cambio === "otra-mapa" || d.cambio === "otra-unidad") && otraApp) {
+    if (d.cambio === "otra-mapa") otraApp.mapa[otraApp.leido.nombres[Number(d.a)]] = t.value;
+    else otraApp.libras = t.value === "lb";
+    // Se vuelve a pintar la hoja sin perder por dónde ibas
+    const arriba = [$("hoja").scrollTop, $("hojaContenido").scrollTop, window.scrollY];
+    hojaRevisarOtraApp();
+    $("hoja").scrollTop = arriba[0]; $("hojaContenido").scrollTop = arriba[1]; window.scrollTo(0, arriba[2]);
   }
   if (d.cambio === "grupo-volumen") { grupoVolumen = t.value; hojaSeriesMusculo(); }
   if (t.id === "gDias") {

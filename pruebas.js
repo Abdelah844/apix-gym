@@ -1065,6 +1065,51 @@ const PRUEBAS = [
     return (d.version === VERSION_DATOS && Array.isArray(d.medidas) && d.ajustes.ultimaCopia === "") || "Migración incompleta";
   }]
   ,
+  ["3.3 Importar de otras apps", "Lee el CSV de Hevy: agrupa entrenos, salta calentamientos y reconoce ejercicios", function () {
+    estadoPrueba();
+    const csv = '"title","start_time","end_time","description","exercise_title","superset_id","exercise_notes","set_index","set_type","weight_kg","reps","distance_km","duration_seconds","rpe"\n' +
+      '"Push","15 Jan 2025, 18:00","15 Jan 2025, 19:10","","Bench Press (Barbell)","","","0","warmup","40","10","","",""\n' +
+      '"Push","15 Jan 2025, 18:00","15 Jan 2025, 19:10","","Bench Press (Barbell)","","","1","normal","70","8","","","8"\n' +
+      '"Push","15 Jan 2025, 18:00","15 Jan 2025, 19:10","","Lateral Raise (Dumbbell)","","","0","dropset","10","12","","",""\n' +
+      '"Push","15 Jan 2025, 18:00","15 Jan 2025, 19:10","","Ejercicio Raro","","","0","normal","20","10","","",""\n' +
+      '"Pull","17 Jan 2025, 18:00","17 Jan 2025, 18:50","","Lat Pulldown (Cable)","","","0","normal","55","10","","",""';
+    const l = leerOtraApp(csv);
+    if (!l.ok || l.app !== "Hevy" || l.unidad !== "kg") return "No reconoce Hevy: " + l.msg;
+    if (l.entrenos.length !== 2) return "Deberían ser 2 entrenos, son " + l.entrenos.length;
+    const e = l.entrenos[0];
+    if (e.fecha !== "2025-01-15" || e.duracion !== 70) return "Fecha o duración mal: " + e.fecha + " " + e.duracion;
+    if (e.ejercicios[0].series.length !== 1) return "No ha saltado el calentamiento";
+    const mapa = {};
+    for (const n of l.nombres) mapa[n] = ejercicioDeOtraApp(n);
+    if (mapa["Bench Press (Barbell)"] !== "press-banca" || mapa["Lat Pulldown (Cable)"] !== "jalon" || mapa["Ejercicio Raro"] !== "") return "Mapeo mal: " + JSON.stringify(mapa);
+    const r = sesionesDeOtraApp(l, mapa, false);
+    if (r.sesiones.length !== 2 || r.sesiones[0].ejercicios.length !== 2) return "Sesiones mal";
+    if (r.sesiones[0].ejercicios[1].series[0].tipo !== "drop" || r.sesiones[0].ejercicios[0].series[0].rpe !== 8) return "Drop o RPE mal";
+    // Importar dos veces no duplica
+    estado.sesiones = estado.sesiones.concat(r.sesiones); recalcularHistorial();
+    const otra = sesionesDeOtraApp(l, mapa, false);
+    if (otra.sesiones.length !== 0 || otra.saltados !== 2) return "Duplica al importar dos veces";
+    return validarEsquema(estado).length === 0 || "Datos no válidos: " + validarEsquema(estado)[0];
+  }],
+  ["3.3 Importar de otras apps", "Lee el CSV de Strong (con punto y coma, comillas y libras)", function () {
+    estadoPrueba();
+    const viejo = 'Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,Notes,Workout Notes,RPE\n' +
+      '2024-03-02 10:00:00,"Pierna, día duro",1h 5m,Squat (Barbell),1,100,5,0,0,,,\n' +
+      '2024-03-02 10:00:00,"Pierna, día duro",1h 5m,Squat (Barbell),Rest Timer,0,0,0,90,,,\n' +
+      '2024-03-02 10:00:00,"Pierna, día duro",1h 5m,Leg Press,2,200,10,0,0,,,';
+    const a = leerOtraApp(viejo);
+    if (!a.ok || a.app !== "Strong" || a.unidad !== "?") return "No reconoce Strong antiguo: " + a.msg;
+    if (a.entrenos[0].nombre !== "Pierna, día duro" || a.entrenos[0].duracion !== 65) return "Comillas o duración mal";
+    if (a.entrenos[0].ejercicios[0].series.length !== 1) return "No ha saltado el temporizador";
+    const nuevo = '"Workout #";"Date";"Workout Name";"Duration (sec)";"Exercise Name";"Set Order";"Weight (lbs)";"Reps";"RPE";"Distance (meters)";"Seconds";"Notes";"Workout Notes"\n' +
+      '"1";"2024-05-10 09:00:00";"Upper";"3600";"Bench Press (Barbell)";"1";"225";"5";"";"";"";"";""';
+    const b = leerOtraApp(nuevo);
+    if (!b.ok || b.unidad !== "lb" || b.entrenos[0].duracion !== 60) return "No lee Strong nuevo";
+    const r = sesionesDeOtraApp(b, { "Bench Press (Barbell)": "press-banca" }, true);
+    const kg = r.sesiones[0].ejercicios[0].series[0].peso;
+    if (Math.abs(kg - 102) > 0.5) return "225 lb deberían ser ~102 kg, salen " + kg;
+    return leerOtraApp("hola,adios\n1,2").ok === false || "Acepta un CSV que no es de Hevy ni Strong";
+  }],
   ["3.2 Días de racha", "Los días de racha se cuentan desde el primer entreno de la racha actual", function () {
     estadoPrueba();
     if (diasDeRacha() !== 0) return "Sin entrenos debería ser 0";

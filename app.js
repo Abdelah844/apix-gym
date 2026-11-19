@@ -1422,7 +1422,8 @@ function pintarProgreso() {
 
   // ----- Pestaña Historial: solo la lista de entrenos -----
   if (subProgreso === "historial") {
-    $("app").innerHTML = h + historialSemanasHtml() + '</div>';
+    $("app").innerHTML = h + historialSemanasHtml() +
+      '<button class="btn-txt small" data-act="abrir-otra-app" style="align-self:center">📥 ¿Vienes de Hevy o Strong? Trae tus entrenos</button></div>';
     return;
   }
 
@@ -2457,6 +2458,60 @@ function hojaImportar() {
     '<p class="err" id="importError"></p><button class="btn" data-act="importar">' + (confirmar === "importar" ? "Pulsa otra vez para sustituir tus datos" : "Importar") + '</button></div>');
 }
 
+// ---------- Traer entrenos de Hevy o Strong ----------
+let otraApp = null;   // { leido, mapa, libras } mientras se revisa el archivo
+
+function hojaOtraApp(error) {
+  otraApp = null;
+  abrirHoja(cabeceraHoja("Traer tus entrenos", "Desde otra app") + '<div class="stack">' +
+    '<p>Si apuntabas en Hevy o Strong, puedes traer todo tu historial. Tus rangos, récords y racha se calculan con él.</p>' +
+    '<div class="card stack tight"><p class="label">1 · Exporta tus datos</p>' +
+      '<p class="small"><b>Hevy</b> · <span>Perfil → ⚙ Ajustes → Exportar e importar datos → Exportar entrenos</span></p>' +
+      '<p class="small"><b>Strong</b> · <span>Perfil → ⚙ Ajustes → Exportar datos</span></p>' +
+      '<p class="muted small">Se crea un archivo .csv. Guárdalo en el móvil (Archivos, Drive o descargas).</p></div>' +
+    '<div class="card stack tight"><p class="label">2 · Elígelo aquí</p>' +
+      '<label class="btn full" style="text-align:center;cursor:pointer">📂 Elegir archivo .csv<input type="file" id="otraAppArchivo" accept=".csv,text/csv,text/plain" hidden></label></div>' +
+    '<p class="err">' + esc(error || "") + '</p>' +
+    '<p class="muted small">Se añaden a los entrenos que ya tienes. No se borra nada.</p></div>');
+}
+
+function hojaRevisarOtraApp() {
+  const l = otraApp.leido;
+  const reconocidos = l.nombres.filter(function (n) { return otraApp.mapa[n]; });
+  const dudosos = l.nombres.filter(function (n) { return !ejercicioDeOtraApp(n); });
+  const lista = EJERCICIOS.slice().sort(function (a, b) { return a.nombre.localeCompare(b.nombre, "es"); });
+  const r = sesionesDeOtraApp(l, otraApp.mapa, otraApp.libras);
+  let h = cabeceraHoja("Revisa antes de importar", l.app) + '<div class="stack">' +
+    '<div class="card stack tight"><p><b>' + l.entrenos.length + ' entrenos</b></p><p class="small num">' + fechaBonita(l.entrenos[0].fecha) + ' ' + l.entrenos[0].fecha.slice(0, 4) +
+      ' → ' + fechaBonita(l.entrenos[l.entrenos.length - 1].fecha) + ' ' + l.entrenos[l.entrenos.length - 1].fecha.slice(0, 4) + '</p>' +
+      '<p class="small">' + reconocidos.length + ' de ' + l.nombres.length + ' ejercicios reconocidos.</p></div>';
+  if (l.unidad === "?") {
+    h += '<label class="f">¿En qué unidad apuntabas los pesos?<select data-cambio="otra-unidad">' +
+      opciones([["kg", "Kilos (kg)"], ["lb", "Libras (lb)"]], otraApp.libras ? "lb" : "kg") + '</select></label>';
+  }
+  if (dudosos.length) {
+    h += '<div class="card stack tight"><p class="label">No los conozco: elige cuál es en Apix</p>' +
+      '<p class="muted small">Si lo dejas en «No importar», ese ejercicio se salta.</p>';
+    dudosos.forEach(function (n) {
+      const i = l.nombres.indexOf(n);
+      h += '<label class="f">' + esc(n) + '<select data-cambio="otra-mapa" data-a="' + i + '"><option value="">No importar</option>' +
+        lista.map(function (e) { return '<option value="' + e.id + '"' + (otraApp.mapa[n] === e.id ? " selected" : "") + '>' + e.nombre + '</option>'; }).join("") + '</select></label>';
+    });
+    h += '</div>';
+  }
+  const auto = l.nombres.filter(function (n) { return ejercicioDeOtraApp(n); });
+  if (auto.length) {
+    h += '<details class="card"><summary class="small">✓ Ver los ' + auto.length + ' reconocidos solos</summary><div class="stack tight" style="margin-top:8px">' +
+      auto.map(function (n) { return '<p class="small">' + esc(n) + ' → <b>' + buscarEj(otraApp.mapa[n]).nombre + '</b></p>'; }).join("") + '</div></details>';
+  }
+  if (r.saltados) h += '<p class="muted small">' + r.saltados + ' entreno(s) ya estaban en Apix: no se repiten.</p>';
+  h += r.sesiones.length
+    ? '<button class="btn" data-act="importar-otra-app">Importar ' + r.sesiones.length + ' entrenos</button>'
+    : '<p class="err">No hay nada nuevo que importar.</p>';
+  h += '<button class="btn-sec full" data-act="abrir-otra-app">Elegir otro archivo</button></div>';
+  abrirHoja(h);
+}
+
 // ---------- Denunciar una publicación ----------
 function hojaDenunciaNube(postId) {
   let ops = "";
@@ -2669,6 +2724,7 @@ function hojaAjustes() {
       '<button class="btn full" data-act="hacer-copia">Hacer copia ahora</button>' +
       '<p class="muted small">Se crea un archivo. En el iPhone, elige «Guardar en Archivos», Drive o mándatelo por correo.</p>' +
       '<button class="btn-sec full" data-act="abrir-importar">Restaurar una copia</button>' +
+      '<button class="btn-sec full" data-act="abrir-otra-app">📥 Traer entrenos de Hevy o Strong</button>' +
       '<label class="f">Recordarme hacer copia<select id="aCopiaDias">' + opciones([[7, "Cada semana"], [14, "Cada 2 semanas"], [30, "Cada mes"], [0, "Nunca"]], a.copiaDias === undefined ? 14 : a.copiaDias) + '</select></label></div>' +
     '<div class="card stack" id="aj-perfil">' + formPerfil(estado.perfil) + '</div>' +
     '<div class="card stack" id="aj-entreno"><h3>Entrenamiento</h3>' +

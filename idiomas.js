@@ -9941,7 +9941,7 @@ const TRADUCCIONES = {
 "{n} entrenos": [
 "{n} workouts",
 "{n} séances",
-"{n} حصة"
+"{n} تمارين"
 ],
 "{n} kg y {n} repeticiones se bloquean": [
 "{n} kg and {n} reps are blocked",
@@ -13936,7 +13936,7 @@ const TRADUCCIONES = {
 "Libras (lb)": [
 "Pounds (lb)",
 "Livres (lb)",
-"الليبرات (lb)"
+"ليفر (lb)"
 ],
 "Tus datos se guardan siempre igual: cambiar de unidad no pierde nada.": [
 "Your data is always stored the same way: switching units loses nothing.",
@@ -15712,6 +15712,156 @@ const TRADUCCIONES = {
 "Train again today",
 "S'entraîner encore aujourd'hui",
 "تمرن مرة أخرى اليوم"
+],
+"📥 ¿Vienes de Hevy o Strong? Trae tus entrenos": [
+"📥 Coming from Hevy or Strong? Bring your workouts",
+"📥 Tu viens de Hevy ou Strong ? Récupère tes séances",
+"📥 جاي من Hevy ولا Strong؟ جيب التمارين ديالك"
+],
+"📥 Traer entrenos de Hevy o Strong": [
+"📥 Bring workouts from Hevy or Strong",
+"📥 Récupérer mes séances de Hevy ou Strong",
+"📥 جيب التمارين من Hevy ولا Strong"
+],
+"Traer tus entrenos": [
+"Bring your workouts",
+"Récupère tes séances",
+"جيب التمارين ديالك"
+],
+"Desde otra app": [
+"From another app",
+"Depuis une autre app",
+"من تطبيق آخر"
+],
+"Si apuntabas en Hevy o Strong, puedes traer todo tu historial. Tus rangos, récords y racha se calculan con él.": [
+"If you logged in Hevy or Strong, you can bring your whole history. Your ranks, records and streak are calculated with it.",
+"Si tu notais tes séances sur Hevy ou Strong, tu peux récupérer tout ton historique. Tes rangs, records et ta série sont calculés avec.",
+"إلا كنتي كتسجل ف Hevy ولا Strong، تقدر تجيب السجل ديالك كامل. الرتب والأرقام القياسية والسلسلة كيتحسبو بيه."
+],
+"{n} · Exporta tus datos": [
+"{n} · Export your data",
+"{n} · Exporte tes données",
+"{n} · صدّر البيانات ديالك"
+],
+"Perfil → ⚙ Ajustes → Exportar e importar datos → Exportar entrenos": [
+"Profile → ⚙ Settings → Export & Import Data → Export Workouts",
+"Profil → ⚙ Réglages → Exporter et importer les données → Exporter les séances",
+"Profil ← ⚙ Réglages ← Exporter et importer les données ← Exporter les séances"
+],
+"Perfil → ⚙ Ajustes → Exportar datos": [
+"Profile → ⚙ Settings → Export Strong Data",
+"Profil → ⚙ Réglages → Exporter les données",
+"Profil ← ⚙ Réglages ← Exporter les données"
+],
+"Se crea un archivo .csv. Guárdalo en el móvil (Archivos, Drive o descargas).": [
+"A .csv file is created. Save it on your phone (Files, Drive or downloads).",
+"Un fichier .csv est créé. Enregistre-le sur ton téléphone (Fichiers, Drive ou téléchargements).",
+"كيتصاوب ملف ‎.csv. خبيه ف التيليفون (Fichiers، Drive ولا التحميلات)."
+],
+"{n} · Elígelo aquí": [
+"{n} · Choose it here",
+"{n} · Choisis-le ici",
+"{n} · ختارو هنا"
+],
+"📂 Elegir archivo .csv": [
+"📂 Choose .csv file",
+"📂 Choisir le fichier .csv",
+"📂 ختار ملف ‎.csv"
+],
+"Se añaden a los entrenos que ya tienes. No se borra nada.": [
+"They're added to the workouts you already have. Nothing is deleted.",
+"Elles s'ajoutent à tes séances actuelles. Rien n'est supprimé.",
+"كيتزادو على التمارين لي عندك. والو ما كيتمسح."
+],
+"Revisa antes de importar": [
+"Check before importing",
+"Vérifie avant d'importer",
+"راجع قبل ما تستورد"
+],
+"{n} de {n} ejercicios reconocidos.": [
+"{n} of {n} exercises recognised.",
+"{n} exercices reconnus sur {n}.",
+"{n} من {n} تمارين تعرفت عليهم."
+],
+"¿En qué unidad apuntabas los pesos?": [
+"Which unit did you log weights in?",
+"Dans quelle unité notais-tu les poids ?",
+"بأشمن وحدة كنتي كتكتب الوزن؟"
+],
+"Kilos (kg)": [
+"Kilograms (kg)",
+"Kilos (kg)",
+"كيلو (kg)"
+],
+"No los conozco: elige cuál es en Apix": [
+"I don't know these: choose which one it is in Apix",
+"Je ne les connais pas : choisis lequel c'est dans Apix",
+"ما عرفتهمش: ختار شنو هو ف Apix"
+],
+"Si lo dejas en «No importar», ese ejercicio se salta.": [
+"If you leave it on \"Don't import\", that exercise is skipped.",
+"Si tu laisses « Ne pas importer », cet exercice est ignoré.",
+"إلا خليتيه «ما تستوردش»، هاد التمرين كيتخطى."
+],
+"No importar": [
+"Don't import",
+"Ne pas importer",
+"ما تستوردش"
+],
+"✓ Ver los {n} reconocidos solos": [
+"✓ See the {n} recognised automatically",
+"✓ Voir les {n} reconnus automatiquement",
+"✓ شوف {n} لي تعرفو بوحدهم"
+],
+"{n} entreno(s) ya estaban en Apix: no se repiten.": [
+"{n} workout(s) were already in Apix: they won't be repeated.",
+"{n} séance(s) étaient déjà dans Apix : elles ne seront pas dupliquées.",
+"{n} تمرين كانو ديجا ف Apix: ما كيتعاودوش."
+],
+"Importar {n} entrenos": [
+"Import {n} workouts",
+"Importer {n} séances",
+"استورد {n} تمارين"
+],
+"No hay nada nuevo que importar.": [
+"There's nothing new to import.",
+"Il n'y a rien de nouveau à importer.",
+"ما كاين والو جديد باش تستورد."
+],
+"Elegir otro archivo": [
+"Choose another file",
+"Choisir un autre fichier",
+"ختار ملف آخر"
+],
+"¡Entrenos importados!": [
+"Workouts imported!",
+"Séances importées !",
+"التمارين تستوردو!"
+],
+"Se han traído {n} entrenos. Tus rangos, récords y racha ya los tienen en cuenta.": [
+"{n} workouts imported. Your ranks, records and streak now include them.",
+"{n} séances récupérées. Tes rangs, records et ta série en tiennent compte.",
+"تجابو {n} تمارين. الرتب والأرقام القياسية والسلسلة ديالك ديجا حاسبينهم."
+],
+"El archivo está vacío o no es un CSV.": [
+"The file is empty or isn't a CSV.",
+"Le fichier est vide ou n'est pas un CSV.",
+"الملف خاوي ولا ماشي CSV."
+],
+"No reconozco el archivo. Tiene que ser el CSV que exportan Hevy o Strong.": [
+"I don't recognise this file. It must be the CSV exported by Hevy or Strong.",
+"Je ne reconnais pas ce fichier. Il doit s'agir du CSV exporté par Hevy ou Strong.",
+"ما عرفتش هاد الملف. خاصو يكون CSV لي كيصدرو Hevy ولا Strong."
+],
+"No he encontrado ningún entreno en el archivo.": [
+"I couldn't find any workouts in the file.",
+"Je n'ai trouvé aucune séance dans le fichier.",
+"ما لقيت حتى تمرين ف الملف."
+],
+"Entreno importado": [
+"Imported workout",
+"Séance importée",
+"تمرين مستورد"
 ],
 "Social": [
 "Social",
