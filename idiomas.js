@@ -15873,6 +15873,11 @@ const TRADUCCIONES = {
 "✓ Voir ou changer les {n} reconnus",
 "✓ شوف ولا بدل {n} لي تعرفو"
 ],
+"Reemplazar ejercicio": [
+"Replace exercise",
+"Remplacer l'exercice",
+"بدل التمرين"
+],
 "Social": [
 "Social",
 "Social",

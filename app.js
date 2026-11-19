@@ -857,7 +857,9 @@ function tarjetaEjercicio(ei) {
     (AGARRE[e.id] ? '<p class="small banco-linea">✋ <span>' + TIPOS_AGARRE[AGARRE[e.id]].nombre + '</span></p>' : "") +
     (record ? '<p class="small" style="color:var(--pr);font-weight:700">Récord: ' + numero(record.peso) + ' kg × ' + record.reps + '</p>' : "") + '</div>' +
     '<div class="stack tight" style="gap:6px"><button class="icon-btn sm fav' + (estado.favoritos.includes(e.id) ? " on" : "") + '" data-act="fav-sesion" data-a="' + e.id + '" aria-label="' + (estado.favoritos.includes(e.id) ? "Quitar de favoritos" : "Añadir a favoritos") + '">' + (estado.favoritos.includes(e.id) ? "★" : "☆") + '</button>' +
-    '<button class="icon-btn sm" data-act="info-ej" data-a="' + e.id + '" aria-label="Cómo se hace">' + I.info + '</button></div></div>';
+    '<button class="icon-btn sm" data-act="info-ej" data-a="' + e.id + '" aria-label="Cómo se hace">' + I.info + '</button></div></div>' +
+    // Reemplazar a la vista: por si la máquina está ocupada o no la hay en tu gimnasio
+    '<button class="btn-reemplazar" data-act="sustituir-sesion" data-a="' + ei + '">' + I.cambiar + '<span>Reemplazar ejercicio</span></button>';
 
   // Sugerencia de progresión (corta)
   h += '<div class="rec"><span class="pill ' + etiqueta[0] + '">' + etiqueta[1] + '</span><div class="grow"><p>' + esc(rec.motivo) + '</p>' +
@@ -950,7 +952,6 @@ function tarjetaEjercicio(ei) {
     (ei < a.ejercicios.length - 1 ? '<button class="btn-sec small" data-act="superserie" data-a="' + ei + '">' + (e.superserie ? "Quitar superserie" : "Superserie con el siguiente") + '</button>' : "") +
     '<button class="icon-btn sm" data-act="mover-ej" data-a="' + ei + '" data-b="-1" aria-label="Mover antes"' + (ei > 0 ? "" : " disabled") + '>' + I.arriba + '</button>' +
     '<button class="icon-btn sm" data-act="mover-ej" data-a="' + ei + '" data-b="1" aria-label="Mover después"' + (ei < a.ejercicios.length - 1 ? "" : " disabled") + '>' + I.abajo + '</button>' +
-    '<button class="icon-btn sm" data-act="sustituir-sesion" data-a="' + ei + '" aria-label="Sustituir">' + I.cambiar + '</button>' +
     '<button class="icon-btn sm btn-danger" data-act="quitar-ej" data-a="' + ei + '" aria-label="Quitar">' + I.borrar + '</button></div>' +
     '<div class="tools"><label class="check small" style="padding:7px 10px"><input type="checkbox" data-in="molestias" data-e="' + ei + '"' + (e.molestias ? " checked" : "") + '>Molestias</label>' +
     '<label class="check small" style="padding:7px 10px"><input type="checkbox" data-in="cambio" data-e="' + ei + '"' + (e.cambio ? " checked" : "") + '>Otra máquina o técnica</label></div>' +
@@ -2232,7 +2233,7 @@ let bibBase = null;
 function hojaBiblioteca(modo, soloVariantesDe) {
   modoBib = modo;
   bibBase = soloVariantesDe || null;
-  let titulo = modo === "ver" ? "Academia" : (modo.startsWith("sust") ? "Sustituir ejercicio" : "Añadir ejercicio");
+  let titulo = modo === "ver" ? "Academia" : (modo.startsWith("sust") ? "Reemplazar ejercicio" : "Añadir ejercicio");
   let h = cabeceraHoja(titulo, EJERCICIOS.length + " ejercicios");
   if (soloVariantesDe) {
     const e = buscarEj(soloVariantesDe);
