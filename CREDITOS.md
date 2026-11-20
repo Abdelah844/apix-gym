@@ -214,3 +214,7 @@ Las imágenes `*-agarre.jpg` son recortes ampliados de las mismas fotos (mismo o
 | est-postura-nino | Childs_Pose |
 | est-flexor-cadera | Kneeling_Hip_Flexor |
 | est-giro-sentado | Spinal_Stretch |
+
+### Fotos de agarre (archivos `*-agarre.jpg`)
+
+Las fotos de cerca de las manos de jalon, jalon-cerrado, jalon-estrecho, jalon-supino, extension-polea, extension-polea-v, extension-cuerda y extension-inversa-polea son imágenes generadas por IA (generadas con Figma). La de remo-barra-supino es un recorte de Reverse_Grip_Bent-Over_Rows (Free Exercise DB).

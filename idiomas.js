@@ -16503,6 +16503,16 @@ const TRADUCCIONES = {
 "Grandis-toi pendant la rotation.",
 "طول راسك لفوق وانت كتلوي."
 ],
+"Barra recta": [
+"Straight bar",
+"Barre droite",
+"بارة نيشان"
+],
+"Coges la barra recta por encima (ves tus nudillos), con las manos a la anchura de los hombros o algo menos.": [
+"Grip the straight bar from above (you see your knuckles), hands shoulder-width apart or slightly narrower.",
+"Tu prends la barre droite par-dessus (tu vois tes jointures), mains à la largeur des épaules ou un peu moins.",
+"شد البارة النيشان من الفوق (كتشوف المفاصل ديال صوابعك)، واليدين بعرض الكتاف ولا شوية قل."
+],
 "Social": [
 "Social",
 "Social",

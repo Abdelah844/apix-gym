@@ -765,6 +765,7 @@ const TIPOS_AGARRE = {
   "triangulo": { nombre: "Triángulo", texto: "Las palmas se miran entre sí y las manos van casi juntas.", forma: "triangulo", manos: 16, palma: null },
   "barra-v":   { nombre: "Barra en V", texto: "Coges la barra en V por encima, con las manos juntas y las palmas mirando un poco hacia abajo.", forma: "v", manos: 34, palma: false },
   "neutro-ancho": { nombre: "Agarre neutro ancho", texto: "Coges las asas paralelas de una barra ancha: las palmas se miran entre sí y las manos van más abiertas que los hombros.", forma: "asas", manos: 104, palma: null },
+  "barra-recta": { nombre: "Barra recta", texto: "Coges la barra recta por encima (ves tus nudillos), con las manos a la anchura de los hombros o algo menos.", forma: "barra", manos: 52, palma: false },
   "cuerda":    { nombre: "Cuerda", texto: "Las palmas se miran entre sí, una mano a cada lado de la cuerda.", forma: "cuerda", manos: 22, palma: null }
 };
 const AGARRE = {
@@ -780,7 +781,7 @@ const AGARRE = {
   "press-banca-cerrado": "cerrado", "press-cerrado-multipower": "cerrado", "press-militar": "prono",
   "curl-barra": "supino", "curl-predicador": "supino", "curl-inverso": "cerrado", "curl-barra-z": "barra-z",
   "curl-martillo": "neutro", "curl-martillo-inclinado": "neutro", "curl-martillo-cruzado": "neutro", "curl-martillo-cuerda": "cuerda",
-  "extension-polea": "cerrado", "extension-polea-v": "barra-v", "extension-cuerda": "cuerda", "extension-cuerda-nuca": "cuerda", "extension-inversa-polea": "supino",
+  "extension-polea": "barra-recta", "extension-polea-v": "barra-v", "extension-cuerda": "cuerda", "extension-cuerda-nuca": "cuerda", "extension-inversa-polea": "supino",
   "remo-menton-polea": "cerrado", "press-frances": "cerrado"
 };
 
