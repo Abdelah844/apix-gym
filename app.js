@@ -1028,6 +1028,11 @@ function fraseApixEntreno(ei, si) {
   if (pendientesEj === 1 && !quedanOtros) return "¡Última serie del entreno! Dalo todo.";
   if (pendientesEj === 1 && e.series.length > 1) return "¡Vamos con esa última serie!";
   if (!quedanOtros && si === 0 && a.ejercicios.length > 1) return "Último ejercicio. ¡Termina fuerte!";
+  // (Chulo) Al empezar un ejercicio en el que llevas semanas con el mismo peso
+  if (apixChulo() && si === 0 && !e.series[0].hecha) {
+    const m = semanasMismoPeso(e.id);
+    if (m.semanas >= 4 && e.series[0].peso === m.peso) return rellenar(mensajeDelDia(BURLAS_APIX.mismoPeso, hoy()), { semanas: m.semanas });
+  }
   return "";
 }
 
@@ -2737,6 +2742,7 @@ function textoResumenApix(s, totalSeries) {
   let texto = "";
   if (s.prs.length) texto = s.prs.length + (s.prs.length > 1 ? " récords nuevos." : " récord nuevo.") + " ";
   if (!s.ejercicios.length) return totalCardio(s).min + " minutos de cardio. ¡Tu racha te lo agradece!";
+  if (apixChulo()) { const burla = burlaResumen(s); if (burla) return texto + '<span>' + burla + '</span>'; }
   if (sesionCompleta(s)) return texto + "Has hecho todas las series: ¡mira qué color me has puesto!";
   if (s.prs.length) return texto + "¡Eres una máquina!";
   return totalSeries + " series hechas. Si la próxima vez acabas todas, me pondré amarillo.";
@@ -2915,6 +2921,7 @@ function hojaAjustes() {
       (("wakeLock" in navigator) ? chk("aPantalla", a.pantallaEncendida !== false, "No apagar la pantalla mientras entreno") : "") +
       '<p class="muted small">Prueba los sonidos:</p><div class="chips" style="flex-wrap:wrap">' + [["serie", "Serie"], ["descanso", "Descanso"], ["record", "Récord"], ["rango", "Rango"], ["fin", "Fin"], ["racha", "Racha"], ["enfadado", "Apix enfadado"]].map(function (x) { return '<button class="chip" data-act="probar-sonido" data-a="' + x[0] + '">' + x[1] + '</button>'; }).join("") + '</div></div>' +
     '<div class="card stack tight"><h3>Apix, la mascota</h3>' + chk("aMascota", a.mascota !== false, "Mostrar a Apix en Inicio") +
+      '<label class="f">Carácter de Apix<select id="aCaracter">' + opciones([["amable", "😊 Amable"], ["chulo", "😏 Chulo (te vacila en plan colega)"]], a.apixCaracter === "chulo" ? "chulo" : "amable") + '</select></label>' +
       '<button class="btn-sec" data-act="ver-tutorial">Ver el tutorial otra vez</button>' +
       '<p class="muted small">Te anima los días de entreno, se enfada si pierdes la racha y celebra tus récords. Tócalo en Inicio y te contestará.</p></div>' +
     '<div class="card stack tight" id="aj-avisos"><h3>Notificaciones</h3>' +
@@ -3198,8 +3205,25 @@ function apixDescanso() {
   caja.innerHTML = apixSVG(humor, "") + '<p data-no-traducir>' + esc(frase) + '</p>';
 }
 // Pitido corto y vibración (si el dispositivo lo permite)
+let tBurlaDescanso = null;
+function seriesHechasAhora() {
+  let n = 0;
+  if (estado.activa) for (const e of estado.activa.ejercicios) for (const x of e.series) if (x.hecha) n++;
+  return n;
+}
 function avisoFinDescanso() {
   sonar("descanso");                                    // timbre de campana
+  // (Chulo) Si pasa minuto y medio sin hacer la siguiente serie, Apix vacila
+  clearTimeout(tBurlaDescanso);
+  if (apixChulo() && estado.activa) {
+    const hechas = seriesHechasAhora();
+    const sigueParado = function () { return estado.activa && seriesHechasAhora() === hechas; };
+    tBurlaDescanso = setTimeout(function () {
+      if (!sigueParado()) return;
+      apixDice("descanso", BURLAS_APIX.descansoLargo[0], 4500);
+      tBurlaDescanso = setTimeout(function () { if (sigueParado()) apixDice("descanso", BURLAS_APIX.siesta[0], 4500); }, 90000);
+    }, 90000);
+  }
   apixDice("anima", "¡Descanso terminado! A por ella." + (textoSiguiente() ? "|Siguiente: " + textoSiguiente() : ""), 3500);
   document.body.classList.remove("destello-fin"); void document.body.offsetWidth; document.body.classList.add("destello-fin");
   // Si la app está en segundo plano y tienes los avisos activados, llega también una notificación

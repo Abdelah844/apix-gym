@@ -16168,6 +16168,86 @@ const TRADUCCIONES = {
 "Mollets debout à la machine",
 "Mollets debout à la machine"
 ],
+"¿Hola? ¿Sigues vivo o te has fusionado con el sofá?": [
+"Hello? Are you still alive or have you merged with the sofa?",
+"Allô ? Tu es encore vivant ou tu as fusionné avec le canapé ?",
+"ألو؟ باقي حي ولا ولّيتي جزء من الكنبة؟"
+],
+"He visto caracoles con más constancia.": [
+"I've seen snails with more consistency.",
+"J'ai vu des escargots plus réguliers que toi.",
+"شفت الغلالة عندهم الاستمرارية كثر منك."
+],
+"Tu racha está en la UCI. Yo que tú iría a visitarla.": [
+"Your streak is in the ICU. If I were you, I'd go visit it.",
+"Ta série est en réanimation. À ta place, j'irais la voir.",
+"السلسلة ديالك ف الإنعاش. لو كنت بلاصتك نمشي نزورها."
+],
+"Otra vez sin pierna… vas camino de ser un flamenco.": [
+"No legs again… you're on your way to becoming a flamingo.",
+"Encore sans jambes… tu vas finir en flamant rose.",
+"عاوتاني بلا رجلين… غادي تولي بحال البلاردو."
+],
+"Pecho otra vez, ¿no? Qué sorpresa.": [
+"Chest again, huh? What a surprise.",
+"Encore des pecs, hein ? Quelle surprise.",
+"الصدر عاوتاني؟ يا سلام على المفاجأة."
+],
+"¿Ya está? Si acabo de sentarme…": [
+"That's it? I just sat down…",
+"C'est tout ? Je viens juste de m'asseoir…",
+"صافي؟ عاد گلست…"
+],
+"Has hecho medio entreno. Te doy medio aplauso: 👏": [
+"You did half a workout. Here's half a clap: 👏",
+"Tu as fait la moitié de la séance. Voilà la moitié d'un applaudissement : 👏",
+"درتي نص الحصة. ها نص تصفيقة: 👏"
+],
+"Ese peso y tú ya sois pareja de hecho.": [
+"You and that weight are practically married.",
+"Toi et ce poids, vous êtes pacsés maintenant.",
+"نتا وهاد الوزن ولّيتو مخطوبين."
+],
+"{n} semanas con ese peso. ¿Le vas a poner nombre?": [
+"{n} weeks with that weight. Are you going to name it?",
+"{n} semaines avec ce poids. Tu vas lui donner un prénom ?",
+"{n} سيمانات بنفس الوزن. غادي تسميه؟"
+],
+"La barra se aburre. Súbele un poquito, anda.": [
+"The bar is getting bored. Go up a little, come on.",
+"La barre s'ennuie. Monte un peu, allez.",
+"البارة كتملّ. زيد شوية، يالاه."
+],
+"¿Descansando o viendo una serie de Netflix entera?": [
+"Resting or watching a whole Netflix series?",
+"Tu te reposes ou tu regardes une série Netflix entière ?",
+"كترتاح ولا كتفرج ف سيري كاملة ف Netflix؟"
+],
+"Si descansas más, esto cuenta como siesta.": [
+"If you rest any longer, this counts as a nap.",
+"Si tu te reposes encore, ça compte comme une sieste.",
+"إلا زدتي ترتاح، هادي غادي تتحسب نعسة."
+],
+"Mira quién ha vuelto… pensaba que te había secuestrado el sofá.": [
+"Look who's back… I thought the sofa had kidnapped you.",
+"Regarde qui revient… je croyais que le canapé t'avait kidnappé.",
+"شوف شكون رجع… كنت كنظن الكنبة خطفاتك."
+],
+"Carácter de Apix": [
+"Apix's personality",
+"Caractère d'Apix",
+"الطبع ديال Apix"
+],
+"😊 Amable": [
+"😊 Kind",
+"😊 Gentil",
+"😊 ظريف"
+],
+"😏 Chulo (te vacila en plan colega)": [
+"😏 Cheeky (teases you like a mate)",
+"😏 Taquin (te charrie comme un pote)",
+"😏 قافز (كيضحك عليك بحال صاحبك)"
+],
 "Social": [
 "Social",
 "Social",

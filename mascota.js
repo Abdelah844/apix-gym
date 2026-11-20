@@ -65,6 +65,92 @@ const MENSAJES_APIX = {
   ]
 };
 
+// ---------- Apix chulo ----------
+// Frases de vacile en tono de colega. Solo salen si en Ajustes eliges «Carácter de Apix: Chulo».
+const BURLAS_APIX = {
+  sinEntrenar: ["¿Hola? ¿Sigues vivo o te has fusionado con el sofá?", "He visto caracoles con más constancia."],
+  rachaUci: ["Tu racha está en la UCI. Yo que tú iría a visitarla."],
+  sinPierna: ["Otra vez sin pierna… vas camino de ser un flamenco."],
+  pechoOtraVez: ["Pecho otra vez, ¿no? Qué sorpresa."],
+  incompleto: ["¿Ya está? Si acabo de sentarme…"],
+  medio: ["Has hecho medio entreno. Te doy medio aplauso: 👏"],
+  mismoPeso: ["Ese peso y tú ya sois pareja de hecho.", "{semanas} semanas con ese peso. ¿Le vas a poner nombre?", "La barra se aburre. Súbele un poquito, anda."],
+  descansoLargo: ["¿Descansando o viendo una serie de Netflix entera?"],
+  siesta: ["Si descansas más, esto cuenta como siesta."],
+  vuelta: ["Mira quién ha vuelto… pensaba que te había secuestrado el sofá."]
+};
+
+function apixChulo() {
+  return estado.ajustes.apixCaracter === "chulo" && estado.ajustes.mascota !== false;
+}
+
+// Tienes racha, pero esta semana aún no llegas al mínimo y quedan muy pocos días
+function rachaEnUci() {
+  const mapa = sesionesPorSemana();
+  const min = minimoSemanal();
+  const lunes = lunesDe(hoy());
+  const hechos = mapa[lunes] || 0;
+  if (hechos >= min) return false;                                   // esta semana ya cumpliste
+  if ((mapa[sumarDias(lunes, -7)] || 0) < min) return false;          // no hay racha viva
+  const quedan = 7 - ((new Date(hoy() + "T12:00:00").getDay() + 6) % 7);   // días que quedan, contando hoy
+  return min - hechos >= quedan - 1;
+}
+
+// En los últimos 10 días has entrenado al menos 2 veces y ninguna pierna
+function sinPiernaUltimamente() {
+  const desde = sumarDias(hoy(), -10);
+  const recientes = sesionesValidas().filter(function (x) { return x.fecha >= desde && x.ejercicios.length; });
+  if (recientes.length < 2) return false;
+  return !recientes.some(function (x) {
+    return x.ejercicios.some(function (e) {
+      return ["cuadriceps", "isquios", "gluteos"].includes(buscarEj(e.id).grupo) && e.series.some(serieValida);
+    });
+  });
+}
+
+// El grupo muscular con más series hechas en un entreno
+function grupoPrincipal(s) {
+  const cuenta = {};
+  let mejor = "", max = 0;
+  for (const e of s.ejercicios) {
+    const g = buscarEj(e.id).grupo;
+    cuenta[g] = (cuenta[g] || 0) + e.series.filter(serieValida).length;
+    if (cuenta[g] > max) { max = cuenta[g]; mejor = g; }
+  }
+  return mejor;
+}
+
+// Semanas que llevas con el mismo peso máximo en un ejercicio (0 si no hay al menos 3 entrenos iguales)
+function semanasMismoPeso(id) {
+  const lista = sesionesValidas().filter(function (x) { return x.ejercicios.some(function (e) { return e.id === id; }); });
+  if (lista.length < 3) return { semanas: 0, peso: 0 };
+  const maxPeso = function (x) {
+    let m = 0;
+    for (const e of x.ejercicios) if (e.id === id) for (const y of e.series) if (serieValida(y) && y.peso > m) m = y.peso;
+    return m;
+  };
+  const peso = maxPeso(lista[lista.length - 1]);
+  if (!peso) return { semanas: 0, peso: 0 };
+  let k = lista.length - 1;
+  while (k > 0 && maxPeso(lista[k - 1]) === peso) k--;
+  if (lista.length - k < 3) return { semanas: 0, peso: peso };
+  return { semanas: Math.floor(diasEntre(lista[k].fecha, hoy()) / 7), peso: peso };
+}
+
+// Frase chula para el resumen al terminar (o "" si no toca)
+function burlaResumen(s) {
+  const anteriores = sesionesValidas().filter(function (x) { return x.id !== s.id && x.fecha <= s.fecha; });
+  const previa = anteriores[anteriores.length - 1];
+  if (previa && diasEntre(previa.fecha, s.fecha) >= 5) return mensajeDelDia(BURLAS_APIX.vuelta, s.fecha);
+  if (s.prs.length) return "";                                       // con récord no se vacila
+  let total = 0, hechas = 0;
+  for (const e of s.ejercicios) for (const x of e.series) { total++; if (x.hecha) hechas++; }
+  if (total && hechas / total < 0.35) return mensajeDelDia(BURLAS_APIX.incompleto, s.fecha);
+  if (total && hechas / total < 0.7) return mensajeDelDia(BURLAS_APIX.medio, s.fecha);
+  if (previa && previa.ejercicios.length && grupoPrincipal(s) === "pecho" && grupoPrincipal(previa) === "pecho") return mensajeDelDia(BURLAS_APIX.pechoOtraVez, s.fecha);
+  return "";
+}
+
 // Elige un mensaje según el día del año (siempre el mismo durante el día)
 function mensajeDelDia(lista, fecha) {
   const d = new Date((fecha || hoy()) + "T12:00:00");
@@ -180,6 +266,10 @@ function estadoMascota() {
   if (perdida >= 1 && !(ultima && ultima.fecha === hoyF)) {
     return { humor: "enfadado", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.enfadado, hoyF), { racha: perdida }) };
   }
+  // 3a. (Chulo) Racha a punto de perderse
+  if (apixChulo() && !(ultima && ultima.fecha === hoyF) && rachaEnUci()) {
+    return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.rachaUci, hoyF) };
+  }
   // 3b. Reto personal en marcha: te recuerda lo que falta (si hoy no has entrenado todavía)
   //     En día de descanso solo si el reto acaba hoy o mañana
   const reto = retoUrgente();
@@ -197,6 +287,8 @@ function estadoMascota() {
   if (recuerdo) return { humor: "orgulloso", mensaje: recuerdo };
   if (cal.includes(hoyN)) {
     const dias = diasSinEntrenar();
+    if (apixChulo() && dias !== null && dias >= 3) return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.sinEntrenar, hoyF) };
+    if (apixChulo() && sinPiernaUltimamente()) return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.sinPierna, hoyF) };
     if (dias !== null && dias >= 3) return { humor: "anima", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.animaFuerte, hoyF), { dias: dias }) };
     return { humor: "anima", mensaje: mensajeDelDia(MENSAJES_APIX.anima, hoyF) };
   }

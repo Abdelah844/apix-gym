@@ -1140,6 +1140,42 @@ const PRUEBAS = [
     estado.sesiones[estado.sesiones.length - 1].cardio = [{ id: "bici", min: 999, km: null, nivel: null, inc: null }];
     return validarEsquema(estado).length > 0 || "Acepta un cardio de 999 min";
   }],
+  ["3.5 Apix chulo", "Las burlas solo salen con el carácter «Chulo»", function () {
+    estadoPrueba();
+    const h = hoy();
+    sesionPrueba(sumarDias(h, -8), [["press-banca", [[60, 10], [60, 10]]]]);
+    sesionPrueba(sumarDias(h, -4), [["press-banca", [[60, 10], [60, 10]]]]);
+    estado.ajustes.diasEntreno = [0, 1, 2, 3, 4, 5, 6];         // hoy toca entrenar
+    estado.ajustes.apixCaracter = "amable";
+    const amable = estadoMascota().mensaje;
+    const todas = [].concat.apply([], Object.keys(BURLAS_APIX).map(function (k) { return BURLAS_APIX[k]; }));
+    if (todas.includes(amable)) return "En modo amable ha salido una burla: " + amable;
+    estado.ajustes.apixCaracter = "chulo";
+    const chulo = estadoMascota().mensaje;
+    return BURLAS_APIX.sinEntrenar.includes(chulo) || "En modo chulo con 4 días sin entrenar debería vacilar, dice: " + chulo;
+  }],
+  ["3.5 Apix chulo", "Detecta: sin pierna, mismo peso varias semanas, medio entreno, vuelta y pecho otra vez", function () {
+    estadoPrueba();
+    const h = hoy();
+    sesionPrueba(sumarDias(h, -35), [["press-banca", [[60, 10]]]]);
+    sesionPrueba(sumarDias(h, -9), [["press-banca", [[60, 10]]]]);
+    sesionPrueba(sumarDias(h, -2), [["press-banca", [[60, 8]]]]);
+    if (!sinPiernaUltimamente()) return "No ve que no has hecho pierna";
+    const m = semanasMismoPeso("press-banca");
+    if (m.peso !== 60 || m.semanas !== 5) return "Mismo peso mal: " + JSON.stringify(m);
+    sesionPrueba(h, [["sentadilla", [[80, 5], [80, 5, null, false], [80, 5, null, false]]]]);
+    if (sinPiernaUltimamente()) return "Ya has hecho pierna";
+    const hoySes = estado.sesiones.find(function (x) { return x.fecha === h; });
+    if (burlaResumen(hoySes) !== BURLAS_APIX.medio[0] && burlaResumen(hoySes) !== BURLAS_APIX.incompleto[0]) return "No ve el entreno a medias: " + burlaResumen(hoySes);
+    estadoPrueba();
+    sesionPrueba(sumarDias(h, -10), [["sentadilla", [[80, 5]]]]);
+    sesionPrueba(h, [["sentadilla", [[80, 5]]]]);
+    if (burlaResumen(estado.sesiones[1]) !== BURLAS_APIX.vuelta[0]) return "No ve la vuelta tras 10 días";
+    estadoPrueba();
+    sesionPrueba(sumarDias(h, -2), [["press-banca", [[60, 10]]]]);
+    sesionPrueba(h, [["press-inclinado-mancuernas", [[20, 10]]]]);
+    return burlaResumen(estado.sesiones[1]) === BURLAS_APIX.pechoOtraVez[0] || "No ve pecho otra vez: " + burlaResumen(estado.sesiones[1]);
+  }],
   ["3.2 Días de racha", "Los días de racha se cuentan desde el primer entreno de la racha actual", function () {
     estadoPrueba();
     if (diasDeRacha() !== 0) return "Sin entrenos debería ser 0";
