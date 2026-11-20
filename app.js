@@ -733,10 +733,10 @@ function fotosDelDia(dia) {
   if (!dia.ejercicios.length) return '<p class="muted small">Sin ejercicios. Añádelos en Entrenar.</p>';
   let h = '<div class="fotos-dia">';
   dia.ejercicios.forEach(function (o, i) {
-    const f = fotosDe(o.id);
+    const f = miniaturaDe(o.id);
     const nombre = esc(buscarEj(o.id).nombre);
     h += '<button class="foto-dia" data-act="info-ej" data-a="' + o.id + '" aria-label="' + nombre + '">' +
-      (f ? '<img src="' + f[0] + '" alt="" loading="lazy" decoding="async">' : '<span class="num">' + (i + 1) + '</span>') + '</button>';
+      (f ? '<img src="' + f + '" alt="" loading="lazy" decoding="async">' : '<span class="num">' + (i + 1) + '</span>') + '</button>';
   });
   const primero = buscarEj(dia.ejercicios[0].id).nombre;
   return h + '</div><p class="muted small">' + esc(primero) + (dia.ejercicios.length > 1 ? ' <span data-no-traducir>+ ' + (dia.ejercicios.length - 1) + '</span>' : "") + '</p>';
@@ -992,7 +992,7 @@ function tarjetaEjercicio(ei) {
   const hechasEj = e.series.filter(function (s) { return s.hecha; }).length;
 
   let h = '<div class="card ejercicio-foco" id="tarjetaEj">' +
-    '<div class="ex-head">' + (fotosEj ? '<button class="foto-mini" data-act="info-ej" data-a="' + e.id + '" aria-label="Ver técnica"><img src="' + fotosEj[0] + '" alt="" decoding="async"></button>' : insignia(pr === null ? null : rangoDePuntos(pr), "sm")) +
+    '<div class="ex-head">' + (fotosEj ? '<button class="foto-mini" data-act="info-ej" data-a="' + e.id + '" aria-label="Ver técnica"><img src="' + miniaturaDe(e.id) + '" alt="" decoding="async"></button>' : insignia(pr === null ? null : rangoDePuntos(pr), "sm")) +
     '<div class="grow"><p class="label">Ejercicio ' + (ei + 1) + ' de ' + a.ejercicios.length + (e.superserie ? ' · superserie con el siguiente' : (ei > 0 && a.ejercicios[ei - 1].superserie ? ' · superserie con el anterior' : "")) + '</p><h3>' + esc(ej.nombre) + '</h3>' +
     '<p class="muted small num">' + e.objetivo.series + ' × ' + e.objetivo.repMin + '-' + e.objetivo.repMax + ' · descanso ' + e.objetivo.descanso + ' s</p>' +
     lineaAjusteMaquina(e.id) +
@@ -2375,10 +2375,10 @@ function hojaOrdenar(titulo, sub, ids, alGuardar, alCancelar) {
 function pintarListaOrden() {
   $("listaOrden").innerHTML = ordenTemp.orden.map(function (k, pos) {
     const ej = buscarEj(ordenTemp.ids[k]);
-    const fotos = fotosDe(ej.id);
+    const foto = miniaturaDe(ej.id);
     return '<div class="fila-orden"><span class="orden num">' + (pos + 1) + '</span>' +
-      (fotos ? '<img class="foto-mini" src="' + fotos[0] + '" alt="">' : "") +
-      '<span class="grow"><b class="small">' + esc(ej.nombre) + '</b><span class="muted small" style="display:block">' + GRUPOS[ej.grupo] + '</span></span>' +
+      (foto ? '<img class="foto-mini" src="' + foto + '" alt="">' : "") +
+      '<span class="grow"><b class="small">' + esc(ej.nombre) + '</b><span class="muted small" style="display:block">' + GRUPOS[ej.grupo] + '</span>' + textoAgarre(ej.id) + '</span>' +
       '<span class="asa" aria-label="Arrastrar">⠿</span></div>';
   }).join("");
   $("listaOrden").querySelectorAll(".asa").forEach(function (asa) { asa.addEventListener("pointerdown", empezarArrastre); });
@@ -2439,11 +2439,11 @@ function hojaEditarDia(i) {
   if (d.ejercicios.length > 1) h += '<button class="btn-reemplazar" data-act="ordenar-dia" data-a="' + i + '" style="margin-top:0">↕<span>Cambiar el orden</span></button>';
   d.ejercicios.forEach(function (o, k) {
     const ej = buscarEj(o.id);
-    const fotos = fotosDe(o.id);
+    const foto = miniaturaDe(o.id);
     const resaltar = cambioEditor === i + "-" + k ? " recien" : "";
     h += '<div class="card editar-ej' + resaltar + '"><div class="row" style="gap:10px">' +
-      '<span class="orden num">' + (k + 1) + '</span>' + (fotos ? '<img class="foto-mini" src="' + fotos[0] + '" alt="" style="width:44px;height:44px">' : "") +
-      '<div class="grow"><b class="small">' + esc(ej.nombre) + '</b><p class="muted small">' + GRUPOS[ej.grupo] + ' · ' + EQUIPOS[ej.equipo] + '</p></div></div>' +
+      '<span class="orden num">' + (k + 1) + '</span>' + (foto ? '<img class="foto-mini" src="' + foto + '" alt="" style="width:44px;height:44px">' : "") +
+      '<div class="grow"><b class="small">' + esc(ej.nombre) + '</b><p class="muted small">' + GRUPOS[ej.grupo] + ' · ' + EQUIPOS[ej.equipo] + '</p>' + textoAgarre(ej.id) + '</div></div>' +
       '<div class="steppers">' + [["series", "Series", 1], ["repMin", "Reps mín.", 1], ["repMax", "Reps máx.", 1], ["descanso", "Desc. (s)", 15]].map(function (c) {
         return '<div class="stepper"><span class="muted small">' + c[1] + '</span><div class="row"><button data-act="dia-paso" data-a="' + i + '" data-b="' + k + '" data-c="' + c[0] + ':-' + c[2] + '" aria-label="Menos">−</button>' +
           '<b class="num">' + o[c[0]] + '</b><button data-act="dia-paso" data-a="' + i + '" data-b="' + k + '" data-c="' + c[0] + ':' + c[2] + '" aria-label="Más">+</button></div></div>';
@@ -2486,8 +2486,8 @@ function hojaBiblioteca(modo, soloVariantesDe) {
 function filaEj(e) {
   const fav = estado.favoritos.includes(e.id);
   const accion = modoBib === "ver" ? "info-ej" : "elegir-ej";
-  return '<button class="item" data-act="' + accion + '" data-a="' + e.id + '">' + (fotosDe(e.id) ? '<img class="gico foto" src="' + fotosDe(e.id)[0] + '" alt="" loading="lazy" decoding="async">' : '<span class="gico">' + GRUPOS[e.grupo].slice(0, 3).toUpperCase() + '</span>') +
-    '<span class="grow"><span class="name">' + esc(e.nombre) + (fav ? ' <span style="color:var(--warn)">★</span>' : "") + ((estado.noDisponibles || []).includes(e.id) ? ' <span class="muted small">· no hay en tu gimnasio</span>' : "") + '</span><span class="muted small">' + GRUPOS[e.grupo] + ' · ' + EQUIPOS[e.equipo] + ' · ' + ["", "Básico", "Medio", "Avanzado"][e.nivel] + '</span></span></button>';
+  return '<button class="item" data-act="' + accion + '" data-a="' + e.id + '">' + (fotosDe(e.id) ? '<img class="gico foto" src="' + miniaturaDe(e.id) + '" alt="" loading="lazy" decoding="async">' : '<span class="gico">' + GRUPOS[e.grupo].slice(0, 3).toUpperCase() + '</span>') +
+    '<span class="grow"><span class="name">' + esc(e.nombre) + (fav ? ' <span style="color:var(--warn)">★</span>' : "") + ((estado.noDisponibles || []).includes(e.id) ? ' <span class="muted small">· no hay en tu gimnasio</span>' : "") + '</span><span class="muted small">' + GRUPOS[e.grupo] + ' · ' + EQUIPOS[e.equipo] + ' · ' + ["", "Básico", "Medio", "Avanzado"][e.nivel] + '</span>' + textoAgarre(e.id) + '</span></button>';
 }
 
 // Quita tildes y mayúsculas: "Pájaros" y "pajaros" se buscan igual

@@ -824,6 +824,19 @@ const FOTO_AGARRE = { "jalon": true, "jalon-estrecho": true, "jalon-cerrado": tr
   "extension-polea": true, "extension-polea-v": true, "extension-cuerda": true, "extension-inversa-polea": true,
   "remo-barra-supino": true };
 
+// Foto pequeña de las listas: si hay foto de las manos, se usa esa (así se distingue el agarre)
+function miniaturaDe(id) {
+  if (FOTO_AGARRE[id]) return "fotos/" + id + "-agarre.jpg";
+  const f = fotosDe(id);
+  return f ? f[0] : null;
+}
+
+// "✋ Agarre abierto" para poner debajo del nombre
+function textoAgarre(id) {
+  const t = TIPOS_AGARRE[AGARRE[id]];
+  return t ? '<span class="chip-agarre">✋ <span>' + t.nombre + '</span></span>' : "";
+}
+
 function fotosDe(id) {
   if (!FOTOS[id]) return null;
   return ["fotos/" + id + "-inicio.jpg", "fotos/" + id + "-final.jpg"];
