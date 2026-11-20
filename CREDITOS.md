@@ -13,7 +13,7 @@
 |---|---|
 | dominadas-neutras | V-Bar_Pullup |
 | press-banca-cerrado | Close-Grip_Barbell_Bench_Press |
-| remo-barra-supino | Imágenes generadas por IA (generadas con Figma) |
+| remo-barra-supino | Imágenes generadas por IA (generadas con Figma). Foto del agarre: recorte de Reverse_Grip_Bent-Over_Rows |
 | remo-maquina-abierto | Imágenes generadas por IA (generadas con Figma) |
 | remo-polea-barra-ancha | Imágenes generadas por IA (generadas con Figma) |
 | curl-arana | Dumbbell_Prone_Incline_Curl |
@@ -77,7 +77,7 @@
 | elevacion-piernas | Hanging_Leg_Raise |
 | elevaciones-frontales-polea | Front_Cable_Raise |
 | elevaciones-laterales | Side_Lateral_Raise |
-| elevaciones-polea | Cable_Seated_Lateral_Raise |
+| elevaciones-polea | Standing_Low-Pulley_Deltoid_Raise |
 | encogimientos-mancuernas | Dumbbell_Shrug |
 | encogimientos-maquina | Leverage_Shrug |
 | extension-cuadriceps | Leg_Extensions |
@@ -118,7 +118,7 @@
 | lenador-polea | Standing_Cable_Wood_Chop |
 | pallof-press | Pallof_Press |
 | remo-invertido | Inverted_Row |
-| pajaros-mancuernas | Reverse_Flyes |
+| pajaros-mancuernas | Seated_Bent-Over_Rear_Delt_Raise |
 | pajaros-maquina | Reverse_Machine_Flyes |
 | pajaros-polea | Cable_Rear_Delt_Fly |
 | patada-gluteo | One-Legged_Cable_Kickback |

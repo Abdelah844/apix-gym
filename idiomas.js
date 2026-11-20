@@ -16108,6 +16108,66 @@ const TRADUCCIONES = {
 "Faire glisser",
 "جر"
 ],
+"Remo en barra T con pecho apoyado": [
+"Chest-supported T-bar row",
+"Rowing T-bar buste appuyé",
+"Rowing T-bar buste appuyé"
+],
+"Elevaciones laterales con mancuernas": [
+"Dumbbell lateral raises",
+"Élévations latérales aux haltères",
+"Élévations latérales aux haltères"
+],
+"Extensión de tríceps tras nuca con cuerda": [
+"Overhead cable rope triceps extension",
+"Extension triceps nuque à la corde",
+"Extension triceps nuque à la corde"
+],
+"Extensión de tríceps en polea con agarre inverso": [
+"Reverse-grip triceps pushdown",
+"Extension triceps à la poulie prise inversée",
+"Extension triceps à la poulie prise inversée"
+],
+"Extensión de tríceps tras nuca con mancuerna": [
+"Overhead dumbbell triceps extension",
+"Extension triceps nuque à l’haltère",
+"Extension triceps nuque à l’haltère"
+],
+"Extensión de tríceps en máquina": [
+"Machine triceps extension",
+"Extension triceps à la machine",
+"Extension triceps à la machine"
+],
+"Curl de muñeca con mancuernas": [
+"Dumbbell wrist curl",
+"Curl des poignets aux haltères",
+"Curl des poignets aux haltères"
+],
+"Peso muerto con piernas rígidas en multipower": [
+"Smith machine stiff-leg deadlift",
+"Soulevé de terre jambes tendues à la Smith machine",
+"Soulevé de terre jambes tendues à la Smith machine"
+],
+"Aductores en polea": [
+"Cable hip adduction",
+"Adducteurs à la poulie",
+"Adducteurs à la poulie"
+],
+"Gemelos sentado en máquina": [
+"Seated machine calf raise",
+"Mollets assis à la machine",
+"Mollets assis à la machine"
+],
+"Gemelos de pie con mancuernas": [
+"Standing dumbbell calf raise",
+"Mollets debout aux haltères",
+"Mollets debout aux haltères"
+],
+"Gemelos de pie en máquina": [
+"Standing machine calf raise",
+"Mollets debout à la machine",
+"Mollets debout à la machine"
+],
 "Social": [
 "Social",
 "Social",

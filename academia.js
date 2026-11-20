@@ -558,7 +558,7 @@ const FOTOS = {
   "dominadas": "Pullups",
   "elevacion-piernas": "Hanging_Leg_Raise",
   "elevaciones-laterales": "Side_Lateral_Raise",
-  "elevaciones-polea": "Cable_Seated_Lateral_Raise",
+  "elevaciones-polea": "Standing_Low-Pulley_Deltoid_Raise",
   "extension-cuadriceps": "Leg_Extensions",
   "extension-nuca": "Standing_Dumbbell_Triceps_Extension",
   "extension-polea": "Triceps_Pushdown",
@@ -630,7 +630,7 @@ const FOTOS = {
   "remo-multipower": "Smith_Machine_Bent_Over_Row",
   "dominadas-supinas": "Chin-Up",
   "dominadas-neutras": "V-Bar_Pullup",
-  "remo-barra-supino": "IA",   // imágenes generadas por IA
+  "remo-barra-supino": "IA",   // imágenes generadas por IA (la foto del agarre es de Free Exercise DB)
   "remo-polea-barra-ancha": "IA",   // imágenes generadas por IA
   "remo-maquina-abierto": "IA",   // imágenes generadas por IA
   "press-banca-cerrado": "Close-Grip_Barbell_Bench_Press",
@@ -640,7 +640,7 @@ const FOTOS = {
   "press-arnold": "Arnold_Dumbbell_Press",
   "elevaciones-frontales-polea": "Front_Cable_Raise",
   "pajaros-polea": "Cable_Rear_Delt_Fly",
-  "pajaros-mancuernas": "Reverse_Flyes",
+  "pajaros-mancuernas": "Seated_Bent-Over_Rear_Delt_Raise",
   "remo-menton-polea": "Upright_Cable_Row",
   "curl-barra-z": "EZ-Bar_Curl",
   "curl-predicador": "Preacher_Curl",
@@ -740,7 +740,7 @@ const BANCO = {
   "press-frances": ["Banco plano", ""],
   "press-frances-mancuernas": ["Banco plano", ""],
   "press-frances-inclinado": ["Banco inclinado a 30-45°", "Inclinado estira más la cabeza larga del tríceps que en plano."],
-  "extension-nuca": ["Banco con respaldo vertical", "El respaldo te ayuda a no arquear la espalda."],
+  "extension-nuca": ["De pie o en banco con respaldo vertical", "Sentado con respaldo te cuesta menos no arquear la espalda."],
   "patada-triceps": ["Banco plano (para apoyarte)", ""],
   "remo-mancuerna": ["Banco plano (para apoyarte)", ""],
   "fondos-banco": ["Banco plano", ""],
@@ -821,7 +821,8 @@ function agarreSVG(id) {
 
 // Foto ampliada de las manos (fotos/<id>-agarre.jpg) para ver bien la diferencia entre agarres
 const FOTO_AGARRE = { "jalon": true, "jalon-estrecho": true, "jalon-cerrado": true, "jalon-supino": true,
-  "extension-polea": true, "extension-polea-v": true, "extension-cuerda": true, "extension-inversa-polea": true };
+  "extension-polea": true, "extension-polea-v": true, "extension-cuerda": true, "extension-inversa-polea": true,
+  "remo-barra-supino": true };
 
 function fotosDe(id) {
   if (!FOTOS[id]) return null;
