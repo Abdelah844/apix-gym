@@ -536,7 +536,7 @@ function pintarEntrenar() {
         h += '<details class="card dia-plegado"><summary><div class="grow"><p class="label">' + etiqueta + '</p><h3>' + esc(d.nombre) + '</h3></div><span class="muted small">' + d.ejercicios.length + ' ejercicios</span><span class="flecha" aria-hidden="true">▾</span></summary><div class="stack tight" style="margin-top:10px">' + lista + botones + '</div></details>';
       }
     });
-    h += '<button class="btn-txt" data-act="anadir-dia">+ Añadir día</button>';
+    h += '<div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn-txt" data-act="anadir-dia">+ Añadir día</button><button class="btn-txt" data-act="anadir-dia-postura">🧍 + Día de postura</button></div>';
     h += '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>';
     // Herramientas: debajo de la rutina
     h += '<p class="label" style="margin-top:6px">Más opciones</p>' +

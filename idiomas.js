@@ -16248,6 +16248,46 @@ const TRADUCCIONES = {
 "😏 Taquin (te charrie comme un pote)",
 "😏 قافز (كيضحك عليك بحال صاحبك)"
 ],
+"Mejorar la postura": [
+"Improve your posture",
+"Améliorer la posture",
+"حسّن الوقفة ديالك"
+],
+"Para hombros caídos hacia delante y espalda encorvada: fortalece la espalda alta, el hombro de atrás, el glúteo y el abdomen. Ideal si pasas muchas horas sentado.": [
+"For rounded shoulders and a hunched back: strengthens the upper back, rear shoulders, glutes and core. Ideal if you sit for many hours.",
+"Pour les épaules enroulées et le dos voûté : renforce le haut du dos, l'arrière des épaules, les fessiers et les abdos. Idéal si tu passes beaucoup d'heures assis.",
+"للكتاف لي طايحين لقدام والظهر المعووج: كتقوي الظهر الفوقاني، الكتف اللور، المؤخرة والكرش. مزيانة إلا كتگلس بزاف د السوايع."
+],
+"Postura A": [
+"Posture A",
+"Posture A",
+"الوقفة A"
+],
+"Postura B": [
+"Posture B",
+"Posture B",
+"الوقفة B"
+],
+"Postura C": [
+"Posture C",
+"Posture C",
+"الوقفة C"
+],
+"Postura": [
+"Posture",
+"Posture",
+"الوقفة"
+],
+"🧍 + Día de postura": [
+"🧍 + Posture day",
+"🧍 + Jour posture",
+"🧍 + نهار الوقفة"
+],
+"Día de postura añadido a tu rutina": [
+"Posture day added to your routine",
+"Jour posture ajouté à ta routine",
+"نهار الوقفة تزاد للروتين ديالك"
+],
 "Social": [
 "Social",
 "Social",

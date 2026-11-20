@@ -1052,7 +1052,8 @@ function validarRutina(r) {
     else if (duracionDia(d, factor) > r.duracion) problemas.push({ tipo: "duracion", dia: i, msg: d.nombre + " dura unos " + duracionDia(d, factor) + " min (tienes " + r.duracion + ")." });
   });
   const v = volumenSemanal(r);
-  for (const g of GRUPOS_PRINCIPALES) {
+  // La rutina de postura trabaja a propósito solo espalda, hombro de atrás, glúteo y abdomen: no se avisa del reparto
+  for (const g of (r.famosa === "postura" ? [] : GRUPOS_PRINCIPALES)) {
     if (v[g] < objetivo * 0.7) problemas.push({ tipo: "volumen-bajo", grupo: g, msg: GRUPOS[g] + ": " + v[g] + " series/semana, por debajo de lo recomendado (" + objetivo + ")." });
     if (v[g] > objetivo * 1.4) problemas.push({ tipo: "volumen-alto", grupo: g, msg: GRUPOS[g] + ": " + v[g] + " series/semana, demasiado volumen (" + objetivo + ")." });
   }
@@ -1539,6 +1540,14 @@ const RUTINAS_FAMOSAS = {
       diaPlantilla("Hombros y brazos (2)", [["press-arnold", 4, 8, 12, 120], ["elevaciones-polea", 3, 12, 15, 60], ["face-pull", 3, 12, 15, 60], ["curl-predicador", 3, 8, 12, 75], ["extension-cuerda-nuca", 3, 10, 15, 60]]),
       diaPlantilla("Pierna (2)", [["hack", 4, 8, 12, 150], ["hip-thrust", 4, 8, 12, 120], ["extension-cuadriceps", 3, 12, 15, 75], ["curl-femoral-sentado", 3, 10, 12, 75], ["gemelo-sentado", 4, 12, 20, 60]])
     ] },
+  // Espalda alta, hombro posterior, glúteo y abdomen profundo: lo que suele estar flojo si pasas muchas horas sentado
+  "postura": { nombre: "Mejorar la postura", nivel: "principiante", objetivo: "activo", dias: 3, duracion: 55,
+    desc: "Para hombros caídos hacia delante y espalda encorvada: fortalece la espalda alta, el hombro de atrás, el glúteo y el abdomen. Ideal si pasas muchas horas sentado.",
+    plantilla: [
+      diaPlantilla("Postura A", [["remo-pecho-apoyado", 3, 10, 12, 90], ["face-pull", 3, 12, 15, 60], ["jalon", 3, 10, 12, 90], ["hiperextensiones", 3, 12, 15, 60], ["pallof-press", 3, 10, 12, 45]]),
+      diaPlantilla("Postura B", [["remo-polea", 3, 10, 12, 90], ["pajaros-maquina", 3, 12, 15, 60], ["remo-invertido", 3, 8, 12, 90], ["puente-gluteo", 3, 12, 15, 60], ["lenador-polea", 3, 10, 12, 45]]),
+      diaPlantilla("Postura C", [["remo-mancuerna", 3, 10, 12, 90], ["face-pull", 3, 12, 15, 60], ["pajaros-banco-inclinado", 3, 12, 15, 60], ["hip-thrust", 3, 10, 12, 90], ["pallof-press", 3, 10, 12, 45]])
+    ] },
   "cuerpo-completo": { nombre: "Cuerpo completo para empezar", nivel: "principiante", objetivo: "masa", dias: 3, duracion: 45,
     desc: "Todo el cuerpo en cada sesión, con máquinas fáciles de aprender. Perfecta para tus primeros meses.",
     plantilla: [
@@ -1575,6 +1584,13 @@ function rutinaDesdePlantilla(clave) {
     calendario: calendarioPorDefecto(p.dias), factorDuracion: factorDuracion(), famosa: clave };
   r.problemas = validarRutina(r);
   return { rutina: r, cambios: cambios };
+}
+
+// Un día de postura para añadir a tu rutina (con lo que haya en tu gimnasio)
+function diaPostura() {
+  const d = rutinaDesdePlantilla("postura").rutina.dias[0];
+  d.nombre = "Postura";
+  return d;
 }
 
 // ---------- Flujo del entreno (un ejercicio a la vez) ----------

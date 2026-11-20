@@ -189,6 +189,12 @@ const ACCIONES = {
     cuadrarCalendario(estado.rutina);
     guardar(); hojaEditarDia(estado.rutina.dias.length - 1);
   },
+  "anadir-dia-postura": function () {
+    estado.rutina.dias.push(diaPostura());
+    cuadrarCalendario(estado.rutina);
+    guardar(); pintar(); hojaEditarDia(estado.rutina.dias.length - 1);
+    toast("Día de postura añadido a tu rutina");
+  },
   "ordenar-dia": function (i) {
     i = parseInt(i);
     const lista = estado.rutina.dias[i].ejercicios;
