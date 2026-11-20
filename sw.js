@@ -5,7 +5,7 @@
 // Si cambias algún archivo, sube el número de VERSION para que los móviles descarguen la nueva.
 // =====================================================
 
-const VERSION = "apex-gym-2.54.5";
+const VERSION = "apex-gym-2.54.6";
 
 // Archivos que se guardan nada más instalar la app
 const ARCHIVOS = [
@@ -26,7 +26,9 @@ self.addEventListener("install", function (evento) {
 
 // Las fotos de los ejercicios van en una caché aparte que NO se borra al actualizar la app:
 // así no hay que volver a descargarlas en cada versión y siguen viéndose sin internet.
-const FOTOS_CACHE = "apix-fotos-1";
+// OJO: si cambias una foto que ya existía, sube también este número.
+// Si no, los móviles siguen enseñando la foto vieja que tienen guardada.
+const FOTOS_CACHE = "apix-fotos-2";
 
 // 2. Activar: borra las copias de versiones antiguas y toma el control enseguida
 self.addEventListener("activate", function (evento) {
