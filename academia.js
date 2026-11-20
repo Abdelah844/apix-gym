@@ -581,7 +581,7 @@ const FOTOS = {
   "press-banca": "Barbell_Bench_Press_-_Medium_Grip",
   "press-frances": "EZ-Bar_Skullcrusher",
   "press-hombro-mancuernas": "Seated_Dumbbell_Press",
-  "press-hombro-maquina": "Machine_Shoulder_Military_Press",
+  "press-hombro-maquina": "Leverage_Shoulder_Press",
   "press-inclinado-mancuernas": "Incline_Dumbbell_Press",
   "press-inclinado-multipower": "Smith_Machine_Incline_Bench_Press",
   "press-maquina": "Machine_Bench_Press",

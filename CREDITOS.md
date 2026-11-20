@@ -133,7 +133,7 @@
 | press-declinado-maquina | Leverage_Decline_Chest_Press |
 | press-frances | EZ-Bar_Skullcrusher |
 | press-hombro-mancuernas | Seated_Dumbbell_Press |
-| press-hombro-maquina | Machine_Shoulder_Military_Press |
+| press-hombro-maquina | Leverage_Shoulder_Press |
 | press-hombro-multipower | Smith_Machine_Overhead_Shoulder_Press |
 | press-inclinado-barra | Barbell_Incline_Bench_Press_-_Medium_Grip |
 | press-inclinado-mancuernas | Incline_Dumbbell_Press |
