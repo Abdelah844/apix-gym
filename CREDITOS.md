@@ -81,7 +81,7 @@
 | encogimientos-mancuernas | Dumbbell_Shrug |
 | encogimientos-maquina | Leverage_Shrug |
 | extension-cuadriceps | Leg_Extensions |
-| extension-cuerda | Triceps_Pushdown_-_Rope_Attachment |
+| extension-cuerda | Imágenes generadas por IA (generadas con Figma) |
 | extension-cuerda-nuca | Cable_Rope_Overhead_Triceps_Extension |
 | extension-inversa-polea | Reverse_Grip_Triceps_Pushdown |
 | extension-nuca | Standing_Dumbbell_Triceps_Extension |
@@ -101,13 +101,13 @@
 | hip-thrust | Barbell_Hip_Thrust |
 | hip-thrust-maquina | Imágenes generadas por IA (aportadas por el autor de la app) |
 | hiperextensiones | Hyperextensions_Back_Extensions |
-| jalon | Wide-Grip_Lat_Pulldown |
+| jalon | Imágenes generadas por IA (generadas con Figma) |
 | jalon-estrecho | V-Bar_Pulldown |
 | jalon-cerrado | Close-Grip_Front_Lat_Pulldown |
 | extension-polea-v | Triceps_Pushdown_-_V-Bar_Attachment |
 | elevaciones-maquina | Imágenes generadas por IA (aportadas por el autor de la app) |
 | extension-una-mano-polea | Cable_One_Arm_Tricep_Extension |
-| jalon-supino | Underhand_Cable_Pulldowns |
+| jalon-supino | Imágenes generadas por IA (generadas con Figma) |
 | jalon-una-mano | One_Arm_Lat_Pulldown |
 | jalon-neutro-ancho | Imágenes generadas por IA (generadas con Figma) |
 | jalon-cuerda | Imágenes generadas por IA (generadas con Figma) |

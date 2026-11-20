@@ -573,7 +573,7 @@ const FOTOS = {
   "hack": "Hack_Squat",
   "hip-thrust": "Barbell_Hip_Thrust",
   "hiperextensiones": "Hyperextensions_Back_Extensions",
-  "jalon": "Wide-Grip_Lat_Pulldown",
+  "jalon": "IA",   // imágenes generadas por IA
   "pajaros-maquina": "Reverse_Machine_Flyes",
   "peso-muerto": "Barbell_Deadlift",
   "peso-muerto-rumano": "Romanian_Deadlift",
@@ -613,7 +613,7 @@ const FOTOS = {
   "press-pecho-polea": "Cable_Chest_Press",
   "jalon-estrecho": "V-Bar_Pulldown",
   "jalon-cerrado": "Close-Grip_Front_Lat_Pulldown",
-  "jalon-supino": "Underhand_Cable_Pulldowns",
+  "jalon-supino": "IA",   // imágenes generadas por IA
   "jalon-una-mano": "One_Arm_Lat_Pulldown",
   "jalon-neutro-ancho": "IA",   // imágenes generadas por IA
   "jalon-cuerda": "IA",   // imágenes generadas por IA
@@ -675,7 +675,7 @@ const FOTOS = {
   "curl-tumbado-polea": "Lying_Close-Grip_Bar_Curl_On_High_Pulley",
   "curl-martillo-cruzado": "Cross_Body_Hammer_Curl",
   "curl-martillo-cuerda": "Cable_Hammer_Curls_-_Rope_Attachment",
-  "extension-cuerda": "Triceps_Pushdown_-_Rope_Attachment",
+  "extension-cuerda": "IA",   // imágenes generadas por IA
   "extension-cuerda-nuca": "Cable_Rope_Overhead_Triceps_Extension",
   "extension-inversa-polea": "Reverse_Grip_Triceps_Pushdown",
   "press-cerrado-multipower": "Smith_Machine_Close-Grip_Bench_Press",
