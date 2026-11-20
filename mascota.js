@@ -46,6 +46,10 @@ const MENSAJES_APIX = {
   cuida: [
     "La última vez marcaste molestias. Hoy, con calma: si duele, para y consulta a un profesional.",
   ],
+  // Cuando las molestias se han marcado en el entreno de hoy
+  cuidaHoy: [
+    "Hoy has marcado molestias en {ejercicio}. Descansa esa zona y, el próximo día, menos peso. Si sigue doliendo, consulta a un profesional."
+  ],
   reto: [
     "Te faltan {falta} {unidad} para tu reto «{reto}» y quedan {dias} días. " + FRASE_DISCIPLINA,
     "Tu reto «{reto}» te espera: faltan {falta} {unidad}. ¡No lo sueltes ahora!"
@@ -234,6 +238,10 @@ function estadoMascota() {
   }
   // 1. Molestias recientes: nunca presionar
   if (ultima && diasEntre(ultima.fecha, hoyF) <= 3 && ultima.ejercicios.some(function (e) { return e.molestias; })) {
+    if (ultima.fecha === hoyF) {
+      const ej = ultima.ejercicios.find(function (e) { return e.molestias; });
+      return { humor: "cuida", mensaje: rellenar(MENSAJES_APIX.cuidaHoy[0], { ejercicio: buscarEj(ej.id).nombre.toLowerCase() }) };
+    }
     return { humor: "cuida", mensaje: mensajeDelDia(MENSAJES_APIX.cuida, hoyF) };
   }
   // 1b. Hoy has acabado el entreno completo: Apix se pone amarillo (es el premio)

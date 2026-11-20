@@ -40,6 +40,7 @@ function cambiarIdioma(nuevo) {
 const PATRONES = [
   // ---- Generales ----
   ["Hola, {x}", "Hi, {x}", "Salut, {x}", "سلام، {x}"],
+  ["Hoy has marcado molestias en {x}. Descansa esa zona y, el próximo día, menos peso. Si sigue doliendo, consulta a un profesional.", "Today you marked discomfort in {x}. Rest that area and use less weight next time. If it keeps hurting, see a professional.", "Aujourd'hui tu as signalé une gêne sur {x}. Repose cette zone et la prochaine fois, moins de poids. Si ça continue à faire mal, consulte un professionnel.", "اليوم علمتي على وجع ف {x}. ريّح هاد البلاصة، والمرة الجاية نقص من الوزن. إلا بقا كيوجعك، شوف شي مختص."],
   ["Tu mejor avance: {x} en {x}.", "Your best progress: {x} in {x}.", "Ton meilleur progrès : {x} en {x}.", "أحسن تقدم ديالك: {x} ف {x}."],
   ["📸 Compartir mi mes de {x}", "📸 Share my {x}", "📸 Partager mon mois de {x}", "📸 بارطاجي الشهر ديالي ديال {x}"],
   ["Es tu hora: te toca {x}. ¡Vamos!", "It's time: today is {x}. Let's go!", "C'est l'heure : aujourd'hui c'est {x}. C'est parti !", "جا الوقت ديالك: اليوم عندك {x}. يالله!"],
