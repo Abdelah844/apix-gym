@@ -494,7 +494,7 @@ function pintarEntrenar() {
     h += '<div class="grid2 acciones-entreno"><button class="accion-grande" data-act="abrir-generador"><span class="ico">✨</span><b>' + (estado.rutina ? "Nueva rutina" : "Generar rutina") + '</b><span class="muted small">En 3 pasos, a tu medida</span></button>' +
       '<button class="accion-grande" data-act="empezar-libre"><span class="ico">⚡</span><b>Entreno libre</b><span class="muted small">Eliges sobre la marcha</span></button></div>' +
       '<button class="accion-grande fila" data-act="abrir-famosas"><span class="ico">🏆</span><span><b>Rutinas famosas</b><span class="muted small" style="display:block">5×5, PPL, torso-pierna… listas para usar</span></span></button>' +
-      '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>' +
+      '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>' + tarjetaEstiramientos() +
       '<div class="grid2"><button class="btn-sec small" data-act="abrir-biblioteca">Ejercicios</button><button class="btn-sec small" data-act="abrir-gimnasio">Mi gimnasio</button></div>';
   }
 
@@ -537,7 +537,7 @@ function pintarEntrenar() {
       }
     });
     h += '<div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn-txt" data-act="anadir-dia">+ Añadir día</button><button class="btn-txt" data-act="anadir-dia-postura">🧍 + Día de postura</button></div>';
-    h += '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>';
+    h += '<button class="accion-grande fila" data-act="abrir-cardio" data-a="suelto"><span class="ico">🏃</span><span><b>Cardio</b><span class="muted small" style="display:block">Cinta, bici, elíptica, correr… cuenta para tu racha</span></span></button>' + tarjetaEstiramientos();
     // Herramientas: debajo de la rutina
     h += '<p class="label" style="margin-top:6px">Más opciones</p>' +
       '<div class="grid2"><button class="btn-sec small" data-act="empezar-libre">⚡ Entreno libre</button><button class="btn-sec small" data-act="abrir-generador">✨ Nueva rutina</button></div>' +
@@ -545,6 +545,89 @@ function pintarEntrenar() {
       '<button class="btn-sec small full" data-act="abrir-gimnasio">Mi gimnasio</button>';
   }
   $("app").innerHTML = h + '</div>';
+}
+
+// ---------- Estiramientos guiados ----------
+let est = null;   // { pasos, i, fase: "prep" | "estira", quedan, pausa }
+let tEst = null;
+
+function tarjetaEstiramientos() {
+  const ult = estado.ajustes.ultimoEstiramiento;
+  return '<button class="accion-grande fila" data-act="abrir-estiramientos"><span class="ico">🧘</span><span><b>Estiramientos de postura</b>' +
+    '<span class="muted small" style="display:block">' + '<span>' + Math.round(duracionEstiramientos() / 60) + ' min guiados</span>' + (ult === hoy() ? ' · <span>✓ Hechos hoy</span>' : '') + '</span></span></button>';
+}
+
+function hojaEstiramientos() {
+  pararEstiramientos();
+  let h = cabeceraHoja("Estiramientos de postura", "Unos " + Math.round(duracionEstiramientos() / 60) + " min") + '<div class="stack">' +
+    '<p class="muted small">Para abrir el pecho y soltar la espalda y la cadera. Hazlos después de entrenar o cuando lleves mucho rato sentado. Estira sin dolor: debe tirar, no doler.</p>' +
+    '<div class="lista-orden">' + ESTIRAMIENTOS.map(function (e, k) {
+      return '<div class="fila-orden"><span class="orden num">' + (k + 1) + '</span><img class="foto-mini" src="fotos/est-' + e.id + '-2.jpg" alt="">' +
+        '<span class="grow"><b class="small">' + e.nombre + '</b><span class="muted small" style="display:block">' + e.zona + '</span></span>' +
+        '<span class="muted small num">' + (e.lados ? '2 × ' : '') + e.seg + ' s</span></div>';
+    }).join("") + '</div>' +
+    '<button class="btn" data-act="empezar-estiramientos">▶ Empezar</button></div>';
+  abrirHoja(h);
+}
+
+function empezarEstiramientos() {
+  est = { pasos: pasosEstiramientos(), i: 0, fase: "prep", quedan: PREPARA_EST, pausa: false };
+  pintarEstiramiento();
+  clearInterval(tEst);
+  tEst = setInterval(tickEstiramientos, 1000);
+}
+
+function pararEstiramientos() {
+  clearInterval(tEst); tEst = null; est = null;
+}
+
+function tickEstiramientos() {
+  // Si se ha cerrado la ventana, se para
+  if (!est || !$("estReloj")) { pararEstiramientos(); return; }
+  if (est.pausa) return;
+  est.quedan--;
+  if (est.quedan <= 0) {
+    if (est.fase === "prep") { est.fase = "estira"; est.quedan = est.pasos[est.i].est.seg; sonar("serie"); }
+    else { siguienteEstiramiento(); return; }
+    pintarEstiramiento();
+    return;
+  }
+  $("estReloj").textContent = est.quedan;
+  // Gato y camello: la foto va cambiando cada 4 segundos
+  const p = est.pasos[est.i];
+  if (p.est.alterna && est.fase === "estira" && $("estFoto")) $("estFoto").src = "fotos/est-" + p.est.id + "-" + (Math.floor(est.quedan / 4) % 2 ? 1 : 2) + ".jpg";
+}
+
+function siguienteEstiramiento() {
+  est.i++;
+  if (est.i >= est.pasos.length) { terminarEstiramientos(); return; }
+  est.fase = "prep"; est.quedan = PREPARA_EST; est.pausa = false;
+  if (navigator.vibrate && estado.ajustes.vibracion !== false) navigator.vibrate(80);
+  pintarEstiramiento();
+}
+
+function pintarEstiramiento() {
+  const p = est.pasos[est.i], e = p.est;
+  const prep = est.fase === "prep";
+  abrirHoja(cabeceraHoja(e.nombre, '<span>' + (est.i + 1) + ' de ' + est.pasos.length + '</span> · <span>' + e.zona + '</span>') + '<div class="stack">' +
+    '<div class="barra-progreso"><i style="width:' + Math.round(est.i / est.pasos.length * 100) + '%"></i></div>' +
+    '<img id="estFoto" class="est-foto" src="fotos/est-' + e.id + '-2.jpg" alt="">' +
+    '<div class="est-reloj' + (prep ? ' prep' : '') + '"><span class="muted small">' + (prep ? "Colócate…" : (p.lado || "Mantén")) + '</span>' +
+      '<b id="estReloj" class="num">' + est.quedan + '</b>' + (prep && p.lado ? '<span class="small">' + p.lado + '</span>' : '') + '</div>' +
+    '<ol class="small est-pasos">' + e.pasos.map(function (x) { return '<li>' + x + '</li>'; }).join("") + '</ol>' +
+    '<div class="grid2"><button class="btn-sec" data-act="pausa-estiramientos">' + (est.pausa ? "▶ Seguir" : "⏸ Pausa") + '</button>' +
+    '<button class="btn" data-act="siguiente-estiramiento">Siguiente →</button></div></div>');
+}
+
+function terminarEstiramientos() {
+  pararEstiramientos();
+  estado.ajustes.ultimoEstiramiento = hoy();
+  guardar();
+  sonar("fin");
+  abrirHoja(cabeceraHoja("¡Estiramientos hechos!", "Postura") + '<div class="stack">' +
+    (estado.ajustes.mascota !== false ? '<div class="apix-resumen">' + apixSVG("campeon") + '<p><b>¡Muy bien!</b> Tu espalda te lo agradece. Repítelos varias veces por semana para notar el cambio.</p></div>' : "") +
+    '<button class="btn" data-act="cerrar-hoja">Cerrar</button></div>');
+  if (tab === "entrenar") pintar();
 }
 
 // ---------- Cardio ----------

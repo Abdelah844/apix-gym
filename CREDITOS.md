@@ -203,3 +203,14 @@ For more information, please refer to <https://unlicense.org>
 ```
 
 Las imágenes `*-agarre.jpg` son recortes ampliados de las mismas fotos (mismo origen y licencia).
+
+### Estiramientos (carpeta `fotos/`, archivos `est-*`)
+
+| Apix Gym | Free Exercise DB |
+|---|---|
+| est-codos-atras | Elbows_Back |
+| est-cuello-lateral | Side_Neck_Stretch |
+| est-gato-camello | Cat_Stretch |
+| est-postura-nino | Childs_Pose |
+| est-flexor-cadera | Kneeling_Hip_Flexor |
+| est-giro-sentado | Spinal_Stretch |

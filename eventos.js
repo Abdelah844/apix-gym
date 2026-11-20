@@ -922,6 +922,11 @@ const ACCIONES = {
   "abrir-otra-app": function () { hojaOtraApp(); },
   // ----- Cardio -----
   "abrir-cardio": function (destino) { hojaCardio(destino); },
+  // ----- Estiramientos -----
+  "abrir-estiramientos": function () { hojaEstiramientos(); },
+  "empezar-estiramientos": function () { empezarEstiramientos(); },
+  "pausa-estiramientos": function () { if (!est) return; est.pausa = !est.pausa; pintarEstiramiento(); },
+  "siguiente-estiramiento": function () { if (est) siguienteEstiramiento(); },
   "cardio-tipo": function (id) {
     const min = $("cMin") ? $("cMin").value : "";      // que no se pierdan los minutos ya escritos
     formCardio.id = id; hojaCardio();

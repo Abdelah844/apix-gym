@@ -1661,7 +1661,7 @@ const TRADUCCIONES = {
 "Cerrar": [
 "Close",
 "Fermer",
-"سدّ"
+"سد"
 ],
 "Cerrar sesión": [
 "Log out",
@@ -3681,7 +3681,7 @@ const TRADUCCIONES = {
 "Espalda": [
 "Back",
 "Dos",
-"الضهر"
+"الظهر"
 ],
 "Espalda alta apoyada en el banco.": [
 "Upper back resting on the bench.",
@@ -5349,9 +5349,9 @@ const TRADUCCIONES = {
 "بقى نشيط"
 ],
 "Mantén": [
-"Keep",
-"Garde",
-"بقى"
+"Hold",
+"Tiens",
+"بقا هكا"
 ],
 "Mantén el abdomen apretado.": [
 "Keep your abs tight.",
@@ -7796,7 +7796,7 @@ const TRADUCCIONES = {
 "Siguiente →": [
 "Next →",
 "Suivant →",
-"الجاي ←"
+"التالي ←"
 ],
 "Sin conexión a internet.": [
 "No internet connection.",
@@ -16287,6 +16287,221 @@ const TRADUCCIONES = {
 "Posture day added to your routine",
 "Jour posture ajouté à ta routine",
 "نهار الوقفة تزاد للروتين ديالك"
+],
+"Estiramientos de postura": [
+"Posture stretches",
+"Étirements posture",
+"تمطيط الوقفة"
+],
+"{n} min guiados": [
+"{n} min guided",
+"{n} min guidés",
+"{n} دقايق مع التوجيه"
+],
+"✓ Hechos hoy": [
+"✓ Done today",
+"✓ Faits aujourd'hui",
+"✓ تدارو اليوم"
+],
+"Unos {n} min": [
+"About {n} min",
+"Environ {n} min",
+"تقريبا {n} دقايق"
+],
+"Para abrir el pecho y soltar la espalda y la cadera. Hazlos después de entrenar o cuando lleves mucho rato sentado. Estira sin dolor: debe tirar, no doler.": [
+"To open the chest and loosen the back and hips. Do them after training or after sitting for a long time. Stretch without pain: it should pull, not hurt.",
+"Pour ouvrir la poitrine et détendre le dos et les hanches. Fais-les après l'entraînement ou après être resté longtemps assis. Étire sans douleur : ça doit tirer, pas faire mal.",
+"باش تحل الصدر وترخي الظهر والورك. ديرهم من بعد التمرين ولا ملي تبقى گالس بزاف. تمطط بلا وجع: خاصو يجبد، ماشي يوجع."
+],
+"▶ Empezar": [
+"▶ Start",
+"▶ Commencer",
+"▶ بدا"
+],
+"Colócate…": [
+"Get in position…",
+"Mets-toi en place…",
+"حط راسك ف البلاصة…"
+],
+"Lado izquierdo": [
+"Left side",
+"Côté gauche",
+"الجهة اليسرى"
+],
+"Lado derecho": [
+"Right side",
+"Côté droit",
+"الجهة اليمنى"
+],
+"⏸ Pausa": [
+"⏸ Pause",
+"⏸ Pause",
+"⏸ وقف"
+],
+"▶ Seguir": [
+"▶ Resume",
+"▶ Reprendre",
+"▶ كمل"
+],
+"¡Estiramientos hechos!": [
+"Stretches done!",
+"Étirements terminés !",
+"التمطيط تدار!"
+],
+"¡Muy bien!": [
+"Great job!",
+"Très bien !",
+"مزيان بزاف!"
+],
+"Tu espalda te lo agradece. Repítelos varias veces por semana para notar el cambio.": [
+"Your back thanks you. Repeat them several times a week to notice the change.",
+"Ton dos te remercie. Refais-les plusieurs fois par semaine pour sentir la différence.",
+"الظهر ديالك كيشكرك. عاودهم بزاف د المرات ف السيمانة باش تحس بالفرق."
+],
+"Pecho: codos atrás": [
+"Chest: elbows back",
+"Pecs : coudes en arrière",
+"الصدر: المرافق لور"
+],
+"Pecho y hombros": [
+"Chest and shoulders",
+"Pecs et épaules",
+"الصدر والكتاف"
+],
+"De pie, pon las manos en la parte baja de la espalda.": [
+"Standing, place your hands on your lower back.",
+"Debout, pose les mains en bas du dos.",
+"واقف، حط يديك ف التحت ديال الظهر."
+],
+"Lleva los codos hacia atrás, como si quisieras juntarlos.": [
+"Pull your elbows back as if you wanted to bring them together.",
+"Ramène les coudes en arrière, comme pour les rapprocher.",
+"جبد المرافق لور، بحال إلا بغيتي تجمعهم."
+],
+"Saca pecho y respira tranquilo.": [
+"Lift your chest and breathe calmly.",
+"Bombe le torse et respire calmement.",
+"خرج الصدر وتنفس بالهدوء."
+],
+"Cuello lateral": [
+"Side neck",
+"Cou latéral",
+"الرقبة من الجنب"
+],
+"Cuello": [
+"Neck",
+"Cou",
+"الرقبة"
+],
+"Con la mano, lleva la cabeza hacia un hombro sin forzar.": [
+"With your hand, bring your head towards one shoulder without forcing.",
+"Avec la main, amène la tête vers une épaule sans forcer.",
+"بيدك، ميل راسك لكتف واحد بلا ما تزير."
+],
+"El otro hombro, relajado y hacia abajo.": [
+"Keep the other shoulder relaxed and down.",
+"L'autre épaule, détendue et basse.",
+"الكتف الآخر مرخي ولتحت."
+],
+"Nota el estiramiento en el lateral del cuello.": [
+"Feel the stretch on the side of your neck.",
+"Sens l'étirement sur le côté du cou.",
+"حس بالتمطيط ف جنب الرقبة."
+],
+"Gato y camello": [
+"Cat and camel",
+"Chat et chameau",
+"القط والجمل"
+],
+"A cuatro patas, manos debajo de los hombros.": [
+"On all fours, hands under your shoulders.",
+"À quatre pattes, mains sous les épaules.",
+"على ربعة، اليدين تحت الكتاف."
+],
+"Redondea la espalda hacia arriba mirando al ombligo.": [
+"Round your back upwards looking at your belly button.",
+"Arrondis le dos vers le haut en regardant le nombril.",
+"قوس الظهر لفوق وشوف ف الصرة."
+],
+"Luego húndela mirando al frente. Cambia despacio.": [
+"Then arch it looking forward. Switch slowly.",
+"Puis creuse-le en regardant devant. Change doucement.",
+"من بعد هبطو وشوف لقدام. بدل بشوية."
+],
+"Postura del niño": [
+"Child's pose",
+"Posture de l'enfant",
+"وضعية الطفل"
+],
+"Espalda y dorsales": [
+"Back and lats",
+"Dos et dorsaux",
+"الظهر والدورسال"
+],
+"De rodillas, siéntate sobre los talones.": [
+"Kneeling, sit back on your heels.",
+"À genoux, assieds-toi sur les talons.",
+"على الركابي، گلس على الكعبين."
+],
+"Estira los brazos hacia delante y apoya la frente.": [
+"Stretch your arms forward and rest your forehead.",
+"Tends les bras devant et pose le front.",
+"مد يديك لقدام وحط الجبهة."
+],
+"Deja caer el pecho hacia el suelo y respira hondo.": [
+"Let your chest sink to the floor and breathe deeply.",
+"Laisse descendre la poitrine vers le sol et respire profondément.",
+"خلي الصدر يطيح للأرض وتنفس مزيان."
+],
+"Flexor de cadera": [
+"Hip flexor",
+"Fléchisseur de hanche",
+"العضلة ديال الورك"
+],
+"Cadera": [
+"Hips",
+"Hanche",
+"الورك"
+],
+"Rodilla en el suelo y la otra pierna delante, en zancada.": [
+"One knee on the floor and the other leg in front, in a lunge.",
+"Un genou au sol et l'autre jambe devant, en fente.",
+"ركبة ف الأرض والرجل الأخرى لقدام، بحال زنكادة."
+],
+"Aprieta el glúteo y lleva la cadera un poco hacia delante.": [
+"Squeeze your glute and push your hips slightly forward.",
+"Serre le fessier et avance un peu la hanche.",
+"زير المؤخرة ودفع الورك شوية لقدام."
+],
+"Mantén el tronco recto. Al estar sentado mucho, esta zona se acorta.": [
+"Keep your torso upright. Sitting a lot shortens this area.",
+"Garde le buste droit. Rester assis longtemps raccourcit cette zone.",
+"خلي الجسم نيشان. ملي كتگلس بزاف، هاد البلاصة كتقصار."
+],
+"Giro de espalda sentado": [
+"Seated back twist",
+"Rotation du dos assis",
+"لفة الظهر وانت گالس"
+],
+"Espalda alta": [
+"Upper back",
+"Haut du dos",
+"الظهر الفوقاني"
+],
+"Sentado, con las manos detrás de la cabeza.": [
+"Seated, with your hands behind your head.",
+"Assis, les mains derrière la tête.",
+"گالس، واليدين مور الراس."
+],
+"Gira el tronco hacia un lado sin mover la cadera.": [
+"Turn your torso to one side without moving your hips.",
+"Tourne le buste d'un côté sans bouger les hanches.",
+"لوي الجسم لجهة بلا ما تحرك الورك."
+],
+"Crece hacia arriba mientras giras.": [
+"Lengthen upwards as you twist.",
+"Grandis-toi pendant la rotation.",
+"طول راسك لفوق وانت كتلوي."
 ],
 "Social": [
 "Social",

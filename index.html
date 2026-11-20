@@ -440,6 +440,13 @@ input, select, textarea { font-size: 16px; }
 .cardio-tipo .ico { font-size: 1.5rem; }
 .cardio-tipo.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .cardio-sesion { margin-top: 12px; }
+.est-foto { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; background: #fff; }
+.est-reloj { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; }
+.est-reloj b { font-size: 4rem; line-height: 1; color: var(--accent); }
+.est-reloj.prep b { color: var(--muted); }
+.est-pasos { margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; }
+.barra-progreso { height: 6px; border-radius: 99px; background: var(--surface2); overflow: hidden; }
+.barra-progreso i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
 .lista-orden { display: flex; flex-direction: column; gap: 8px; }
 .fila-orden { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--surface2); transition: transform .15s ease; }
 .fila-orden .foto-mini { width: 40px; height: 40px; }
@@ -843,6 +850,7 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 <script src="logica.js"></script>
 <script src="importar.js"></script>
 <script src="cardio.js"></script>
+<script src="estiramientos.js"></script>
 <script src="academia.js"></script>
 <script src="mascota.js"></script>
 <script src="imagen.js"></script>
