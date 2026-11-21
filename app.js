@@ -1208,11 +1208,15 @@ function pintarRangos() {
   // Mejores y a mejorar
   const conDatos = ejerciciosHechos().map(function (id) { return { id: id, p: puntosEjercicio(id) }; }).sort(function (a, b) { return b.p - a.p; });
   if (conDatos.length) {
+    // Tus mejores y A mejorar: solo ejercicios básicos (en abdomen y accesorios los rangos no son fiables).
+    // Si aún no has hecho ningún básico, se usan todos.
+    const basicos = conDatos.filter(function (d) { const e = buscarEj(d.id); return e.compuesto && e.grupo !== "abdominales"; });
+    const paraComparar = basicos.length ? basicos : conDatos;
     h += '<div class="grid2"><div class="card stack tight"><p class="label" style="color:var(--good)">Tus mejores</p>';
-    for (const d of conDatos.slice(0, 3)) h += '<p class="small"><b>' + esc(buscarEj(d.id).nombre) + '</b><br><span class="muted">' + nombreRango(rangoDePuntos(d.p)) + '</span></p>';
+    for (const d of paraComparar.slice(0, 3)) h += '<p class="small"><b>' + esc(buscarEj(d.id).nombre) + '</b><br><span class="muted">' + nombreRango(rangoDePuntos(d.p)) + '</span></p>';
     h += '</div><div class="card stack tight"><p class="label" style="color:var(--warn)">A mejorar</p>';
     const sinDatos = datosG.filter(function (d) { return d.p === null; }).map(function (d) { return GRUPOS[d.g]; });
-    for (const d of conDatos.slice(-2).reverse()) h += '<p class="small"><b>' + esc(buscarEj(d.id).nombre) + '</b><br><span class="muted">' + nombreRango(rangoDePuntos(d.p)) + '</span></p>';
+    for (const d of paraComparar.slice(-2).reverse()) h += '<p class="small"><b>' + esc(buscarEj(d.id).nombre) + '</b><br><span class="muted">' + nombreRango(rangoDePuntos(d.p)) + '</span></p>';
     if (sinDatos.length) h += '<p class="small"><b>Sin datos</b><br><span class="muted">' + sinDatos.slice(0, 4).join(", ") + '</span></p>';
     h += '</div></div>';
 
