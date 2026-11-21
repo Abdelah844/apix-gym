@@ -10363,6 +10363,21 @@ const TRADUCCIONES = {
 "Dernière séance",
 "آخر حصة"
 ],
+"← Volver": [
+"← Back",
+"← Retour",
+"→ رجع"
+],
+"Cuenta y copia": [
+"Account and backup",
+"Compte et sauvegarde",
+"الكونط والنسخة الاحتياطية"
+],
+"Avisos de logros: récords, ascensos y resumen semanal": [
+"Achievement alerts: records, promotions and weekly summary",
+"Alertes de réussites : records, montées de rang et résumé hebdomadaire",
+"تنبيهات الإنجازات: الريكوردات، الترقيات وملخص السيمانة"
+],
 "← Anterior": [
 "← Previous",
 "← Précédent",

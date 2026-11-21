@@ -2888,7 +2888,7 @@ function hojaPiloto() {
     '<div class="card stack tight"><h3>Informar de un problema</h3><p class="muted small">Una recomendación incorrecta, un rango injusto, algo difícil de usar…</p>' +
     '<select id="probTipo" aria-label="Tipo de problema"><option value="recomendacion">Recomendación incorrecta</option><option value="rango">Rango injusto</option><option value="uso">Difícil de usar</option><option value="error">Error o fallo</option><option value="otro">Otro</option></select>' +
     '<textarea id="probTexto" maxlength="500" placeholder="¿Qué ha pasado?"></textarea><p class="err" id="probError"></p>' +
-    '<button class="btn" data-act="informar-problema">Guardar informe</button></div>';
+    '<button class="btn" data-act="guardar-informe-piloto">Guardar informe</button></div>';
   if (m.problemas.length) {
     h += '<div class="card"><h3>Tus informes (' + m.problemas.length + ')</h3><div class="list">';
     for (const p of m.problemas.slice().reverse().slice(0, 10)) h += '<div class="item"><div class="grow"><span class="small" style="font-weight:700">' + esc(p.tipo) + ' · ' + fechaBonita(p.fecha.slice(0, 10)) + '</span><span class="muted small" style="display:block">' + esc(p.texto) + '</span></div></div>';
@@ -3047,69 +3047,137 @@ function hojaReto() {
 }
 
 // ---------- Ajustes ----------
-function hojaAjustes() {
+// Ajustes en forma de menú, como los ajustes del móvil: una lista corta y cada fila abre su pantalla.
+// seccionAjustes: "" = el menú; si no, la pantalla abierta ("cuenta", "perfil", "entreno"...).
+// Quien llama a hojaAjustes() sin nada vuelve a dibujar la pantalla que estaba abierta.
+let seccionAjustes = "";
+function hojaAjustes(seccion) {
+  if (seccion !== undefined) seccionAjustes = seccion;
   const a = estado.ajustes;
   const n = a.notif;
   function chk(id, valor, texto) { return '<label class="check"><input type="checkbox" id="' + id + '"' + (valor ? " checked" : "") + '>' + texto + '</label>'; }
-  const diasCopia = a.ultimaCopia ? diasEntre(a.ultimaCopia, hoy()) : null;
-  abrirHoja(cabeceraHoja("Perfil y ajustes", estado.modo === "demo" ? "Modo demo" : "Cuenta en este dispositivo") + '<div class="stack">' +
-    '<div class="chips indice-ajustes">' + [["aj-idioma", "🌐"], ["aj-nube", "☁️ Cuenta"], ["aj-copia", "💾 Copia"], ["aj-perfil", "Perfil"], ["aj-entreno", "Entreno"], ["aj-sonido", "Sonido"], ["aj-avisos", "Avisos"], ["aj-datos", "Datos"]].map(function (x) {
-      return '<button class="chip" data-act="ir-seccion" data-a="' + x[0] + '">' + x[1] + '</button>'; }).join("") + '</div>' +
-    '<div class="card stack tight" id="aj-idioma"><h3>🌐 Idioma · Language · Langue</h3>' + selectorIdioma() + '</div>' +
-    tarjetaNube() +
-    // Copia de seguridad: arriba, para que se encuentre fácil
-    '<div class="card stack tight copia-ajustes" id="aj-copia"><h3>💾 Copia de seguridad</h3>' +
-      '<p class="small">' + (diasCopia === null ? "<b>Aún no tienes ninguna copia.</b>" : "Última copia: <b>" + fechaBonita(a.ultimaCopia) + "</b> (hace " + diasCopia + " día" + (diasCopia === 1 ? "" : "s") + ").") + (conectado() ? ' Tus entrenos ya se guardan en la nube; esta copia es un extra por si acaso.' : ' Tus entrenos solo están en este móvil: si borras la app, se pierden.') + '</p>' +
-      '<button class="btn full" data-act="hacer-copia">Hacer copia ahora</button>' +
-      '<p class="muted small">Se crea un archivo. En el iPhone, elige «Guardar en Archivos», Drive o mándatelo por correo.</p>' +
-      '<button class="btn-sec full" data-act="abrir-importar">Restaurar una copia</button>' +
-      '<button class="btn-sec full" data-act="abrir-otra-app">📥 Traer entrenos de Hevy o Strong</button>' +
-      '<label class="f">Recordarme hacer copia<select id="aCopiaDias">' + opciones([[7, "Cada semana"], [14, "Cada 2 semanas"], [30, "Cada mes"], [0, "Nunca"]], a.copiaDias === undefined ? 14 : a.copiaDias) + '</select></label></div>' +
-    '<div class="card stack" id="aj-perfil">' + formPerfil(estado.perfil) + '</div>' +
-    '<div class="card stack" id="aj-entreno"><h3>Entrenamiento</h3>' +
+  // Cabecera de cada pantalla: botón para volver al menú y el título
+  function cabeza(titulo) {
+    return cabeceraHoja(titulo, "Perfil y ajustes") + '<button class="btn-txt volver-aj" data-act="ajustes-seccion" data-a="">← Volver</button>';
+  }
+  // Estas pantallas se guardan solas al cambiar algo (ver "change" en eventos.js)
+  const guardado = '<p class="muted small" id="aOk" aria-live="polite"></p>';
+  let h;
+
+  if (seccionAjustes === "cuenta") {
+    const diasCopia = a.ultimaCopia ? diasEntre(a.ultimaCopia, hoy()) : null;
+    h = cabeza("Cuenta y copia") + '<div class="stack" data-ajustes>' + tarjetaNube() +
+      '<div class="card stack tight copia-ajustes"><h3>💾 Copia de seguridad</h3>' +
+        '<p class="small">' + (diasCopia === null ? "<b>Aún no tienes ninguna copia.</b>" : "Última copia: <b>" + fechaBonita(a.ultimaCopia) + "</b> (hace " + diasCopia + " " + plural(diasCopia, "día", "días") + ").") + (conectado() ? ' Tus entrenos ya se guardan en la nube; esta copia es un extra por si acaso.' : ' Tus entrenos solo están en este móvil: si borras la app, se pierden.') + '</p>' +
+        '<button class="btn full" data-act="hacer-copia">Hacer copia ahora</button>' +
+        '<p class="muted small">Se crea un archivo. En el iPhone, elige «Guardar en Archivos», Drive o mándatelo por correo.</p>' +
+        '<button class="btn-sec full" data-act="abrir-importar">Restaurar una copia</button>' +
+        '<button class="btn-sec full" data-act="abrir-otra-app">📥 Traer entrenos de Hevy o Strong</button>' +
+        // Con cuenta en la nube ya se guarda solo: el recordatorio no hace falta
+        (conectado() ? "" : '<label class="f">Recordarme hacer copia<select id="aCopiaDias">' + opciones([[7, "Cada semana"], [14, "Cada 2 semanas"], [30, "Cada mes"], [0, "Nunca"]], a.copiaDias === undefined ? 14 : a.copiaDias) + '</select></label>') +
+      '</div>' + guardado + '</div>';
+  } else if (seccionAjustes === "perfil") {
+    // El perfil es un formulario con datos que se comprueban: este sí tiene botón de guardar
+    h = cabeza("Editar perfil") + '<div class="stack"><div class="card stack">' + formPerfil(estado.perfil) + '</div>' +
+      '<button class="btn" data-act="guardar-perfil">Guardar cambios</button><p class="muted small" id="aOk"></p></div>';
+  } else if (seccionAjustes === "entreno") {
+    h = cabeza("Entrenamiento") + '<div class="stack" data-ajustes><div class="card stack">' +
       '<div class="grid2"><label class="f">Descanso en compuestos<select id="aDescComp">' + opciones([[90, "90 s"], [120, "2 min"], [150, "2:30"], [180, "3 min"], [240, "4 min"]], a.descansoCompuesto || 120) + '</select></label>' +
       '<label class="f">Descanso en aislamiento<select id="aDescanso">' + opciones([[45, "45 s"], [60, "60 s"], [75, "75 s"], [90, "90 s"], [120, "2 min"]], a.descansoAislamiento || 75) + '</select></label></div>' +
       '<p class="muted small" style="margin-top:-4px">Para ejercicios añadidos a mano. En la rutina, cada ejercicio guarda su propio descanso.</p>' +
       '<div class="grid2"><label class="f">Incremento barra y máquina<select id="aIncremento">' + opciones([[1, "1 kg"], [1.25, "1,25 kg"], [2.5, "2,5 kg"], [5, "5 kg"]], a.incremento) + '</select></label>' +
       '<label class="f">Incremento de mancuernas<select id="aIncMancuernas">' + opciones([[1, "1 kg"], [2, "2 kg"], [2.5, "2,5 kg"]], a.incrementoMancuernas) + '</select></label></div>' +
-      '<label class="f">Fórmula del 1RM estimado<select id="aFormula">' + opciones(Object.keys(FORMULAS_1RM).map(function (k) { return [k, FORMULAS_1RM[k].nombre]; }), a.formula1RM || "epley") + '</select></label>' +
-      '<p class="muted small" style="margin-top:-4px">Cambia el 1RM que ves en Progreso. Los rangos usan siempre Epley, para que sean justos para todos.</p>' +
       '<label class="f">Unidades<select id="aUnidad">' + opciones([["kg", "Kilogramos (kg)"], ["lb", "Libras (lb)"]], a.unidad || "kg") + '</select></label>' +
       '<p class="muted small">Tus datos se guardan siempre igual: cambiar de unidad no pierde nada.</p></div>' +
-    '<div class="card stack"><h3>Apariencia</h3><div class="seg">' + [["oscuro", "Oscuro"], ["claro", "Claro"], ["sistema", "Sistema"]].map(function (o) { return '<button data-act="tema" data-a="' + o[0] + '" class="' + (a.tema === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div>' +
-    '<div class="card stack"><h3>Privacidad</h3><label class="f">Quién ve tu perfil<select id="aPrivacidad">' + opciones([["publico", "Todo el mundo"], ["amigos", "Solo amigos"], ["privado", "Solo yo"]], a.privacidad) + '</select></label>' +
-      chk("aCompartir", a.compartir, "Mostrar mis entrenos a mis amigos") + '</div>' +
-    // Solo sale si aún no la tienes instalada (si ya lo está, no aporta nada)
-    (appInstalada() ? "" : '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>') +
-    '<div class="card stack tight"><h3>Calentamiento</h3>' + chk("aCalentamiento", a.calentamiento !== false, "Proponer series de calentamiento") +
-      '<p class="muted small">En los ejercicios grandes con peso (sentadilla, press banca, peso muerto…). No cuentan para récords ni rangos.</p></div>' +
-    '<div class="card stack tight"><h3>Ajustes recomendados</h3>' + chk("aSugerencias", a.sugerencias !== false, "Mostrar ajustes recomendados en Entrenar") +
-      '<p class="muted small">Son propuestas para tu rutina según tu historial (por ejemplo, añadir una serie). Nunca se aplican solas.</p></div>' +
-    '<div class="card stack tight" id="aj-sonido"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") + chk("aVibracion", a.vibracion !== false, "Vibración") +
-      (("wakeLock" in navigator) ? chk("aPantalla", a.pantallaEncendida !== false, "No apagar la pantalla mientras entreno") : "") +
-      '<p class="muted small">Prueba los sonidos:</p><div class="chips" style="flex-wrap:wrap">' + [["serie", "Serie"], ["descanso", "Descanso"], ["record", "Récord"], ["rango", "Rango"], ["fin", "Fin"], ["racha", "Racha"], ["enfadado", "Apix enfadado"]].map(function (x) { return '<button class="chip" data-act="probar-sonido" data-a="' + x[0] + '">' + x[1] + '</button>'; }).join("") + '</div></div>' +
-    '<div class="card stack tight"><h3>Apix, la mascota</h3>' + chk("aMascota", a.mascota !== false, "Mostrar a Apix en Inicio") +
-      '<label class="f">Carácter de Apix<select id="aCaracter">' + opciones([["amable", "😊 Amable"], ["chulo", "😏 Chulo (te vacila en plan colega)"]], a.apixCaracter === "chulo" ? "chulo" : "amable") + '</select></label>' +
-      '<button class="btn-sec" data-act="ver-tutorial">Ver el tutorial otra vez</button>' +
-      '<p class="muted small">Te anima los días de entreno, se enfada si pierdes la racha y celebra tus récords. Tócalo en Inicio y te contestará.</p></div>' +
-    '<div class="card stack tight" id="aj-avisos"><h3>Notificaciones</h3>' +
+      '<div class="card stack tight">' +
+        chk("aCalentamiento", a.calentamiento !== false, "Proponer series de calentamiento") +
+        '<p class="muted small">En los ejercicios grandes con peso (sentadilla, press banca, peso muerto…). No cuentan para récords ni rangos.</p>' +
+        chk("aSugerencias", a.sugerencias !== false, "Mostrar ajustes recomendados en Entrenar") +
+        '<p class="muted small">Son propuestas para tu rutina según tu historial (por ejemplo, añadir una serie). Nunca se aplican solas.</p>' +
+        (("wakeLock" in navigator) ? chk("aPantalla", a.pantallaEncendida !== false, "No apagar la pantalla mientras entreno") : "") +
+      '</div>' +
+      '<button class="btn-sec full" data-act="abrir-gimnasio">Mi gimnasio (máquinas disponibles)</button>' + guardado + '</div>';
+  } else if (seccionAjustes === "avisos") {
+    h = cabeza("Notificaciones") + '<div class="stack" data-ajustes><div class="card stack tight">' +
       chk("nRec", n.recordatorios, "Recordatorio los días de entreno") + chk("nRacha", n.racha !== false, "Aviso si tu racha está en peligro") + chk("nReto", n.retos !== false, "Aviso del último día de un reto") +
+      // Antes eran tres casillas (récords, ascensos y resumen semanal): ahora una sola
+      chk("nLogros", n.records || n.rangos || n.semanal, "Avisos de logros: récords, ascensos y resumen semanal") +
       '<label class="f">Hora del recordatorio<select id="nHora">' + opciones([[8, "8:00"], [10, "10:00"], [12, "12:00"], [16, "16:00"], [17, "17:00"], [18, "18:00"], [19, "19:00"], [20, "20:00"]], n.hora || 18) + '</select></label>' +
       '<button class="btn-sec" data-act="activar-avisos">' + (permisoAvisos() === "granted" ? "✓ Avisos activados en este móvil · Probar" : "Activar avisos en este móvil") + '</button>' +
       '<p class="muted small">' + (permisoAvisos() === "denied" ? "Has bloqueado los avisos. Actívalos en los ajustes del navegador." : (permisoAvisos() === "no" ? "Este navegador no permite avisos. En iPhone, instala la app en la pantalla de inicio." : (pushActivo() ? "Te llegan a esa hora aunque tengas la app cerrada. Máximo 1 al día." : "Llegan si abres la app ese día o la tienes en segundo plano. Máximo 1 al día."))) + '</p>' +
-      chk("nRecords", n.records, "Récords personales") + chk("nRangos", n.rangos, "Ascensos de rango") + chk("nSemanal", n.semanal, "Resumen semanal") +
-      '</div>' +
-    '<button class="btn" data-act="guardar-ajustes">Guardar cambios</button><p class="muted small" id="aOk"></p>' +
-    '<div class="card stack tight" id="aj-datos"><h3>Tus datos</h3>' +
-      '<button class="btn-sec full" data-act="abrir-gimnasio">Mi gimnasio (máquinas disponibles)</button>' +
-      '<button class="btn-sec full" data-act="abrir-privacidad">Privacidad y condiciones de uso</button>' +
+      '</div>' + guardado + '</div>';
+  } else if (seccionAjustes === "apariencia") {
+    h = cabeza("Apariencia") + '<div class="stack" data-ajustes>' +
+      '<div class="card stack tight"><h3>🌐 Idioma · Language · Langue</h3>' + selectorIdioma() + '</div>' +
+      '<div class="card stack tight"><div class="seg">' + [["oscuro", "Oscuro"], ["claro", "Claro"], ["sistema", "Sistema"]].map(function (o) { return '<button data-act="tema" data-a="' + o[0] + '" class="' + (a.tema === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div>' +
+      '<div class="card stack tight"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") + chk("aVibracion", a.vibracion !== false, "Vibración") + '</div>' +
+      '<div class="card stack tight"><h3>Apix, la mascota</h3>' + chk("aMascota", a.mascota !== false, "Mostrar a Apix en Inicio") +
+        '<label class="f">Carácter de Apix<select id="aCaracter">' + opciones([["amable", "😊 Amable"], ["chulo", "😏 Chulo (te vacila en plan colega)"]], a.apixCaracter === "chulo" ? "chulo" : "amable") + '</select></label>' +
+        '<p class="muted small">Te anima los días de entreno, se enfada si pierdes la racha y celebra tus récords. Tócalo en Inicio y te contestará.</p></div>' +
+      guardado + '</div>';
+  } else if (seccionAjustes === "privacidad") {
+    h = cabeza("Privacidad") + '<div class="stack" data-ajustes><div class="card stack tight">' +
+      '<label class="f">Quién ve tu perfil<select id="aPrivacidad">' + opciones([["publico", "Todo el mundo"], ["amigos", "Solo amigos"], ["privado", "Solo yo"]], a.privacidad) + '</select></label>' +
+      chk("aCompartir", a.compartir, "Mostrar mis entrenos a mis amigos") + '</div>' +
+      '<button class="btn-sec full" data-act="abrir-privacidad">Privacidad y condiciones de uso</button>' + guardado + '</div>';
+  } else if (seccionAjustes === "ayuda") {
+    h = cabeza("Ayuda") + '<div class="stack">' +
+      '<button class="btn-sec full" data-act="ver-tutorial">Ver el tutorial otra vez</button>' +
       '<button class="btn-sec full" data-act="informar-problema">Informar de un problema</button>' +
+      // Solo sale si aún no la tienes instalada (si ya lo está, no aporta nada)
+      (appInstalada() ? "" : '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>') +
       // Herramientas para revisar la app: solo se ven abriendo la app con ?dev al final de la dirección
       (MODO_DESARROLLO ? '<button class="btn-sec full" data-act="exportar">Ver los datos como texto</button>' +
         '<button class="btn-sec full" data-act="pruebas">Ejecutar pruebas de calidad</button>' +
         '<button class="btn-sec full" data-act="abrir-piloto">Prueba piloto</button>' : "") +
+      '</div>';
+  } else {
+    // El menú: tu perfil arriba y una fila por pantalla
+    seccionAjustes = "";
+    const p = estado.perfil;
+    const filas = [["cuenta", "☁️", "Cuenta y copia"], ["entreno", "🏋️", "Entrenamiento"], ["avisos", "🔔", "Notificaciones"],
+      ["apariencia", "🎨", "Apariencia"], ["privacidad", "🔒", "Privacidad"], ["ayuda", "❓", "Ayuda"]];
+    h = cabeceraHoja("Perfil y ajustes", estado.modo === "demo" ? "Modo demo" : "Cuenta en este dispositivo") + '<div class="stack">' +
+      '<div class="card row perfil-aj"><span class="avatar">' + esc(p.nombre[0] || "?").toUpperCase() + '</span>' +
+        '<div class="grow"><b>' + esc(p.nombre) + '</b><p class="muted small" data-no-traducir>@' + esc(p.usuario || "") + '</p></div>' +
+        '<button class="btn-sec" data-act="ajustes-seccion" data-a="perfil">Editar perfil</button></div>' +
+      '<div class="card menu-aj">' + filas.map(function (x) {
+        return '<button data-act="ajustes-seccion" data-a="' + x[0] + '"><span class="ico" aria-hidden="true">' + x[1] + '</span><span>' + x[2] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
+      }).join("") + '</div>' +
       '<button class="btn-sec full" data-act="cerrar-sesion">Cerrar sesión</button>' +
-      '<button class="btn-sec full btn-danger" data-act="borrar-todo">' + (confirmar === "borrar-todo" ? "Pulsa otra vez: se borrará todo" : "Eliminar cuenta y datos") + '</button></div></div>');
+      '<button class="btn-sec full btn-danger" data-act="borrar-todo">' + (confirmar === "borrar-todo" ? "Pulsa otra vez: se borrará todo" : "Eliminar cuenta y datos") + '</button></div>';
+  }
+  abrirHoja(h);
+}
+
+// Guarda lo que haya en la pantalla de ajustes abierta (solo los campos que están en pantalla)
+function guardarAjustesPantalla() {
+  const a = estado.ajustes;
+  function valor(id) { return $(id) ? $(id).value : null; }
+  function marcado(id) { return $(id) ? $(id).checked : null; }
+  if (valor("aDescComp") !== null) a.descansoCompuesto = parseInt(valor("aDescComp"));
+  if (valor("aDescanso") !== null) { a.descanso = parseInt(valor("aDescanso")); a.descansoAislamiento = a.descanso; }
+  if (valor("aIncremento") !== null) a.incremento = parseFloat(valor("aIncremento"));
+  if (valor("aIncMancuernas") !== null) a.incrementoMancuernas = parseFloat(valor("aIncMancuernas"));
+  if (valor("aUnidad") !== null) a.unidad = valor("aUnidad") === "lb" ? "lb" : "kg";
+  if (marcado("aCalentamiento") !== null) a.calentamiento = marcado("aCalentamiento");
+  if (marcado("aSugerencias") !== null) a.sugerencias = marcado("aSugerencias");
+  if (marcado("aPantalla") !== null) a.pantallaEncendida = marcado("aPantalla");
+  if (valor("aCopiaDias") !== null) a.copiaDias = parseInt(valor("aCopiaDias"));
+  if (marcado("aSonido") !== null) a.sonido = marcado("aSonido");
+  if (marcado("aVibracion") !== null) a.vibracion = marcado("aVibracion");
+  if (marcado("aMascota") !== null) a.mascota = marcado("aMascota");
+  if (valor("aCaracter") !== null) a.apixCaracter = valor("aCaracter") === "chulo" ? "chulo" : "amable";
+  if (valor("aPrivacidad") !== null) a.privacidad = valor("aPrivacidad");
+  if (marcado("aCompartir") !== null) a.compartir = marcado("aCompartir");
+  if (marcado("nRec") !== null) {
+    const logros = marcado("nLogros");
+    a.notif = { recordatorios: marcado("nRec"), racha: marcado("nRacha"), retos: marcado("nReto"), hora: parseInt(valor("nHora")),
+      records: logros, rangos: logros, amigos: a.notif.amigos, semanal: logros, ultimoAviso: a.notif.ultimoAviso || "" };
+    sincronizarAvisosPush();                         // la hora o los avisos pueden haber cambiado
+  }
+  guardar(); pintar();
+  if ($("aOk")) $("aOk").textContent = tr("Guardado");
 }
 
 // ---------- Cuenta en la nube (la parte de internet está en nube.js) ----------

@@ -94,7 +94,9 @@ const ACCIONES = {
     guardar(); cerrarHoja(); pintar();
   },
   "cerrar-hoja": function () { cerrarHoja(); confirmar = ""; pintar(); },
-  "abrir-ajustes": function () { confirmar = ""; hojaAjustes(); },
+  "abrir-ajustes": function () { confirmar = ""; hojaAjustes(""); },
+  // Abre una pantalla de Ajustes ("cuenta", "perfil"...) o vuelve al menú (vacío)
+  "ajustes-seccion": function (s) { confirmar = ""; hojaAjustes(s || ""); },
   "abrir-generador": function () { confirmar = ""; hojaGenerador(!genOp); },
   "gen-elegir": function (campo, valor) {
     leerOpcionesAvanzadas();
@@ -519,7 +521,6 @@ const ACCIONES = {
     guardar(); pintarSesion();
     toast(i >= 0 ? "Quitado de favoritos" : "★ Añadido a favoritos", i >= 0 ? "" : "ok");
   },
-  "ir-seccion": function (id) { const el = $(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); },
   "abrir-famosas": function () { confirmar = ""; hojaFamosas(); },
   "ver-famosa": function (k) {
     const r = rutinaDesdePlantilla(k);
@@ -897,7 +898,8 @@ const ACCIONES = {
 
   // ---------- Ajustes ----------
   "tema": function (t) { estado.ajustes.tema = t; guardar(); aplicarTema(); hojaAjustes(); },
-  "guardar-ajustes": async function () {
+  // Pantalla «Editar perfil» de Ajustes (lo demás de Ajustes se guarda solo al cambiarlo)
+  "guardar-perfil": async function () {
     const p = leerPerfil();
     if (!p) { $("fError").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     // Con cuenta en la nube, el usuario es único: se comprueba antes de cambiarlo
@@ -914,15 +916,8 @@ const ACCIONES = {
     p.diasSemana = Array.isArray(estado.perfil.diasSemana) && estado.perfil.diasSemana.length === p.dias ? estado.perfil.diasSemana : calendarioPorDefecto(p.dias);
     if (p.dias !== estado.perfil.dias) estado.ajustes.diasEntreno = p.diasSemana.slice();
     estado.perfil = p;
-    const a = estado.ajustes;
-    a.descanso = parseInt($("aDescanso").value); a.descansoAislamiento = a.descanso; a.descansoCompuesto = parseInt($("aDescComp").value); a.formula1RM = $("aFormula").value; a.incremento = parseFloat($("aIncremento").value); a.incrementoMancuernas = parseFloat($("aIncMancuernas").value);
-    a.unidad = $("aUnidad").value === "lb" ? "lb" : "kg";
-    a.privacidad = $("aPrivacidad").value; a.compartir = $("aCompartir").checked; a.mascota = $("aMascota").checked; a.apixCaracter = $("aCaracter").value === "chulo" ? "chulo" : "amable";
-    a.copiaDias = parseInt($("aCopiaDias").value); a.sonido = $("aSonido").checked; a.calentamiento = $("aCalentamiento").checked; a.sugerencias = $("aSugerencias").checked; a.vibracion = $("aVibracion").checked; if ($("aPantalla")) a.pantallaEncendida = $("aPantalla").checked;
-    a.notif = { recordatorios: $("nRec").checked, racha: $("nRacha").checked, retos: $("nReto").checked, hora: parseInt($("nHora").value), records: $("nRecords").checked, rangos: $("nRangos").checked, amigos: a.notif.amigos, semanal: $("nSemanal").checked, ultimoAviso: a.notif.ultimoAviso || "" };
     guardar(); pintar();
-    sincronizarAvisosPush();                         // la hora o los avisos pueden haber cambiado
-    $("aOk").textContent = "Cambios guardados.";
+    $("aOk").textContent = tr("Cambios guardados.");
   },
   "exportar": function () { hojaExportar(); },
   // Quita la tarjeta de ajustes recomendados (se puede volver a activar en Ajustes)
@@ -932,7 +927,8 @@ const ACCIONES = {
   },
   "pruebas": function () { pararDescanso(); hojaPruebas(); },
   "abrir-piloto": function () { hojaPiloto(); },
-  "informar-problema": function () {
+  // Informe de la prueba piloto (antes se llamaba igual que "informar-problema" y lo pisaba)
+  "guardar-informe-piloto": function () {
     const t = $("probTexto").value.trim();
     if (t.length < 5) { $("probError").textContent = "Describe el problema en al menos 5 caracteres."; return; }
     estado.metricas.problemas.push({ fecha: new Date().toISOString(), tipo: $("probTipo").value, texto: t.slice(0, 500), pantalla: tab });
@@ -1576,6 +1572,11 @@ document.addEventListener("touchend", function (ev) {
   const ei = ejercicioActual();
   ACCIONES["ir-ej"](dx < 0 ? ei + 1 : ei - 1);
 }, { passive: true });
+
+// Ajustes: las pantallas marcadas con data-ajustes se guardan solas al cambiar una opción
+document.addEventListener("change", function (ev) {
+  if (estado && ev.target.closest("#hoja [data-ajustes]")) guardarAjustesPantalla();
+});
 
 // ---------- Arranque ----------
 iniciarTraductor();       // idiomas: traduce la pantalla si no es español (traductor.js)
