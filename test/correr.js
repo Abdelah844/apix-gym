@@ -18,7 +18,7 @@ const contexto = { console: console, localStorage: new AlmacenFalso(), Math: Mat
 vm.createContext(contexto);
 
 const raiz = path.join(__dirname, "..");
-for (const archivo of ["idiomas.js", "traductor.js", "datos.js", "logica.js", "importar.js", "cardio.js", "estiramientos.js", "academia.js", "mascota.js", "sonidos.js", "nube.js", "pruebas.js"]) {
+for (const archivo of ["idiomas-en.js", "idiomas-fr.js", "idiomas-ary.js", "traductor.js", "datos.js", "logica.js", "importar.js", "cardio.js", "estiramientos.js", "academia.js", "mascota.js", "sonidos.js", "nube.js", "pruebas.js"]) {
   vm.runInContext(fs.readFileSync(path.join(raiz, archivo), "utf8"), contexto, { filename: archivo });
 }
 
@@ -56,7 +56,10 @@ const sw = fs.readFileSync(path.join(raiz, "sw.js"), "utf8");
 const lista = JSON.parse(sw.match(/const ARCHIVOS = (\[[\s\S]*?\]);/)[1].replace(/\s+/g, " "));
 const noExisten = lista.filter(function (f) { return f !== "./" && !fs.existsSync(path.join(raiz, f)); });
 comprobar("Todos los archivos que guarda sw.js existen", noExisten.length === 0, "faltan: " + noExisten.join(", "));
-const scripts = (fs.readFileSync(path.join(raiz, "index.html"), "utf8").match(/src="([^"]+\.js)"/g) || []).map(function (t) { return "./" + t.slice(5, -1); });
+let scripts = (fs.readFileSync(path.join(raiz, "index.html"), "utf8").match(/src="([^"]+\.js)"/g) || []).map(function (t) { return "./" + t.slice(5, -1); });
+// El archivo de idioma se elige al cargar (document.write): no va en ARCHIVOS, pero los 3 tienen que existir
+scripts = scripts.filter(function (f) { return f.indexOf("'") < 0; });
+comprobar("Existen los archivos de los 3 idiomas", ["en", "fr", "ary"].every(function (c) { return fs.existsSync(path.join(raiz, "idiomas-" + c + ".js")); }), "falta algún idiomas-xx.js");
 comprobar("sw.js guarda todos los scripts de index.html", scripts.every(function (f) { return lista.includes(f); }), "añade a ARCHIVOS: " + scripts.filter(function (f) { return !lista.includes(f); }).join(", "));
 
 console.log("\n" + (resultados.length - fallos) + " de " + resultados.length + " pruebas superadas en " + (Date.now() - inicio) + " ms");

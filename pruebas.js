@@ -1372,9 +1372,12 @@ const PRUEBAS = [
   }],
   ["2.9 Idiomas", "Cada traducción conserva los mismos números que el español", function () {
     if (typeof TRADUCCIONES === "undefined") return true;
-    for (const k in TRADUCCIONES) {
-      const n = (k.match(/\{n\}/g) || []).length;
-      for (const t of TRADUCCIONES[k]) if ((t.match(/\{n\}/g) || []).length !== n) return "Números distintos en: " + k;
+    for (const idioma in TRADUCCIONES) {           // solo los idiomas que estén cargados
+      const lista = TRADUCCIONES[idioma];
+      for (const k in lista) {
+        const n = (k.match(/\{n\}/g) || []).length;
+        if ((lista[k].match(/\{n\}/g) || []).length !== n) return "Números distintos en " + idioma + ": " + k;
+      }
     }
     return true;
   }]

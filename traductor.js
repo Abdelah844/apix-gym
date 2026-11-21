@@ -1,7 +1,8 @@
 // =====================================================
 // APIX GYM · IDIOMAS (español, inglés, francés y darija)
 // La app está escrita en español. Este archivo cambia los textos de la pantalla
-// al idioma elegido usando la lista de idiomas.js.
+// al idioma elegido usando la lista de idiomas-en.js, idiomas-fr.js o idiomas-ary.js
+// (index.html solo descarga la del idioma elegido; en español no descarga ninguna).
 //
 // Cómo funciona:
 //  1. Cada vez que la app pinta algo, un "observador" (MutationObserver) lo ve.
@@ -253,12 +254,12 @@ let traductorPatrones = [];
 const traductorCache = new Map();
 
 function prepararTraductor() {
-  if (traductorDicc || IDIOMA_ACTUAL === "es" || typeof TRADUCCIONES === "undefined") return;
-  // Columna de cada idioma: inglés 0, francés 1, darija 2 (si falta la darija, se usa el francés)
-  const i = { en: 0, fr: 1, ary: 2 }[IDIOMA_ACTUAL];
-  traductorDicc = {};
-  for (const clave in TRADUCCIONES) traductorDicc[clave] = TRADUCCIONES[clave][i] || TRADUCCIONES[clave][1];
-  const col = i + 1;
+  if (traductorDicc || IDIOMA_ACTUAL === "es") return;
+  // La lista del idioma elegido (la carga index.html). Si aún no ha llegado, se intenta luego.
+  if (typeof TRADUCCIONES === "undefined" || !TRADUCCIONES[IDIOMA_ACTUAL]) return;
+  traductorDicc = TRADUCCIONES[IDIOMA_ACTUAL];
+  // Columna de cada idioma en PATRONES: inglés 1, francés 2, darija 3
+  const col = { en: 1, fr: 2, ary: 3 }[IDIOMA_ACTUAL];
   traductorPatrones = PATRONES.map(function (p) {
     // "Hola, {x}" → /^Hola, (.+?)$/  (los caracteres especiales se escapan)
     const partes = p[0].split("{x}").map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); });

@@ -871,8 +871,12 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
   <div class="msg" id="celebraMsg"></div>
 </div>
 
-<script src="idiomas.js"></script>
 <script src="traductor.js"></script>
+<script>
+  // Solo se descarga la lista de traducciones del idioma elegido (en español no hace falta ninguna).
+  // document.write la carga aquí mismo, antes que el resto de archivos.
+  if (IDIOMA_ACTUAL !== "es") document.write('<script src="idiomas-' + IDIOMA_ACTUAL + '.js"><\/script>');
+</script>
 <script src="datos.js"></script>
 <script src="logica.js"></script>
 <script src="importar.js"></script>

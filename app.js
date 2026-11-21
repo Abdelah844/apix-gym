@@ -408,8 +408,7 @@ function pintarInicio() {
   });
   // Una sola tarjeta: racha, anillo de la semana, días y rango global
   h += '<div class="card stack tight"><div class="row between"><div><p class="label">Racha de constancia</p>' +
-    '<div class="row" style="gap:6px;align-items:baseline"><span class="big-num num" style="color:var(--fire)">' + rachaSemanas() + '</span><span class="muted">semanas</span>' +
-      (diasDeRacha() ? '<span class="racha-dias">🔥 <b class="num">' + diasDeRacha() + '</b> ' + (diasDeRacha() === 1 ? "día" : "días") + '</span>' : "") + '</div>' +
+    '<div class="row" style="gap:6px;align-items:baseline"><span class="big-num num" style="color:var(--fire)">' + diasDeRacha() + '</span><span class="muted">' + plural(diasDeRacha(), "día", "días") + '</span></div>' +   // solo los días: es el número exacto
     '<p class="muted small">Una semana cuenta si entrenas al menos ' + minimoSemanal() + ' días.</p></div>' +
     anilloSemana(semana, p.dias) + '</div>' +
     '<div class="week">' + semanaHtml + '</div>' +
@@ -427,9 +426,6 @@ function pintarInicio() {
       '<p class="muted small">Te falta un ' + Math.max(1, Math.round(prox.falta * 100)) + ' % de fuerza en este ejercicio.</p></div></button>';
   }
 
-  // Logros: cuántos llevas y cuál es el siguiente
-  h += logrosInicioHtml();
-
   // Datos rápidos
   const pesoC = estado.pesoCorporal.length ? estado.pesoCorporal[estado.pesoCorporal.length - 1].kg : null;
   const hace4 = puntosGlobal(fechaTexto(28));
@@ -441,25 +437,11 @@ function pintarInicio() {
     '<div class="card"><p class="label">Entrenos</p><div class="big-num num">' + estado.sesiones.length + '</div><p class="muted small">en total</p></div>' +
   '</div>';
 
-  // Último entreno y récords recientes, en una sola tarjeta
-  const prs = [];
-  for (let i = estado.sesiones.length - 1; i >= 0 && prs.length < 3; i--) {
-    for (const id of estado.sesiones[i].prs) if (prs.length < 3) prs.push({ id: id, fecha: estado.sesiones[i].fecha, s: estado.sesiones[i] });
-  }
+  // Último entreno (los récords recientes y los logros están en Progreso)
   if (ultima) {
     h += '<div class="card stack tight"><button class="stack tight" data-act="ver-sesion" data-a="' + ultima.id + '" style="text-align:left;width:100%;padding:0"><div class="row between"><p class="label">Último entreno</p><span class="muted small">' + fechaBonita(ultima.fecha) + '</span></div>' +
       '<h3>' + esc(ultima.diaNombre) + '</h3><p class="muted num">' + lineaSesion(ultima) +
-      (ultima.prs.length ? ' · <span style="color:var(--pr);font-weight:700">' + ultima.prs.length + ' récord' + (ultima.prs.length > 1 ? "s" : "") + '</span>' : "") + '</p></button>';
-    if (prs.length) {
-      h += '<div class="row between" style="border-top:1px solid var(--line);padding-top:10px"><p class="label">Récords recientes</p><button class="btn-txt small" data-tab="progreso">Ver progreso</button></div><div class="list">';
-      for (const r of prs) {
-        const e = r.s.ejercicios.find(function (x) { return x.id === r.id; });
-        const mejor = e.series.filter(function (x) { return x.hecha; }).sort(function (a, b) { return unaRM(b.peso, b.reps) - unaRM(a.peso, a.reps); })[0];
-        h += '<div class="item" style="padding:7px 0"><div class="grow"><span class="name small">' + esc(buscarEj(r.id).nombre) + '</span><span class="muted small num">' + numero(pesoVista(mejor.peso)) + ' ' + unidadPeso() + ' × ' + mejor.reps + ' · ' + fechaBonita(r.fecha) + '</span></div><span class="pill pr">Récord</span></div>';
-      }
-      h += '</div>';
-    }
-    h += '</div>';
+      (ultima.prs.length ? ' · <span style="color:var(--pr);font-weight:700">' + ultima.prs.length + ' ' + plural(ultima.prs.length, "récord", "récords") + '</span>' : "") + '</p></button></div>';
   }
 
   // Amigos: los tuyos (con su tarjeta) y, en la demo, su actividad
@@ -1619,12 +1601,30 @@ function pintarProgreso() {
   }
   h += ejerciciosClaveHtml(clave);
   if (ejerciciosHechos().length) h += '<button class="btn-sec small full" data-act="ver-evolucion">📈 Ver la gráfica de otro ejercicio</button>';
+  h += recordsRecientesHtml();
+  h += logrosInicioHtml();       // logros: cuántos llevas y cuál es el siguiente
   h += mapaProgresoHtml(cuenta, semanas, olvidados);
   h += calendarioConstanciaHtml();
   h += cardioProgresoHtml(ses);
   h += pesoTotalHtml(ses);
 
   $("app").innerHTML = h + '</div>';
+}
+
+// Tus 3 récords más recientes (en Progreso)
+function recordsRecientesHtml() {
+  const prs = [];
+  for (let i = estado.sesiones.length - 1; i >= 0 && prs.length < 3; i--) {
+    for (const id of estado.sesiones[i].prs) if (prs.length < 3) prs.push({ id: id, fecha: estado.sesiones[i].fecha, s: estado.sesiones[i] });
+  }
+  if (!prs.length) return "";
+  let h = '<div class="card stack tight"><p class="label">Récords recientes</p><div class="list">';
+  for (const r of prs) {
+    const e = r.s.ejercicios.find(function (x) { return x.id === r.id; });
+    const mejor = e.series.filter(function (x) { return x.hecha; }).sort(function (a, b) { return unaRM(b.peso, b.reps) - unaRM(a.peso, a.reps); })[0];
+    h += '<div class="item" style="padding:7px 0"><div class="grow"><span class="name small">' + esc(buscarEj(r.id).nombre) + '</span><span class="muted small num">' + numero(pesoVista(mejor.peso)) + ' ' + unidadPeso() + ' × ' + mejor.reps + ' · ' + fechaBonita(r.fecha) + '</span></div><span class="pill pr">Récord</span></div>';
+  }
+  return h + '</div></div>';
 }
 
 // Cardio del periodo elegido (solo si has hecho alguno)
