@@ -7,7 +7,6 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#0B0A10",
   "theme_color": "#0B0A10",
   "icons": [
@@ -28,6 +27,18 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Entrenar",
+      "url": "./index.html?ir=entrenar",
+      "icons": [{ "src": "iconos/icono-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Progreso",
+      "url": "./index.html?ir=progreso",
+      "icons": [{ "src": "iconos/icono-192.png", "sizes": "192x192" }]
     }
   ],
   "categories": [

@@ -1570,6 +1570,10 @@ document.addEventListener("touchend", function (ev) {
 iniciarTraductor();       // idiomas: traduce la pantalla si no es español (traductor.js)
 cargar();
 if (estado && estado.activa) { sesionRecuperada = true; tab = "entrenar"; }
+// Atajos del icono (manifest.json → shortcuts): "index.html?ir=progreso" abre esa pestaña.
+// Si hay un entreno a medias, manda el entreno.
+const atajo = new URLSearchParams(location.search).get("ir");
+if (estado && estado.perfil && !estado.activa && (atajo === "entrenar" || atajo === "progreso")) tab = atajo;
 pintar();
 // Si se acaba de cambiar el idioma desde el registro, se vuelve a abrir el registro
 try { if (!estado && sessionStorage.getItem("apex-abrir-registro")) { sessionStorage.removeItem("apex-abrir-registro"); pintarRegistro(); } } catch (e) { }
