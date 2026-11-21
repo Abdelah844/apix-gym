@@ -804,6 +804,8 @@ function pesoParaRM(id, rm, reps) {
 function proximoAscenso() {
   let mejor = null;
   for (const id of ejerciciosHechos()) {
+    const e = buscarEj(id);
+    if (e.grupo === "abdominales" || !e.compuesto) continue;   // solo ejercicios básicos: en abdomen y accesorios los rangos no son fiables
     const p = puntosEjercicio(id);
     const i = rangoDePuntos(p);
     if (i >= RANGOS.length - 1) continue;
@@ -2113,6 +2115,15 @@ function descansoRestante(activa, ahora) {
 // DATOS DE DEMOSTRACIÓN (ficticios y marcados)
 // =====================================================
 
+// Primer día (de las últimas 6 semanas) en que los puntos ya llegaban a ese rango. Lo usa la demo.
+function primerDiaConRango(calcularPuntos, rango) {
+  for (let i = 42; i >= 0; i--) {
+    const p = calcularPuntos(fechaTexto(i));
+    if (p !== null && rangoDePuntos(p) >= rango) return fechaTexto(i);
+  }
+  return hoy();
+}
+
 function crearDemo() {
   estado = estadoVacio({
     nombre: "Alex", usuario: "alex.demo", sexo: "hombre", edad: 22, altura: 178, peso: 74, experiencia: "intermedio",
@@ -2122,6 +2133,8 @@ function crearDemo() {
   estado.modo = "demo";
   estado.rutina = generarRutina({ objetivo: "masa", nivel: "intermedio", dias: 4, duracion: 60, tipo: "auto",
     equipo: estado.perfil.equipo, prioridad: "", evitar: "" });
+  // Bíceps con 3 series: con 2 la demo decía "casi no entrenas Bíceps" aunque tenía buen rango
+  for (const d of estado.rutina.dias) for (const o of d.ejercicios) if (buscarEj(o.id).grupo === "biceps") o.series = 3;
 
   estado.pesoCorporal = [];
   for (let i = 6; i >= 0; i--) estado.pesoCorporal.push({ fecha: fechaTexto(i * 7), kg: Math.round((72.6 + (6 - i) * 0.23) * 10) / 10 });
@@ -2158,10 +2171,15 @@ function crearDemo() {
   }
   recalcularHistorial();
 
+  // Historial de ascensos sacado de los propios datos de la demo,
+  // para que coincida con los rangos que se ven en Rangos.
+  const rangoGlobal = rangoDePuntos(puntosGlobal());
+  const rangoPecho = rangoDePuntos(puntosGrupo("pecho"));
   estado.ascensos = [
-    { fecha: fechaTexto(30), nombre: "Rango global", tipo: "global", rango: 2 },
-    { fecha: fechaTexto(12), nombre: "Pecho", tipo: "grupo", rango: 4 }
+    { fecha: primerDiaConRango(puntosGlobal, rangoGlobal), nombre: "Rango global", tipo: "global", rango: rangoGlobal },
+    { fecha: primerDiaConRango(function (f) { return puntosGrupo("pecho", f); }, rangoPecho), nombre: "Pecho", tipo: "grupo", rango: rangoPecho }
   ];
+  estado.ascensos.sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; });
 
   // Contenido social ficticio: todo lleva demo: true y solo se muestra en modo demo
   estado.social.amigos = ["demo-laura", "demo-marcos", "demo-sara"];

@@ -5,12 +5,12 @@
 // Si cambias algún archivo, sube el número de VERSION para que los móviles descarguen la nueva.
 // =====================================================
 
-const VERSION = "apex-gym-2.54.7";
+const VERSION = "apix-gym-2.54.8";
 
 // Archivos que se guardan nada más instalar la app
 const ARCHIVOS = [
   "./", "./index.html", "./manifest.json", "./privacidad.html", "./borrar-cuenta.html",
-  "./idiomas.js", "./traductor.js", "./datos.js", "./logica.js", "./importar.js", "./cardio.js", "./estiramientos.js", "./academia.js", "./mascota.js", "./imagen.js", "./fotos.js", "./sonidos.js", "./app.js", "./nube.js", "./pruebas.js", "./eventos.js",
+  "./idiomas.js", "./traductor.js", "./datos.js", "./logica.js", "./importar.js", "./cardio.js", "./estiramientos.js", "./academia.js", "./mascota.js", "./imagen.js", "./fotos.js", "./sonidos.js", "./app.js", "./nube.js", "./eventos.js",
   "./iconos/icono-192.png", "./iconos/icono-512.png",
   "./manrope.woff", "./chakra-petch-medium.woff", "./chakra-petch-semibold.woff", "./chakra-petch-bold.woff"
 ];
@@ -83,7 +83,7 @@ self.addEventListener("push", function (evento) {
   let datos = {};
   try { datos = evento.data ? evento.data.json() : {}; } catch (e) { datos = { texto: evento.data ? evento.data.text() : "" }; }
   evento.waitUntil(self.registration.showNotification(datos.titulo || "Apix Gym", {
-    body: datos.texto || "", icon: "iconos/icono-192.png", badge: "iconos/icono-192.png", tag: "apex-recordatorio",
+    body: datos.texto || "", icon: "iconos/icono-192.png", badge: "iconos/icono-192.png", tag: "apix-recordatorio",
     renotify: true, vibrate: [300, 150, 300, 150, 300]   // vuelve a sonar y vibra aunque ya hubiera otro aviso
   }));
 });

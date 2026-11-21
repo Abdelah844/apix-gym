@@ -1,6 +1,6 @@
 {
-  "name": "apex-gym",
-  "version": "2.7.0",
+  "name": "apix-gym",
+  "version": "2.54.8",
   "description": "App de entrenamiento con rangos de fuerza, progresión y rutinas adaptativas",
   "private": true,
   "scripts": {

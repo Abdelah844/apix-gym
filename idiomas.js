@@ -16513,6 +16513,21 @@ const TRADUCCIONES = {
 "Tu prends la barre droite par-dessus (tu vois tes jointures), mains à la largeur des épaules ou un peu moins.",
 "شد البارة النيشان من الفوق (كتشوف المفاصل ديال صوابعك)، واليدين بعرض الكتاف ولا شوية قل."
 ],
+"{n} comentario": [
+"{n} comment",
+"{n} commentaire",
+"{n} كومونتير"
+],
+"{n} récord": [
+"{n} record",
+"{n} record",
+"{n} ريكورد"
+],
+"No se han podido cargar las pruebas. Revisa tu conexión.": [
+"Couldn’t load the tests. Check your connection.",
+"Impossible de charger les tests. Vérifie ta connexion.",
+"ما قدرناش نحمّلو التيستات. شوف الكونيكسيون ديالك."
+],
 "Social": [
 "Social",
 "Social",

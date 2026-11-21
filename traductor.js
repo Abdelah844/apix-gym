@@ -102,6 +102,8 @@ const PATRONES = [
   ["Te hemos enviado un email a {x}. Ábrelo y pulsa el enlace para activar la cuenta. Después, inicia sesión.", "We’ve sent an email to {x}. Open it and tap the link to activate your account. Then log in.", "Nous avons envoyé un e-mail à {x}. Ouvre-le et appuie sur le lien pour activer le compte. Ensuite, connecte-toi.", "صيفطنا إيميل ل {x}. حلّو وورّك على اللينك باش تفعّل الكونط ديالك. ومن بعد دخل."],
   ["Superserie: ahora {x}", "Superset: now {x}", "Superset : maintenant {x}", "سوبرسيت: دابا {x}"],
   ["Hoy toca descanso · próximo: {x}", "Rest day today · next: {x}", "Repos aujourd’hui · prochain : {x}", "اليوم راحة · الجاي: {x}"],
+  ["Completó {x} · {x} series efectivas · {x} récord", "Completed {x} · {x} effective sets · {x} record", "A terminé {x} · {x} séries efficaces · {x} record", "كمّلت {x} · {x} سيريات فعالة · {x} ريكورد"],
+  ["Completó {x} · {x} series efectivas · {x} récords", "Completed {x} · {x} effective sets · {x} records", "A terminé {x} · {x} séries efficaces · {x} records", "كمّلت {x} · {x} سيريات فعالة · {x} ريكوردات"],
   ["Completó {x} · {x} series efectivas · {x} récord(s)", "Completed {x} · {x} effective sets · {x} record(s)", "A terminé {x} · {x} séries efficaces · {x} record(s)", "كمّلت {x} · {x} سيريات فعالة · {x} ريكورد"],
   ["Completó {x} · {x} series efectivas", "Completed {x} · {x} effective sets", "A terminé {x} · {x} séries efficaces", "كمّلت {x} · {x} سيريات فعالة"],
   ["💪 {x} en Apix Gym · racha de {x} semanas 🔥", "💪 {x} on Apix Gym · {x}-week streak 🔥", "💪 {x} sur Apix Gym · série de {x} semaines 🔥", "💪 {x} ف Apix Gym · سلسلة {x} سيمانات 🔥"],

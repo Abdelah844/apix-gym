@@ -62,7 +62,9 @@ const I = {
 let contadorInsignia = 0;
 function insignia(i, tam) {
   const vacio = i === null || i === undefined;
-  let s = '<svg class="badge ' + (tam || "") + '" viewBox="-22 -16 144 140" role="img" aria-label="' + (vacio ? "Sin rango" : "Rango " + RANGOS[i].nombre) + '">';
+  let etiqueta = vacio ? "Sin rango" : "Rango " + RANGOS[i].nombre;
+  if (tam === "logo") etiqueta = "Apix Gym";          // como logo de la app no es un rango
+  let s = '<svg class="badge ' + (tam || "") + '" viewBox="-22 -16 144 140" role="img" aria-label="' + etiqueta + '">';
   const hex = "50,4 94,29 94,83 50,108 6,83 6,29";
   if (vacio) return s + '<polygon points="' + hex + '" fill="var(--surface2)" stroke="var(--surface3)" stroke-width="4" stroke-dasharray="8 6"/>' +
     '<text x="50" y="66" text-anchor="middle" font-size="30" font-weight="700" fill="var(--muted)">–</text></svg>';
@@ -432,7 +434,7 @@ function pintarInicio() {
   const pesoC = estado.pesoCorporal.length ? estado.pesoCorporal[estado.pesoCorporal.length - 1].kg : null;
   const hace4 = puntosGlobal(fechaTexto(28));
   let fuerza = "—";
-  if (pg !== null && hace4 !== null) { const d = pg - hace4; fuerza = (d >= 0 ? "+" : "") + d.toFixed(1); }
+  if (pg !== null && hace4 !== null) { const d = pg - hace4; fuerza = (d >= 0 ? "+" : "") + numero(d.toFixed(1)); }   // con coma, como los kilos
   h += '<div class="grid3">' +
     '<div class="card"><p class="label">Peso</p><div class="big-num num">' + (pesoC ? numero(pesoVista(pesoC)) : "—") + '</div><p class="muted small">' + unidadPeso() + '</p></div>' +
     '<div class="card"><p class="label">Fuerza</p><div class="big-num num">' + fuerza + '</div><p class="muted small">pts · 4 sem</p></div>' +
@@ -694,6 +696,8 @@ let serieMarcada = "";          // "ei-si" de la última serie completada (para 
 let mensajeEntreno = "";        // frase corta de Apix durante el entreno
 
 function numero(n) { return String(n).replace(".", ","); }
+// Elige la palabra en singular o en plural según el número: plural(1, "récord", "récords") → "récord"
+function plural(n, singular, plural) { return n === 1 ? singular : plural; }
 const ETIQUETA_TIPO = { drop: "↓", rp: "⏸" };
 
 // Tiempo desde que empezó el entreno: 12:34 (o 1:05:20 si pasa de una hora)
@@ -713,6 +717,12 @@ function pasosGuia() {
     { sel: ".ts-fila.foco .tick", titulo: "✓ Completar la serie", texto: "Púlsalo al acabar la serie. Se guarda, empieza el descanso y la app pasa sola a la siguiente." },
     { sel: ".anadir-serie", titulo: "¿Haces una serie más?", texto: "Añádela aquí. Al terminar todo el entreno, pulsa «Terminar» arriba." }
   ];
+}
+// Quita la guía de la pantalla (sin marcarla como vista)
+function ocultarGuia() {
+  document.querySelectorAll(".guia-resalta").forEach(function (x) { x.classList.remove("guia-resalta"); });
+  $("guia").hidden = true;
+  pasoGuia = -1;
 }
 function mostrarGuia(paso) {
   document.querySelectorAll(".guia-resalta").forEach(function (x) { x.classList.remove("guia-resalta"); });
@@ -2158,7 +2168,7 @@ function feedHtml() {
       '<span class="pill ' + (x.tipo === "record" ? "pr" : (x.tipo === "rango" ? "up" : "keep")) + '">' + { record: "Récord", rango: "Rango", entreno: "Entreno" }[x.tipo] + '</span></div>' +
       '<p>' + esc(x.texto) + '</p>' +
       '<div class="acts"><button class="reaccion' + (gusta ? " on" : "") + '" data-act="like" data-a="' + x.id + '"><span class="emoji">' + (gusta ? "♥" : "♡") + '</span><span class="num">' + x.likes.length + '</span></button>' +
-      '<span>' + x.comentarios.length + ' comentarios</span>' +
+      '<span>' + x.comentarios.length + ' ' + plural(x.comentarios.length, 'comentario', 'comentarios') + '</span>' +
       (mio ? '<button data-act="borrar-post" data-a="' + x.id + '">' + (confirmar === "borrar-post" + x.id ? "Pulsa otra vez" : "Eliminar") + '</button>'
            : '<button data-act="denunciar" data-a="' + x.id + '">Denunciar</button>') + '</div>';
     for (const c of x.comentarios) h += '<p class="comment"><b>@' + esc(nombreDe(c.autorId, c.autorNombre)) + '</b> ' + esc(c.texto) + '</p>';
@@ -2878,7 +2888,7 @@ function hojaGrupo(g) {
   const ri = p === null ? null : rangoDePuntos(p);
   const ids = ejerciciosHechos().filter(function (id) { return buscarEj(id).grupo === g; });
   let h = cabeceraHoja(GRUPOS[g], "Grupo muscular") + '<div class="stack"><div class="row">' + insignia(ri, "lg") +
-    '<div class="grow stack tight"><h2>' + nombreRango(ri) + '</h2>' + (p !== null ? '<p class="muted num">' + p.toFixed(1) + ' puntos</p><div class="bar"><i style="width:' + progresoRango(p) + '%"></i></div>' : '<p class="muted">Aún no has registrado ejercicios de este grupo.</p>') + '</div></div>';
+    '<div class="grow stack tight"><h2>' + nombreRango(ri) + '</h2>' + (p !== null ? '<p class="muted num">' + numero(p.toFixed(1)) + ' puntos</p><div class="bar"><i style="width:' + progresoRango(p) + '%"></i></div>' : '<p class="muted">Aún no has registrado ejercicios de este grupo.</p>') + '</div></div>';
   if (ids.length) {
     h += '<div class="card"><h3>Ejercicios registrados</h3><div class="list">';
     for (const id of ids) {
@@ -3125,7 +3135,16 @@ function hojaConflictoNube(copia) {
     '<p class="muted small">Consejo: si no estás seguro, antes haz una copia en Ajustes → «Hacer copia ahora».</p></div>');
 }
 
+// pruebas.js no se carga al abrir la app (casi nadie lo usa): se descarga la primera vez que abres las pruebas
 function hojaPruebas() {
+  if (typeof ejecutarPruebas === "undefined") {
+    const script = document.createElement("script");
+    script.src = "pruebas.js";
+    script.onload = hojaPruebas;                        // cuando termine de descargarse, se vuelve a llamar
+    script.onerror = function () { toast("No se han podido cargar las pruebas. Revisa tu conexión.", "error"); };
+    document.body.appendChild(script);
+    return;
+  }
   const r = ejecutarPruebas();
   const ok = r.filter(function (x) { return x.ok; }).length;
   let h = cabeceraHoja("Pruebas de calidad", ok + " de " + r.length + " superadas") + '<div class="stack"><p class="muted small">Se ejecutan sobre datos de ejemplo. Tus datos no se modifican.</p><div class="card"><div class="list">';
@@ -3443,6 +3462,7 @@ function pintar() {
 function irA(nuevo) {
   const cambia = nuevo !== tab;
   if (nuevo === "social" && cambia) vistaSocial = "feed";        // Social siempre se abre en el feed
+  if (nuevo !== "entrenar" && pasoGuia >= 0) ocultarGuia();   // la guía de series solo tiene sentido en Entrenar
   tab = nuevo; confirmar = ""; window.scrollTo(0, 0); pintar();
   if (cambia) entradaSuave();
 }
@@ -3471,7 +3491,7 @@ function contarNumeros(zona) {
     const empieza = performance.now(), dura = 550;
     (function paso(ahora) {
       if (!el.isConnected) return;
-      const t = Math.min(1, (ahora - empieza) / dura);
+      const t = Math.max(0, Math.min(1, (ahora - empieza) / dura));   // entre 0 y 1: el primer fotograma puede llegar "antes" y daría negativos
       const v = fin * (1 - Math.pow(1 - t, 3));                 // frena al final
       el.textContent = t >= 1 ? texto : m[1] + (m[4] ? v.toFixed(1).replace(".", m[3]) : String(Math.round(v)));
       if (t < 1) requestAnimationFrame(paso);
@@ -3487,7 +3507,7 @@ function pideConfirmar(clave, repintar) {
 
 function textoSesion(s) {
   if (!s.ejercicios.length) return "Hizo " + totalCardio(s).min + " min de cardio";
-  return "Completó " + s.diaNombre + " · " + s.seriesEfectivas + " series efectivas" + (s.prs.length ? " · " + s.prs.length + " récord(s)" : "");
+  return "Completó " + s.diaNombre + " · " + s.seriesEfectivas + " series efectivas" + (s.prs.length ? " · " + s.prs.length + " " + plural(s.prs.length, "récord", "récords") : "");
 }
 
 // ---------- Avisos locales (recordatorios) ----------
@@ -3498,7 +3518,7 @@ function permisoAvisos() {
 function mostrarAviso(titulo, texto) {
   if (permisoAvisos() !== "granted") return false;
   titulo = tr(titulo); texto = tr(texto);          // los avisos no pasan por la pantalla: se traducen aquí
-  const op = { body: texto, icon: "iconos/icono-192.png", badge: "iconos/icono-192.png", tag: "apex-recordatorio" };
+  const op = { body: texto, icon: "iconos/icono-192.png", badge: "iconos/icono-192.png", tag: "apix-recordatorio" };
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(titulo, op); });
   } else {

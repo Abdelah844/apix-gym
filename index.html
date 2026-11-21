@@ -8,12 +8,12 @@
 <meta property="og:title" content="Apix Gym">
 <meta property="og:description" content="Registra tus entrenos, sigue tu progreso y sube de rango con datos reales. Gratis y sin anuncios.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="iconos/icono-512.png">
+<meta property="og:image" content="https://abdelah844.github.io/apix-gym/iconos/icono-512.png">
 <meta name="twitter:card" content="summary">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B0A10">
 <link rel="icon" href="iconos/icono-192.png">
-<link rel="apple-touch-icon" href="iconos/icono-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="iconos/icono-180.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Letras guardadas dentro de la app (archivos .woff junto a index.html): así no se pide nada a Google y funcionan sin internet */
@@ -416,7 +416,7 @@ button.avatar { border: 0; cursor: pointer; padding: 0; }
 
 .avatar { position: relative; }
 .priv-ok a { color: var(--accent); font-weight: 700; }
-.chip-ej { max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip-ej { flex-shrink: 0; max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* flex-shrink: 0 → no se encogen; la fila se desliza de lado */
 .welcome .idiomas { justify-content: center; flex-wrap: wrap; }
 /* Sin zoom al tocar dos veces (el zoom con dos dedos sigue funcionando) y sin zoom al escribir en el iPhone */
 html, body, button, a, label, input, select, textarea, [data-act] { touch-action: manipulation; }
@@ -859,7 +859,6 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 <script src="sonidos.js"></script>
 <script src="app.js"></script>
 <script src="nube.js"></script>
-<script src="pruebas.js"></script>
 <script src="eventos.js"></script>
 
 </body>
