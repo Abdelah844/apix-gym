@@ -4958,16 +4958,6 @@ const TRADUCCIONES = {
 "La carte a un rang non valide.",
 "الكارط فيها رتبة غالطة."
 ],
-"¿Qué tal esa molestia? Si sigue, hoy mejor menos peso o cambia el ejercicio.": [
-"How's that discomfort? If it's still there, go lighter today or swap the exercise.",
-"Comment va cette gêne ? Si elle est toujours là, prends moins lourd aujourd’hui ou change d’exercice.",
-"كيداير داك الوجع؟ إلا مازال، اليوم نقّص من الثقل ولا بدّل التمرين."
-],
-"Escucha a tu cuerpo: una molestia no es una lesión, pero tampoco hay que forzarla.": [
-"Listen to your body: discomfort isn't an injury, but you shouldn't push through it either.",
-"Écoute ton corps : une gêne n’est pas une blessure, mais il ne faut pas forcer non plus.",
-"سمع لجسمك: الوجع ماشي إصابة، ولكن حتى ما خاصكش تزيد تضغط عليه."
-],
 "La última vez marcaste molestias. Hoy, con calma: si duele, para y consulta a un profesional.": [
 "Last time you marked discomfort. Take it easy today: if it hurts, stop and see a professional.",
 "La dernière fois tu as signalé une gêne. Aujourd’hui, doucement : si ça fait mal, arrête et consulte un professionnel.",
@@ -10373,46 +10363,6 @@ const TRADUCCIONES = {
 "Dernière séance",
 "آخر حصة"
 ],
-"Soporte": [
-"Support",
-"Assistance",
-"الدعم"
-],
-"Informa de un error": [
-"Report a bug",
-"Signale un bug",
-"بلّغ على شي غلطة"
-],
-"Sugiere una funcionalidad": [
-"Suggest a feature",
-"Propose une fonctionnalité",
-"اقترح شي ميزة"
-],
-"Sugerir un ejercicio al catálogo": [
-"Suggest an exercise for the catalogue",
-"Proposer un exercice pour le catalogue",
-"اقترح تمرين للكتالوگ"
-],
-"Déjanos una reseña": [
-"Leave us a review",
-"Laisse-nous un avis",
-"خلي لينا رأيك"
-],
-"← Volver": [
-"← Back",
-"← Retour",
-"→ رجع"
-],
-"Cuenta y copia": [
-"Account and backup",
-"Compte et sauvegarde",
-"الكونط والنسخة الاحتياطية"
-],
-"Avisos de logros: récords, ascensos y resumen semanal": [
-"Achievement alerts: records, promotions and weekly summary",
-"Alertes de réussites : records, montées de rang et résumé hebdomadaire",
-"تنبيهات الإنجازات: الريكوردات، الترقيات وملخص السيمانة"
-],
 "← Anterior": [
 "← Previous",
 "← Précédent",
@@ -13863,10 +13813,10 @@ const TRADUCCIONES = {
 "Monte en rang",
 "طلع ف الرتب"
 ],
-"Cada músculo tiene su rango, de Hierro a Apex. Entrena equilibrado para subir tu rango global.": [
-"Each muscle has its own rank, from Iron to Apex. Train in a balanced way to raise your overall rank.",
-"Chaque muscle a son rang, de Fer à Apex. Entraîne-toi de façon équilibrée pour monter ton rang global.",
-"كل عضلة عندها الرتبة ديالها، من الحديد حتى ل Apex. تمرن بتوازن باش تطلع الرتبة العامة ديالك."
+"Cada músculo tiene su rango, de Hierro a Leyenda. Entrena equilibrado para subir tu rango global.": [
+"Each muscle has its own rank, from Iron to Legend. Train in a balanced way to raise your overall rank.",
+"Chaque muscle a son rang, de Fer à Légende. Entraîne-toi de façon équilibrée pour monter ton rang global.",
+"كل عضلة عندها الرتبة ديالها، من الحديد حتى الأسطورة. تمرن بتوازن باش تطلع الرتبة العامة ديالك."
 ],
 "Mira cómo mejoras": [
 "See how you improve",
@@ -14838,10 +14788,10 @@ const TRADUCCIONES = {
 "Des rangs par muscle",
 "رتب لكل عضلة"
 ],
-"De Hierro a Apex: ves qué músculos van bien y cuáles flojean.": [
-"From Iron to Apex: see which muscles are doing well and which are lagging.",
-"De Fer à Apex : tu vois quels muscles vont bien et lesquels sont à la traîne.",
-"من حديد حتى Apex: كتشوف شمن عضلات ماشيين مزيان وشمن واحدين ضعاف."
+"De Hierro a Leyenda: ves qué músculos van bien y cuáles flojean.": [
+"From Iron to Legend: see which muscles are doing well and which are lagging.",
+"De Fer à Légende : tu vois quels muscles vont bien et lesquels sont à la traîne.",
+"من حديد حتى الأسطورة: كتشوف شمن عضلات ماشيين مزيان وشمن واحدين ضعاف."
 ],
 "Aprende la técnica": [
 "Learn the technique",
@@ -14938,10 +14888,10 @@ const TRADUCCIONES = {
 "Invité",
 "ضيف"
 ],
-"Empiezas de cero, como cualquier usuario nuevo. Puedes cambiar tu nombre cuando quieras en Ajustes → Perfil.": [
-"You start from scratch, like any new user. You can change your name whenever you want in Settings → Profile.",
-"Tu pars de zéro, comme n'importe quel nouvel utilisateur. Tu peux changer ton nom quand tu veux dans Réglages → Profil.",
-"كتبدا من الصفر، بحال أي مستخدم جديد. تقدر تبدل سميتك فاش ما بغيتي ف الإعدادات ← البروفيل."
+"Verás la app con entrenos de ejemplo para probarla. Puedes cambiar tu nombre cuando quieras en Ajustes → Perfil.": [
+"You'll see the app with sample workouts so you can try it. You can change your name whenever you want in Settings → Profile.",
+"Tu verras l'app avec des séances d'exemple pour l'essayer. Tu peux changer ton nom quand tu veux dans Réglages → Profil.",
+"غادي تشوف الأپليكاسيون بحصص ديال المثال باش تجربها. تقدر تبدل سميتك فاش ما بغيتي ف الإعدادات ← البروفيل."
 ],
 "Entrar": [
 "Enter",
@@ -15148,10 +15098,10 @@ const TRADUCCIONES = {
 "Titan ·",
 "تيتان ·"
 ],
-"Apex ·": [
-"Apex ·",
-"Apex ·",
-"Apex ·"
+"Leyenda ·": [
+"Legend ·",
+"Légende ·",
+"الأسطورة ·"
 ],
 "📅 Mi semana": [
 "📅 My week",
@@ -15266,7 +15216,7 @@ const TRADUCCIONES = {
 "Leyenda": [
 "Legend",
 "Légende",
-"أسطورة"
+"الأسطورة"
 ],
 "una semana": [
 "a week",
@@ -15448,10 +15398,10 @@ const TRADUCCIONES = {
 "Les rangs sont maintenant plus exigeants",
 "الرتب ولاو صعاب كثر"
 ],
-"Antes se llegaba arriba demasiado pronto. Ahora cada rango vale más: Apex es nivel de élite. Si has bajado de rango, tu fuerza es la misma; lo que ha cambiado es la vara de medir, y es igual para todos.": [
-"It used to be too easy to reach the top. Now every rank is worth more: Apex is elite level. If your rank dropped, your strength is the same; what changed is the yardstick, and it's the same for everyone.",
-"Avant, on arrivait en haut trop vite. Maintenant chaque rang vaut plus : Apex, c'est le niveau élite. Si ton rang a baissé, ta force est la même ; c'est la règle de mesure qui a changé, et elle est la même pour tous.",
-"من قبل كان الواحد كيوصل للفوق بالزربة. دابا كل رتبة عندها قيمة كثر: Apex هو مستوى النخبة. إلا هبطتي ف الرتبة، القوة ديالك هي هي؛ اللي تبدل هو الميزان، وهو نفسو للجميع."
+"Antes se llegaba arriba demasiado pronto. Ahora cada rango vale más: Leyenda es nivel de élite. Si has bajado de rango, tu fuerza es la misma; lo que ha cambiado es la vara de medir, y es igual para todos.": [
+"It used to be too easy to reach the top. Now every rank is worth more: Legend is elite level. If your rank dropped, your strength is the same; what changed is the yardstick, and it's the same for everyone.",
+"Avant, on arrivait en haut trop vite. Maintenant chaque rang vaut plus : Légende, c'est le niveau élite. Si ton rang a baissé, ta force est la même ; c'est la règle de mesure qui a changé, et elle est la même pour tous.",
+"من قبل كان الواحد كيوصل للفوق بالزربة. دابا كل رتبة عندها قيمة كثر: الأسطورة هو مستوى النخبة. إلا هبطتي ف الرتبة، القوة ديالك هي هي؛ اللي تبدل هو الميزان، وهو نفسو للجميع."
 ],
 "Cómo funcionan los rangos": [
 "How ranks work",
@@ -16622,6 +16572,11 @@ const TRADUCCIONES = {
 "{n} h",
 "{n} h",
 "{n} ساعة"
+],
+"Rango Leyenda": [
+"Legend rank",
+"Rang Légende",
+"رتبة الأسطورة"
 ],
 "Social": [
 "Social",

@@ -674,7 +674,7 @@ function rangoDePuntos(p) {
 }
 
 // Escala de los rangos (versión 3, más exigente). Con 54, un chico de 80 kg necesita en press de banca
-// un máximo de unos 65 kg para Oro, 120 kg para Diamante y 160 kg para Apex, como en las tablas de fuerza habituales.
+// un máximo de unos 65 kg para Oro, 120 kg para Diamante y 160 kg para Leyenda, como en las tablas de fuerza habituales.
 // (Hasta la versión 2 era 75 y los rangos altos se conseguían demasiado pronto.)
 const ESCALA_RANGOS = 54;
 function puntosSerie(e, peso, reps, fecha) {
