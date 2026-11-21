@@ -4958,6 +4958,16 @@ const TRADUCCIONES = {
 "La carte a un rang non valide.",
 "الكارط فيها رتبة غالطة."
 ],
+"¿Qué tal esa molestia? Si sigue, hoy mejor menos peso o cambia el ejercicio.": [
+"How's that discomfort? If it's still there, go lighter today or swap the exercise.",
+"Comment va cette gêne ? Si elle est toujours là, prends moins lourd aujourd’hui ou change d’exercice.",
+"كيداير داك الوجع؟ إلا مازال، اليوم نقّص من الثقل ولا بدّل التمرين."
+],
+"Escucha a tu cuerpo: una molestia no es una lesión, pero tampoco hay que forzarla.": [
+"Listen to your body: discomfort isn't an injury, but you shouldn't push through it either.",
+"Écoute ton corps : une gêne n’est pas une blessure, mais il ne faut pas forcer non plus.",
+"سمع لجسمك: الوجع ماشي إصابة، ولكن حتى ما خاصكش تزيد تضغط عليه."
+],
 "La última vez marcaste molestias. Hoy, con calma: si duele, para y consulta a un profesional.": [
 "Last time you marked discomfort. Take it easy today: if it hurts, stop and see a professional.",
 "La dernière fois tu as signalé une gêne. Aujourd’hui, doucement : si ça fait mal, arrête et consulte un professionnel.",

@@ -43,8 +43,11 @@ const MENSAJES_APIX = {
     "Descansa bien hoy: mañana vuelves más fuerte.",
     "Hoy toca sofá, pero con permiso. 😴"
   ],
+  // Salen hasta 3 días después de marcar molestias: una frase distinta cada día para que no canse
   cuida: [
     "La última vez marcaste molestias. Hoy, con calma: si duele, para y consulta a un profesional.",
+    "¿Qué tal esa molestia? Si sigue, hoy mejor menos peso o cambia el ejercicio.",
+    "Escucha a tu cuerpo: una molestia no es una lesión, pero tampoco hay que forzarla."
   ],
   // Cuando las molestias se han marcado en el entreno de hoy
   cuidaHoy: [
