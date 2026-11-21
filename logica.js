@@ -1242,7 +1242,7 @@ function sugerenciasRutina() {
     const destino = destinoSerieExtra(r, g);
     if (!destino) continue;
     const o = r.dias[destino.dia].ejercicios[destino.pos];
-    lista.push({ texto: GRUPOS[g] + ": " + v[g] + " series por semana (recomendado unas " + objetivo + ").",
+    lista.push({ texto: GRUPOS[g] + ": " + String(v[g]).replace(".", ",") + " series por semana (recomendado unas " + objetivo + ").",
       motivo: "Se añadirá exactamente 1 serie a " + buscarEj(o.id).nombre + " (" + r.dias[destino.dia].nombre + "), que pasará de " + o.series + " a " + (o.series + 1) + " series.",
       boton: "Añadir 1 serie a " + buscarEj(o.id).nombre, aplicar: { tipo: "volumen", dia: destino.dia, pos: destino.pos, grupo: g } });
   }

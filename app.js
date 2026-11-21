@@ -504,14 +504,15 @@ function pintarEntrenar() {
     h += '<div class="card stack tight" style="text-align:center;padding:24px 16px"><h2>Aún no tienes rutina</h2><p class="muted">Créala en 3 pasos o entrena libre.</p><button class="btn" data-act="abrir-generador">Crear mi rutina</button></div>';
   } else {
     const sig = indiceSiguienteDia();
-    const sug = sugerenciasRutina();
+    // Los ajustes recomendados se pueden desactivar en Ajustes (o con «No mostrar más»)
+    const sug = estado.ajustes.sugerencias === false ? [] : sugerenciasRutina();
     if (sug.length) {
       h += '<div class="card stack tight"><p class="label" style="color:var(--accent)">Ajustes recomendados</p><p class="muted small">Basados en tu historial. Tú decides si aplicarlos.</p>';
       sug.forEach(function (x, i) {
         h += '<div class="stack tight" style="padding:10px 0;border-top:1px solid var(--line)"><p><b>' + esc(x.texto) + '</b></p><p class="muted small">' + esc(x.motivo) + '</p>' +
           (x.aplicar ? '<button class="btn-sec" data-act="aplicar-sugerencia" data-a="' + i + '">' + esc(x.boton) + '</button>' : "") + '</div>';
       });
-      h += '</div>';
+      h += '<button class="btn-txt small" data-act="ocultar-sugerencias">No mostrar más</button></div>';
     }
     if (mensajeSugerencia) { h += '<div class="card" style="border-color:var(--good)"><p class="small"><b>Cambio aplicado:</b> ' + esc(mensajeSugerencia) + '</p></div>'; mensajeSugerencia = ""; }
     const fd = factorDuracion();
@@ -3010,6 +3011,8 @@ function hojaAjustes() {
     (appInstalada() ? "" : '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>') +
     '<div class="card stack tight"><h3>Calentamiento</h3>' + chk("aCalentamiento", a.calentamiento !== false, "Proponer series de calentamiento") +
       '<p class="muted small">En los ejercicios grandes con peso (sentadilla, press banca, peso muerto…). No cuentan para récords ni rangos.</p></div>' +
+    '<div class="card stack tight"><h3>Ajustes recomendados</h3>' + chk("aSugerencias", a.sugerencias !== false, "Mostrar ajustes recomendados en Entrenar") +
+      '<p class="muted small">Son propuestas para tu rutina según tu historial (por ejemplo, añadir una serie). Nunca se aplican solas.</p></div>' +
     '<div class="card stack tight" id="aj-sonido"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") + chk("aVibracion", a.vibracion !== false, "Vibración") +
       (("wakeLock" in navigator) ? chk("aPantalla", a.pantallaEncendida !== false, "No apagar la pantalla mientras entreno") : "") +
       '<p class="muted small">Prueba los sonidos:</p><div class="chips" style="flex-wrap:wrap">' + [["serie", "Serie"], ["descanso", "Descanso"], ["record", "Récord"], ["rango", "Rango"], ["fin", "Fin"], ["racha", "Racha"], ["enfadado", "Apix enfadado"]].map(function (x) { return '<button class="chip" data-act="probar-sonido" data-a="' + x[0] + '">' + x[1] + '</button>'; }).join("") + '</div></div>' +

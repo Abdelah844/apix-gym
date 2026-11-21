@@ -16528,6 +16528,26 @@ const TRADUCCIONES = {
 "Impossible de charger les tests. Vérifie ta connexion.",
 "ما قدرناش نحمّلو التيستات. شوف الكونيكسيون ديالك."
 ],
+"No mostrar más": [
+"Don’t show again",
+"Ne plus afficher",
+"ما تبيّنش عاوتاني"
+],
+"Listo. Puedes volver a activarlos en Ajustes.": [
+"Done. You can turn them back on in Settings.",
+"C’est fait. Tu peux les réactiver dans Réglages.",
+"صافي. تقدر ترجّعهم ف الإعدادات."
+],
+"Mostrar ajustes recomendados en Entrenar": [
+"Show recommended tweaks in Train",
+"Afficher les ajustements recommandés dans Entraînement",
+"بيّن التعديلات المقترحة ف التمرين"
+],
+"Son propuestas para tu rutina según tu historial (por ejemplo, añadir una serie). Nunca se aplican solas.": [
+"They’re suggestions for your routine based on your history (for example, adding a set). They’re never applied on their own.",
+"Ce sont des propositions pour ton programme selon ton historique (par exemple, ajouter une série). Elles ne s’appliquent jamais toutes seules.",
+"هادو اقتراحات للروتين ديالك على حساب التاريخ ديالك (مثلا، زيد سيري). عمرهم ما كيتطبقو بوحدهم."
+],
 "Social": [
 "Social",
 "Social",

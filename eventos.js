@@ -903,13 +903,18 @@ const ACCIONES = {
     a.descanso = parseInt($("aDescanso").value); a.descansoAislamiento = a.descanso; a.descansoCompuesto = parseInt($("aDescComp").value); a.formula1RM = $("aFormula").value; a.incremento = parseFloat($("aIncremento").value); a.incrementoMancuernas = parseFloat($("aIncMancuernas").value);
     a.unidad = $("aUnidad").value === "lb" ? "lb" : "kg";
     a.privacidad = $("aPrivacidad").value; a.compartir = $("aCompartir").checked; a.mascota = $("aMascota").checked; a.apixCaracter = $("aCaracter").value === "chulo" ? "chulo" : "amable";
-    a.copiaDias = parseInt($("aCopiaDias").value); a.sonido = $("aSonido").checked; a.calentamiento = $("aCalentamiento").checked; a.vibracion = $("aVibracion").checked; if ($("aPantalla")) a.pantallaEncendida = $("aPantalla").checked;
+    a.copiaDias = parseInt($("aCopiaDias").value); a.sonido = $("aSonido").checked; a.calentamiento = $("aCalentamiento").checked; a.sugerencias = $("aSugerencias").checked; a.vibracion = $("aVibracion").checked; if ($("aPantalla")) a.pantallaEncendida = $("aPantalla").checked;
     a.notif = { recordatorios: $("nRec").checked, racha: $("nRacha").checked, retos: $("nReto").checked, hora: parseInt($("nHora").value), records: $("nRecords").checked, rangos: $("nRangos").checked, amigos: a.notif.amigos, semanal: $("nSemanal").checked, ultimoAviso: a.notif.ultimoAviso || "" };
     guardar(); pintar();
     sincronizarAvisosPush();                         // la hora o los avisos pueden haber cambiado
     $("aOk").textContent = "Cambios guardados.";
   },
   "exportar": function () { hojaExportar(); },
+  // Quita la tarjeta de ajustes recomendados (se puede volver a activar en Ajustes)
+  "ocultar-sugerencias": function () {
+    estado.ajustes.sugerencias = false; guardar(); pintar();
+    toast("Listo. Puedes volver a activarlos en Ajustes.", "ok");
+  },
   "pruebas": function () { pararDescanso(); hojaPruebas(); },
   "abrir-piloto": function () { hojaPiloto(); },
   "informar-problema": function () {
