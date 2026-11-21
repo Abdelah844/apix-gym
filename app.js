@@ -1787,6 +1787,12 @@ function rachaArribaHtml() {
   let visto = null;
   try { visto = localStorage.getItem("apix-racha-vista"); localStorage.setItem("apix-racha-vista", r.dias); } catch (e) { }
   if (visto !== null && r.dias > Number(visto)) clase += " sube";
+  // También se anima la primera vez que ves la semana a salvo (justo después del entreno que la completa)
+  if (r.faltan === 0) {
+    let semanaVista = null;
+    try { semanaVista = localStorage.getItem("apix-racha-salvo"); localStorage.setItem("apix-racha-salvo", lunesDe(hoy())); } catch (e) { }
+    if (semanaVista !== lunesDe(hoy()) && clase.indexOf("sube") < 0) clase += " sube";
+  }
   return '<button class="' + clase + '" data-act="ver-racha" aria-label="Racha: ' + r.dias + ' ' + plural(r.dias, "día", "días") + '"><span aria-hidden="true">🔥</span><b class="num">' + r.dias + '</b></button>';
 }
 
