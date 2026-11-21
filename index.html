@@ -747,6 +747,16 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 .perfil-cifras > div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .perfil-cifras b { font-family: var(--display); font-size: 1.4rem; }
 .perfil-cifras span { font-size: .74rem; color: var(--muted); }
+.racha-chip { display: flex; align-items: center; gap: 4px; height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface2); color: var(--muted); font-family: var(--display); font-weight: 700; font-size: 1rem; flex: none; position: relative; }
+.racha-chip span { filter: grayscale(1); opacity: .6; }
+.racha-chip.a-salvo { border-color: var(--fire); color: var(--fire); background: color-mix(in srgb, var(--fire) 14%, transparent); }
+.racha-chip.a-salvo span { filter: none; opacity: 1; }
+.racha-chip.peligro::after { content: ""; position: absolute; top: -3px; right: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--warn); border: 2px solid var(--bg); }
+.racha-chip.sube { animation: racha-sube .6s ease-out; }
+@keyframes racha-sube { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .racha-chip.sube { animation: none; } }
+.racha-aviso { color: var(--warn); margin: -8px 0 12px; }
+.racha-grande { font-size: 2.6rem; line-height: 1; }
 .perfil-social { display: flex; align-items: center; gap: 14px; }
 .perfil-social .perfil-cifras { margin: 4px 0 0; }
 .rejilla-ent { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }

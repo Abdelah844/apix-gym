@@ -751,6 +751,7 @@ const ACCIONES = {
     guardar(); cerrarHoja(); pintar(); toast("✓ Perfil guardado", "ok");
     await actualizarPerfilPublico();                 // tus amigos lo verán la próxima vez que entren
   },
+  "ver-racha": function () { hojaRacha(); },
   "ver-mas-entrenos": function () { entrenosVisibles += 12; pintarSocial(); },
   "vista-social": function (v) { vistaSocial = v; confirmar = ""; window.scrollTo(0, 0); pintarSocial(); entradaSuave(); },
 

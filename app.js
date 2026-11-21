@@ -334,8 +334,9 @@ function pintarInicio() {
   const ultima = estado.sesiones[estado.sesiones.length - 1];
 
   let h = '<div class="head"><div class="grow"><p class="label">' + new Date().toLocaleDateString(localeApp(), { weekday: "long", day: "numeric", month: "long" }) + '</p>' +
-    '<h1>Hola, ' + esc(p.nombre) + '</h1></div>' +
+    '<h1>Hola, ' + esc(p.nombre) + '</h1></div>' + rachaArribaHtml() +
     '<button class="avatar" data-act="abrir-ajustes" aria-label="Perfil y ajustes">' + esc(p.nombre[0] || "?").toUpperCase() + '<span class="engranaje" aria-hidden="true">⚙</span></button></div>';
+  h += rachaAvisoHtml();   // «Te falta 1 entreno esta semana…» (solo si la racha está en peligro)
 
   if (erroresCarga.length) h += '<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><p class="small"><b>Tus datos tienen algún valor incorrecto</b> (' + esc(erroresCarga[0]) + '). Se han cargado igualmente. Revisa tu perfil en Ajustes y exporta una copia.</p></div>';
   if (recuperadoDeCopia) h += '<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><p class="small"><b>Se recuperaron tus datos de la copia de seguridad</b> porque el archivo principal estaba dañado.</p></div>';
@@ -1767,6 +1768,58 @@ function historialSemanasHtml() {
 function usuarioDemo(uid) { return USUARIOS_DEMO.find(function (x) { return x.uid === uid; }); }
 
 let perfilSocial = "yo";          // de quién es el perfil abierto ("yo" o el id de un amigo)
+
+// ---------- Racha arriba a la derecha (solo en Inicio) ----------
+// Naranja: esta semana ya cuenta, la racha está a salvo.
+// Gris con un punto amarillo: aún te faltan entrenos esta semana para no perderla.
+function estadoRacha() {
+  const hechos = sesionesPorSemana()[lunesDe(hoy())] || 0;
+  const minimo = minimoSemanal();
+  return { dias: diasDeRacha(), semanas: rachaSemanas(), hechos: hechos, minimo: minimo, faltan: Math.max(0, minimo - hechos) };
+}
+
+function rachaArribaHtml() {
+  const r = estadoRacha();
+  let clase = "racha-chip";
+  if (r.faltan === 0) clase += " a-salvo";
+  else if (r.semanas > 0) clase += " peligro";
+  // Si el número ha subido desde la última vez que lo viste, hace una pequeña animación
+  let visto = null;
+  try { visto = localStorage.getItem("apix-racha-vista"); localStorage.setItem("apix-racha-vista", r.dias); } catch (e) { }
+  if (visto !== null && r.dias > Number(visto)) clase += " sube";
+  return '<button class="' + clase + '" data-act="ver-racha" aria-label="Racha: ' + r.dias + ' ' + plural(r.dias, "día", "días") + '"><span aria-hidden="true">🔥</span><b class="num">' + r.dias + '</b></button>';
+}
+
+function rachaAvisoHtml() {
+  const r = estadoRacha();
+  if (r.faltan === 0 || r.semanas === 0) return "";
+  return '<p class="racha-aviso small">Te ' + plural(r.faltan, "falta", "faltan") + ' ' + r.faltan + ' ' + plural(r.faltan, "entreno", "entrenos") + ' esta semana para no perder la racha.</p>';
+}
+
+// Ventana que se abre al tocar el fuego
+function hojaRacha() {
+  const r = estadoRacha();
+  const fechas = estado.sesiones.map(function (s) { return s.fecha; });
+  const hoyNum = (new Date().getDay() + 6) % 7;      // 0 = lunes
+  const iniciales = { es: "LMXJVSD", en: "MTWTFSS", fr: "LMMJVSD", ary: "ثثرخجسح" }[typeof IDIOMA_ACTUAL !== "undefined" ? IDIOMA_ACTUAL : "es"] || "LMXJVSD";
+  let semana = "";
+  iniciales.split("").forEach(function (letra, i) {
+    const hecho = fechas.includes(fechaTexto(hoyNum - i));
+    semana += '<div>' + letra + '<i class="' + (hecho ? "on" : "") + (i === hoyNum ? " today" : "") + '">' + (hecho ? '<span style="color:var(--on-accent)">' + I.check + '</span>' : "") + '</i></div>';
+  });
+  let mensaje;
+  if (r.faltan === 0) mensaje = "Esta semana ya cuenta. ¡Racha a salvo!";
+  else mensaje = "Llevas " + r.hechos + " de " + r.minimo + " entrenos esta semana. Con " + r.faltan + " más, la racha sigue.";
+  abrirHoja(cabeceraHoja("Tu racha", "Constancia") +
+    '<div class="stack">' +
+      '<div class="row" style="gap:14px"><span class="racha-grande" aria-hidden="true">🔥</span><div>' +
+        '<div class="big-num num" style="color:var(--fire)">' + r.dias + ' <span class="muted" style="font-size:1rem">' + plural(r.dias, "día", "días") + '</span></div>' +
+        '<p class="muted small">' + r.semanas + ' ' + plural(r.semanas, "semana seguida", "semanas seguidas") + '</p></div></div>' +
+      '<div class="week">' + semana + '</div>' +
+      '<div class="card"><p class="small">' + mensaje + '</p></div>' +
+      '<p class="muted small">Una semana cuenta si entrenas al menos ' + r.minimo + ' días.</p>' +
+    '</div>');
+}
 
 // ---------- Social: tu perfil con tus entrenos en cuadrícula ----------
 let entrenosVisibles = 12;        // fichas que se ven; «Ver más» enseña 12 más
