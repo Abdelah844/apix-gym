@@ -1,6 +1,6 @@
 {
   "name": "apix-gym",
-  "version": "2.54.11",
+  "version": "2.54.12",
   "description": "App de entrenamiento con rangos de fuerza, progresión y rutinas adaptativas",
   "private": true,
   "scripts": {

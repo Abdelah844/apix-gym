@@ -1180,7 +1180,8 @@ function pintarRangos() {
   const datosG = [];
   for (const g in GRUPOS) datosG.push({ g: g, p: puntosGrupo(g) });
   const ordenados = datosG.slice().sort(function (a, b) { return (b.p === null ? -1 : b.p) - (a.p === null ? -1 : a.p); });
-  h += '<div class="card"><div class="row between"><h3>Tus músculos</h3><span class="muted small">De más fuerte a más flojo</span></div><div class="list">';
+  // Plegado (cerrado) para que Rangos no sea tan larga: el mapa corporal ya enseña lo mismo con colores
+  h += '<details class="card dia-plegado"><summary><div class="grow"><h3>Tus músculos</h3><span class="muted small">De más fuerte a más flojo</span></div><span class="flecha" aria-hidden="true">▾</span></summary><div class="list" style="margin-top:8px">';
   ordenados.forEach(function (d, pos) {
     const ri = d.p === null ? null : rangoDePuntos(d.p);
     h += '<button class="item ranking-fila" data-act="ver-grupo" data-a="' + d.g + '"><span class="pos num">' + (d.p === null ? "–" : pos + 1) + '</span>' + insignia(ri, "sm") +
@@ -1189,7 +1190,7 @@ function pintarRangos() {
         : '<div class="bar"><i style="width:' + (ri < RANGOS.length - 1 ? progresoRango(d.p) : 100) + '%;background:' + RANGOS[ri].color + '"></i></div>' +
           '<span class="muted small">' + (ri < RANGOS.length - 1 ? progresoRango(d.p) + '% hacia ' + RANGOS[ri + 1].nombre : "Rango máximo") + '</span>') + '</div></button>';
   });
-  h += '</div></div>';
+  h += '</div></details>';
 
   // Escala de los 9 rangos: el tuyo resaltado, los que aún no tienes atenuados
   h += '<div class="card stack"><div class="row between"><h3>Los 9 rangos</h3><span class="muted small">De principiante a élite</span></div><div class="escala">';
@@ -1229,14 +1230,8 @@ function pintarRangos() {
     h += '</div></details>';
   }
 
-  // Historial de ascensos: plegado (cerrado) para que la pantalla de Rangos no sea tan larga.
-  // Al tocarlo se abre y enseña los 10 últimos.
-  h += '<details class="card dia-plegado"><summary><h3 class="grow">Historial de ascensos</h3><span class="muted small">' + estado.ascensos.length + '</span><span class="flecha" aria-hidden="true">▾</span></summary><div class="list" style="margin-top:8px">';
-  if (estado.ascensos.length === 0) h += '<p class="muted" style="padding-top:8px">Cuando subas de rango aparecerá aquí.</p>';
-  for (const a of estado.ascensos.slice().reverse().slice(0, 10)) {
-    h += '<div class="item">' + insignia(a.rango, "sm") + '<div class="grow"><span class="name small">' + esc(a.nombre) + ' → ' + RANGOS[a.rango].nombre + '</span><span class="muted small">' + fechaBonita(a.fecha) + '</span></div></div>';
-  }
-  $("app").innerHTML = h + '</div></details></div>';
+  // El historial de ascensos ya no se enseña aquí (ocupaba mucho). Los ascensos se siguen guardando.
+  $("app").innerHTML = h + '</div>';
 }
 
 // Una frase que dice qué hacer para subir (lo más importante primero)
@@ -1268,12 +1263,19 @@ function colorGrupo(g) {
 // Mapa corporal sencillo (vista frontal y trasera)
 // colorDe: función que da el color de cada músculo (por defecto, el de su rango)
 // accion: lo que pasa al tocar un músculo (por defecto, abre su ficha de rango)
-function mapaCorporal(colorDe, accion) {
+// vista (opcional): "frente" o "espalda" → solo esa mitad, en pequeño y sin botones (para las fichas de Social)
+function mapaCorporal(colorDe, accion, vista) {
   const color = colorDe || colorGrupo;
   const act = accion || "ver-grupo";
-  function z(g, forma) { return '<g class="zona" data-act="' + act + '" data-a="' + g + '" role="button" tabindex="0" aria-label="' + GRUPOS[g] + '"><title>' + GRUPOS[g] + '</title>' + forma.replace(/FILL/g, color(g)) + '</g>'; }
+  function z(g, forma) {
+    const dibujo = forma.replace(/FILL/g, color(g));
+    if (vista) return '<g>' + dibujo + '</g>';
+    return '<g class="zona" data-act="' + act + '" data-a="' + g + '" role="button" tabindex="0" aria-label="' + GRUPOS[g] + '"><title>' + GRUPOS[g] + '</title>' + dibujo + '</g>';
+  }
   const base = 'fill="var(--surface2)" stroke="var(--line)"';
   let s = '<svg class="mapa" viewBox="0 0 240 230">';
+  if (vista === "frente") s = '<svg class="silueta" viewBox="0 0 120 222" aria-hidden="true">';
+  if (vista === "espalda") s = '<svg class="silueta" viewBox="120 0 120 222" aria-hidden="true">';
   // Silueta frontal (x=60) y trasera (x=180)
   for (const cx of [60, 180]) {
     s += '<circle cx="' + cx + '" cy="20" r="13" ' + base + '/>' +
@@ -1297,7 +1299,7 @@ function mapaCorporal(colorDe, accion) {
   s += z("triceps", '<rect x="141" y="56" width="12" height="28" rx="6" ' + op + '/><rect x="207" y="56" width="12" height="28" rx="6" ' + op + '/>');
   s += z("gluteos", '<rect x="158" y="100" width="44" height="26" rx="12" ' + op + '/>');
   s += z("isquios", '<rect x="160" y="130" width="17" height="42" rx="8" ' + op + '/><rect x="183" y="130" width="17" height="42" rx="8" ' + op + '/>');
-  s += '<text x="60" y="229" text-anchor="middle" font-size="9" fill="var(--muted)">FRENTE</text><text x="180" y="229" text-anchor="middle" font-size="9" fill="var(--muted)">ESPALDA</text>';
+  if (!vista) s += '<text x="60" y="229" text-anchor="middle" font-size="9" fill="var(--muted)">FRENTE</text><text x="180" y="229" text-anchor="middle" font-size="9" fill="var(--muted)">ESPALDA</text>';
   return s + '</svg>';
 }
 
@@ -1765,6 +1767,70 @@ function usuarioDemo(uid) { return USUARIOS_DEMO.find(function (x) { return x.ui
 
 let perfilSocial = "yo";          // de quién es el perfil abierto ("yo" o el id de un amigo)
 
+// ---------- Social: tu perfil con tus entrenos en cuadrícula ----------
+let pestanaSocial = "entrenos";   // "entrenos" (tu cuadrícula) o "actividad" (lo de tus amigos)
+let entrenosVisibles = 12;        // fichas que se ven; «Ver más» enseña 12 más
+
+const MUSCULOS_FRENTE = ["pecho", "hombros", "biceps", "antebrazos", "abdominales", "cuadriceps"];
+const MUSCULOS_ESPALDA = ["espalda", "triceps", "gluteos", "isquios"];
+
+// Duración corta: «52 min» o «1 h 14 min»
+function duracionCorta(min) {
+  if (min < 60) return min + " min";
+  const resto = min % 60;
+  return Math.floor(min / 60) + " h" + (resto ? " " + resto + " min" : "");
+}
+
+// Silueta de un entreno: los músculos trabajados en color fuerte y los de apoyo en suave.
+// Se dibuja de frente o de espalda según dónde haya más series.
+function siluetaSesion(s) {
+  const series = seriesEfectivasPorGrupo([s]);
+  let frente = 0, espalda = 0;
+  for (const g of MUSCULOS_FRENTE) frente += series[g];
+  for (const g of MUSCULOS_ESPALDA) espalda += series[g];
+  const acento = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#9B7EFF";
+  function color(g) {
+    if (series[g] >= 3) return acento;              // trabajado de verdad
+    if (series[g] > 0) return acento + "59";        // solo de apoyo: el mismo color, más transparente
+    return "none";
+  }
+  return mapaCorporal(color, "", espalda > frente ? "espalda" : "frente");
+}
+
+// Una ficha de la cuadrícula: fecha, silueta y duración. Al tocarla se abre el entreno.
+function fichaEntreno(s) {
+  const partes = s.fecha.split("-");               // "2026-10-28" → "28/10"
+  const dibujo = soloCardio(s) ? '<span class="ficha-cardio" aria-hidden="true">🏃</span>' : siluetaSesion(s);
+  return '<button class="ficha-ent" data-act="ver-sesion" data-a="' + esc(s.id) + '">' +
+    '<span class="num small" data-no-traducir>' + partes[2] + '/' + partes[1] + '</span>' + dibujo +
+    '<span class="muted small num">' + (s.duracion ? duracionCorta(s.duracion) : "") + '</span></button>';
+}
+
+// Tu perfil arriba del todo: avatar, nombre y tres cifras
+function cabeceraPerfilHtml(conCuenta) {
+  const t = miTarjeta();
+  const bio = conCuenta ? miPerfilSocial().bio : "";
+  return '<div class="card perfil-social">' + avatarColor(estado.perfil.usuario, "grande", "yo") +
+    '<div class="grow stack tight"><h3 data-no-traducir>' + esc(estado.perfil.nombre || "") + '</h3>' +
+    (bio ? '<p class="muted small" data-no-traducir>' + esc(bio) + '</p>' : "") +
+    '<div class="perfil-cifras"><div><b class="num">' + t.entrenos + '</b><span>entrenos</span></div>' +
+    '<div><b class="num">' + t.racha + '</b><span>sem. de racha</span></div>' +
+    '<div>' + insignia(t.rango, "sm") + '<span>' + nombreRango(t.rango) + '</span></div></div></div></div>' +
+    (conCuenta ? '<button class="btn-sec small" data-act="editar-perfil-social">✏️ Editar perfil</button>' : "");
+}
+
+// Pestaña «Mis entrenos»: cuadrícula de 3 columnas, del más nuevo al más antiguo
+function misEntrenosHtml() {
+  const lista = sesionesValidas().slice().reverse();
+  if (!lista.length) {
+    return '<div class="card stack tight" style="text-align:center;padding:26px 18px">' + apixSVG("anima", "s") +
+      '<h3>Aquí saldrán tus entrenos</h3><p class="muted small">Cada entreno que termines aparecerá como una ficha con los músculos que has trabajado.</p></div>';
+  }
+  let h = '<div class="rejilla-ent">' + lista.slice(0, entrenosVisibles).map(fichaEntreno).join("") + '</div>';
+  if (lista.length > entrenosVisibles) h += '<button class="btn-sec" data-act="ver-mas-entrenos">Ver más</button>';
+  return h;
+}
+
 function pintarSocial() {
   if (estado.perfil.edad < 16) {
     $("app").innerHTML = '<div class="head"><div><p class="label">Comunidad</p><h1>Social</h1></div></div><div class="card stack tight"><h3>No disponible</h3><p class="muted">La parte social está desactivada para menores de 16 años para proteger tu privacidad. El resto de la app funciona igual.</p></div>';
@@ -1777,16 +1843,21 @@ function pintarSocial() {
   // Cabecera: en el feed, el título y tres iconos (amigos, retos y tu perfil); en lo demás, un botón para volver
   let h;
   if (vistaSocial === "feed") {
-    h = '<div class="head"><div><p class="label">Comunidad</p><h1>Social</h1></div><div class="social-iconos">' + (demo ? '<span class="demo-tag">Demo</span>' : "") +
+    // Arriba: tu @usuario y los iconos de amigos y retos. Debajo, tu perfil y dos pestañas.
+    h = '<div class="head"><div><p class="label">Social</p><h1 data-no-traducir>@' + esc(estado.perfil.usuario || "") + '</h1></div><div class="social-iconos">' + (demo ? '<span class="demo-tag">Demo</span>' : "") +
       '<button class="icono-social" data-act="vista-social" data-a="amigos" aria-label="Amigos">👥' + (pendientes ? '<span class="punto num">' + pendientes + '</span>' : "") + '</button>' +
-      '<button class="icono-social" data-act="vista-social" data-a="retos" aria-label="Retos">🎯</button>' +
-      (nube_ ? '<button class="icono-social" data-act="ver-amigo" data-a="yo" aria-label="Mi perfil">' + avatarColor(estado.perfil.usuario, "", "yo") + '</button>' : "") + '</div></div><div class="stack">';
+      '<button class="icono-social" data-act="vista-social" data-a="retos" aria-label="Retos">🎯</button></div></div><div class="stack">';
+    h += cabeceraPerfilHtml(nube_);
+    h += '<div class="seg"><button data-act="pestana-social" data-a="entrenos" class="' + (pestanaSocial === "entrenos" ? "on" : "") + '">🏋️ <span>Mis entrenos</span></button>' +
+      '<button data-act="pestana-social" data-a="actividad" class="' + (pestanaSocial === "actividad" ? "on" : "") + '">👥 <span>Actividad</span></button></div>';
   } else {
     const titulos = { amigos: "Amigos", retos: "Retos", perfil: "Perfil" };
     h = '<div class="head"><div><button class="btn-txt small volver" data-act="vista-social" data-a="feed">← Social</button><h1>' + titulos[vistaSocial] + '</h1></div></div><div class="stack">';
   }
-  if (demo && vistaSocial === "feed") h += '<p class="muted small">Los demás usuarios de la demo son ficticios.</p>';
-  if (vistaSocial === "retos") h += retosHtml();
+  const enActividad = vistaSocial === "feed" && pestanaSocial === "actividad";
+  if (demo && enActividad) h += '<p class="muted small">Los demás usuarios de la demo son ficticios.</p>';
+  if (vistaSocial === "feed" && pestanaSocial === "entrenos") h += misEntrenosHtml();
+  else if (vistaSocial === "retos") h += retosHtml();
   else if (demo) h += vistaSocial === "feed" ? feedHtml() : amigosHtml();
   else if (!conectado()) h += socialSinCuentaHtml();
   else if (vistaSocial === "perfil") h += perfilSocialHtml(perfilSocial);

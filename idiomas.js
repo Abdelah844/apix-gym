@@ -16548,6 +16548,31 @@ const TRADUCCIONES = {
 "Ce sont des propositions pour ton programme selon ton historique (par exemple, ajouter une série). Elles ne s’appliquent jamais toutes seules.",
 "هادو اقتراحات للروتين ديالك على حساب التاريخ ديالك (مثلا، زيد سيري). عمرهم ما كيتطبقو بوحدهم."
 ],
+"Aquí saldrán tus entrenos": [
+"Your workouts will show up here",
+"Tes séances apparaîtront ici",
+"هنا غادي يبانو الحصص ديالك"
+],
+"Cada entreno que termines aparecerá como una ficha con los músculos que has trabajado.": [
+"Every workout you finish will show up as a card with the muscles you trained.",
+"Chaque séance terminée apparaîtra sous forme de fiche avec les muscles travaillés.",
+"كل حصة كتكمّلها غادي تبان بحال فيشة فيها العضلات اللي خدمتي."
+],
+"Ver más": [
+"See more",
+"Voir plus",
+"شوف كثر"
+],
+"{n} h {n} min": [
+"{n} h {n} min",
+"{n} h {n} min",
+"{n} ساعة {n} دقيقة"
+],
+"{n} h": [
+"{n} h",
+"{n} h",
+"{n} ساعة"
+],
 "Social": [
 "Social",
 "Social",
