@@ -561,8 +561,8 @@ const FOTOS = {
   "elevaciones-polea": "Standing_Low-Pulley_Deltoid_Raise",
   "extension-cuadriceps": "Leg_Extensions",
   "extension-nuca": "Standing_Dumbbell_Triceps_Extension",
-  "extension-polea": "Triceps_Pushdown",
-  "extension-polea-v": "Triceps_Pushdown_-_V-Bar_Attachment",
+  "extension-polea": "IA",   // imágenes generadas por IA
+  "extension-polea-v": "IA",   // imágenes generadas por IA
   "extension-una-mano-polea": "Cable_One_Arm_Tricep_Extension",
   "face-pull": "Face_Pull",
   "flexiones": "Pushups",
@@ -611,8 +611,8 @@ const FOTOS = {
   "aperturas-mancuernas": "Dumbbell_Flyes",
   "aperturas-polea-baja": "Low_Cable_Crossover",
   "press-pecho-polea": "Cable_Chest_Press",
-  "jalon-estrecho": "V-Bar_Pulldown",
-  "jalon-cerrado": "Close-Grip_Front_Lat_Pulldown",
+  "jalon-estrecho": "IA",   // imágenes generadas por IA
+  "jalon-cerrado": "IA",   // imágenes generadas por IA
   "jalon-supino": "IA",   // imágenes generadas por IA
   "jalon-una-mano": "One_Arm_Lat_Pulldown",
   "jalon-neutro-ancho": "IA",   // imágenes generadas por IA

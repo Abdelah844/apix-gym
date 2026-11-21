@@ -85,7 +85,7 @@
 | extension-cuerda-nuca | Cable_Rope_Overhead_Triceps_Extension |
 | extension-inversa-polea | Reverse_Grip_Triceps_Pushdown |
 | extension-nuca | Standing_Dumbbell_Triceps_Extension |
-| extension-polea | Triceps_Pushdown |
+| extension-polea | Imágenes generadas por IA (generadas con Figma) |
 | extension-una-pierna | Single-Leg_Leg_Extension |
 | face-pull | Face_Pull |
 | flexiones | Pushups |
@@ -102,9 +102,9 @@
 | hip-thrust-maquina | Imágenes generadas por IA (aportadas por el autor de la app) |
 | hiperextensiones | Hyperextensions_Back_Extensions |
 | jalon | Imágenes generadas por IA (generadas con Figma) |
-| jalon-estrecho | V-Bar_Pulldown |
-| jalon-cerrado | Close-Grip_Front_Lat_Pulldown |
-| extension-polea-v | Triceps_Pushdown_-_V-Bar_Attachment |
+| jalon-estrecho | Imágenes generadas por IA (generadas con Figma) |
+| jalon-cerrado | Imágenes generadas por IA (generadas con Figma) |
+| extension-polea-v | Imágenes generadas por IA (generadas con Figma) |
 | elevaciones-maquina | Imágenes generadas por IA (aportadas por el autor de la app) |
 | extension-una-mano-polea | Cable_One_Arm_Tricep_Extension |
 | jalon-supino | Imágenes generadas por IA (generadas con Figma) |
