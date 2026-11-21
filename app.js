@@ -217,7 +217,7 @@ function pintarBienvenida() {
       '<div class="ventajas">' + v + '</div>' +
       '<button class="btn" data-act="ir-registro">Crear mi perfil</button>' +
       '<button class="btn-sec full" data-act="abrir-cuenta" data-a="entrar">☁️ Ya tengo cuenta: iniciar sesión</button>' +
-      '<button class="btn-txt" data-act="usar-demo">Entrar como invitado</button>' +
+      '<button class="btn-txt" data-act="usar-demo">Probar con datos de ejemplo</button>' +
       '<a class="muted small" href="privacidad.html">Privacidad y condiciones de uso</a>' +
       selectorIdioma() +
     '</div>';
