@@ -1574,8 +1574,10 @@ function pintarProgreso() {
 
   // ----- Pestaña Historial: solo la lista de entrenos -----
   if (subProgreso === "historial") {
-    $("app").innerHTML = h + historialSemanasHtml() +
-      '<button class="btn-txt small" data-act="abrir-otra-app" style="align-self:center">📥 ¿Vienes de Hevy o Strong? Trae tus entrenos</button></div>';
+    // El enlace de Hevy y Strong solo sale al principio (menos de 5 entrenos); después está en Ajustes → Cuenta y copia
+    let enlaceOtraApp = "";
+    if (sesionesValidas().length < 5) enlaceOtraApp = '<button class="btn-txt small" data-act="abrir-otra-app" style="align-self:center">📥 ¿Vienes de Hevy o Strong? Trae tus entrenos</button>';
+    $("app").innerHTML = h + historialSemanasHtml() + enlaceOtraApp + '</div>';
     return;
   }
 
@@ -1753,7 +1755,7 @@ function historialSemanasHtml() {
       lista.length + (lista.length === 1 ? ' entreno · ' : ' entrenos · ') + series + ' series · ' + miles(kg) + ' kg' + (prs ? ' · 🏆 ' + prs : "") + '</span></div><div class="list">';
     for (const s of lista) {
       h += '<button class="item" data-act="ver-sesion" data-a="' + s.id + '"><div class="grow"><span class="name">' + esc(s.diaNombre) + '</span><span class="muted small num"><span>' + fechaBonita(s.fecha) + '</span> · ' + lineaSesion(s) + '</span></div>' +
-        (s.prs.length ? '<span class="pill pr">' + s.prs.length + ' PR</span>' : "") + '</button>';
+        (s.prs.length ? '<span class="pill pr">' + s.prs.length + ' ' + plural(s.prs.length, "récord", "récords") + '</span>' : "") + '</button>';
     }
     h += '</div></div>';
   }
