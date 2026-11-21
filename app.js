@@ -1768,7 +1768,6 @@ function usuarioDemo(uid) { return USUARIOS_DEMO.find(function (x) { return x.ui
 let perfilSocial = "yo";          // de quién es el perfil abierto ("yo" o el id de un amigo)
 
 // ---------- Social: tu perfil con tus entrenos en cuadrícula ----------
-let pestanaSocial = "entrenos";   // "entrenos" (tu cuadrícula) o "actividad" (lo de tus amigos)
 let entrenosVisibles = 12;        // fichas que se ven; «Ver más» enseña 12 más
 
 const MUSCULOS_FRENTE = ["pecho", "hombros", "biceps", "antebrazos", "abdominales", "cuadriceps"];
@@ -1848,15 +1847,12 @@ function pintarSocial() {
       '<button class="icono-social" data-act="vista-social" data-a="amigos" aria-label="Amigos">👥' + (pendientes ? '<span class="punto num">' + pendientes + '</span>' : "") + '</button>' +
       '<button class="icono-social" data-act="vista-social" data-a="retos" aria-label="Retos">🎯</button></div></div><div class="stack">';
     h += cabeceraPerfilHtml(nube_);
-    h += '<div class="seg"><button data-act="pestana-social" data-a="entrenos" class="' + (pestanaSocial === "entrenos" ? "on" : "") + '">🏋️ <span>Mis entrenos</span></button>' +
-      '<button data-act="pestana-social" data-a="actividad" class="' + (pestanaSocial === "actividad" ? "on" : "") + '">👥 <span>Actividad</span></button></div>';
   } else {
     const titulos = { amigos: "Amigos", retos: "Retos", perfil: "Perfil" };
     h = '<div class="head"><div><button class="btn-txt small volver" data-act="vista-social" data-a="feed">← Social</button><h1>' + titulos[vistaSocial] + '</h1></div></div><div class="stack">';
   }
-  const enActividad = vistaSocial === "feed" && pestanaSocial === "actividad";
-  if (demo && enActividad) h += '<p class="muted small">Los demás usuarios de la demo son ficticios.</p>';
-  if (vistaSocial === "feed" && pestanaSocial === "entrenos") h += misEntrenosHtml();
+  // Social es tu perfil con tus entrenos (la pestaña «Actividad» se quitó)
+  if (vistaSocial === "feed") h += misEntrenosHtml();
   else if (vistaSocial === "retos") h += retosHtml();
   else if (demo) h += vistaSocial === "feed" ? feedHtml() : amigosHtml();
   else if (!conectado()) h += socialSinCuentaHtml();
