@@ -1,0 +1,11 @@
+# GitHub Pages: estos archivos siguen en el repositorio, pero NO se publican en la web.
+# Son documentos y herramientas internas que la app no necesita para funcionar.
+# (pruebas.js sí se publica: la app lo descarga al abrir las pruebas en Ajustes)
+exclude:
+  - INFORME.md
+  - PILOTO.md
+  - package.json
+  - firebase.json
+  - servidor/
+  - test/
+  - i18n/

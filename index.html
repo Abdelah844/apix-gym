@@ -8,8 +8,13 @@
 <meta property="og:title" content="Apix Gym">
 <meta property="og:description" content="Registra tus entrenos, sigue tu progreso y sube de rango con datos reales. Gratis y sin anuncios.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://abdelah844.github.io/apix-gym/iconos/icono-512.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://abdelah844.github.io/apix-gym/iconos/compartir-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Apix Gym: registra tus entrenos, sigue tu progreso y sube de rango.">
+<meta property="og:url" content="https://abdelah844.github.io/apix-gym/">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B0A10">
 <link rel="icon" href="iconos/icono-192.png">
@@ -568,8 +573,9 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 @keyframes graf-aparece { 0%, 40% { opacity: 0; } 100% { opacity: 1; } }
 .punto-oro { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--oro); vertical-align: middle; }
 /* Cambio de pestaña con un fundido corto */
-.app.entra-tab { animation: entra-tab .24s ease-out; }
-@keyframes entra-tab { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* Empieza medio visible (no desde negro) y dura poco: entre series se cambia de pestaña muchas veces */
+.app.entra-tab { animation: entra-tab .16s ease-out; }
+@keyframes entra-tab { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 #hoja { animation: hoja-fondo .2s ease-out; }
 @keyframes hoja-fondo { from { opacity: 0; } to { opacity: 1; } }
 /* Social: avatares de color, fichas de datos y reacciones grandes */
@@ -639,7 +645,11 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 @keyframes apix-respira { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.06, .96) translateY(3px); } }
 @media (prefers-reduced-motion: reduce) { #timerApix .apix, .evolucion .apix { animation: none !important; } }
 /* ---------- Social tipo Instagram ---------- */
-.social-iconos { display: flex; align-items: center; gap: 8px; }
+.social-iconos { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* El @usuario largo se recorta con «…» para que los iconos de Amigos y Retos nunca se salgan de la pantalla */
+.head-social > div:first-child { min-width: 0; }
+.head-social > div:first-child h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 380px) { .social-iconos .demo-tag { display: none; } }
 .icono-social { position: relative; width: 42px; height: 42px; border-radius: 50%; background: var(--surface2); display: grid; place-items: center; font-size: 1.15rem; padding: 0; }
 .icono-social .avatar { width: 42px; height: 42px; }
 .icono-social .punto { position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; border-radius: 99px; background: var(--danger); color: #fff; font-size: .68rem; font-weight: 800; display: grid; place-items: center; padding: 0 4px; }

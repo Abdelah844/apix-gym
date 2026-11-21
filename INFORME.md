@@ -1,5 +1,7 @@
 # Apix Gym 2.1 · Informe de entrega
 
+> **Nota de revisión (21 de noviembre de 2026):** algunos archivos que cita este informe **no están en el repositorio**: `.github/workflows/pruebas.yml` (integración continua), `test/nube.py` y `test/social.py`. Las pruebas que sí se pueden ejecutar desde el repositorio son las de `node test/correr.js` (159 de 159 superadas en esta fecha). Si esos archivos existen en otro sitio, hay que subirlos; si no, las cifras de esas secciones no se pueden comprobar.
+
 Fecha: 1 de noviembre de 2026 · Respuesta a la revisión «Nuevos fallos encontrados en Apix Gym 2.0».
 
 ## 1. Defectos de la auditoría: estado

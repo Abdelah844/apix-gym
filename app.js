@@ -1843,7 +1843,7 @@ function pintarSocial() {
   let h;
   if (vistaSocial === "feed") {
     // Arriba: tu @usuario y los iconos de amigos y retos. Debajo, tu perfil y dos pestañas.
-    h = '<div class="head"><div><p class="label">Social</p><h1 data-no-traducir>@' + esc(estado.perfil.usuario || "") + '</h1></div><div class="social-iconos">' + (demo ? '<span class="demo-tag">Demo</span>' : "") +
+    h = '<div class="head head-social"><div><p class="label">Social</p><h1 data-no-traducir>@' + esc(estado.perfil.usuario || "") + '</h1></div><div class="social-iconos">' + (demo ? '<span class="demo-tag">Demo</span>' : "") +
       '<button class="icono-social" data-act="vista-social" data-a="amigos" aria-label="Amigos">👥' + (pendientes ? '<span class="punto num">' + pendientes + '</span>' : "") + '</button>' +
       '<button class="icono-social" data-act="vista-social" data-a="retos" aria-label="Retos">🎯</button></div></div><div class="stack">';
     h += cabeceraPerfilHtml(nube_);

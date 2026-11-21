@@ -51,6 +51,9 @@ const ACCIONES = {
     const nombre = $("fInvitado") ? $("fInvitado").value.trim() : "";
     crearDemo();
     estado.perfil.nombre = nombre || (typeof tr === "function" ? tr("Invitado") : "Invitado");
+    // El @usuario sale del nombre (sin tildes ni espacios), para que Social no muestre «@alex.demo» junto a otro nombre
+    const usuario = nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, ".").replace(/[^a-z0-9._]/g, "").slice(0, 20);
+    estado.perfil.usuario = usuario.length >= 3 ? usuario : "invitado";
     cerrarHoja(); guardar(); tab = "inicio"; pintar();
   },
   "crear-perfil": function () {
