@@ -14888,10 +14888,10 @@ const TRADUCCIONES = {
 "Invité",
 "ضيف"
 ],
-"Verás la app con entrenos de ejemplo para probarla. Puedes cambiar tu nombre cuando quieras en Ajustes → Perfil.": [
-"You'll see the app with sample workouts so you can try it. You can change your name whenever you want in Settings → Profile.",
-"Tu verras l'app avec des séances d'exemple pour l'essayer. Tu peux changer ton nom quand tu veux dans Réglages → Profil.",
-"غادي تشوف الأپليكاسيون بحصص ديال المثال باش تجربها. تقدر تبدل سميتك فاش ما بغيتي ف الإعدادات ← البروفيل."
+"Empiezas de cero, como cualquier usuario nuevo. Puedes cambiar tu nombre cuando quieras en Ajustes → Perfil.": [
+"You start from scratch, like any new user. You can change your name whenever you want in Settings → Profile.",
+"Tu pars de zéro, comme n'importe quel nouvel utilisateur. Tu peux changer ton nom quand tu veux dans Réglages → Profil.",
+"كتبدا من الصفر، بحال أي مستخدم جديد. تقدر تبدل سميتك فاش ما بغيتي ف الإعدادات ← البروفيل."
 ],
 "Entrar": [
 "Enter",

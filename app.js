@@ -217,7 +217,7 @@ function pintarBienvenida() {
       '<div class="ventajas">' + v + '</div>' +
       '<button class="btn" data-act="ir-registro">Crear mi perfil</button>' +
       '<button class="btn-sec full" data-act="abrir-cuenta" data-a="entrar">☁️ Ya tengo cuenta: iniciar sesión</button>' +
-      '<button class="btn-txt" data-act="usar-demo">Probar con datos de ejemplo</button>' +
+      '<button class="btn-txt" data-act="usar-demo">Entrar como invitado</button>' +
       '<a class="muted small" href="privacidad.html">Privacidad y condiciones de uso</a>' +
       selectorIdioma() +
     '</div>';
@@ -339,7 +339,7 @@ function pintarInicio() {
 
   if (erroresCarga.length) h += '<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><p class="small"><b>Tus datos tienen algún valor incorrecto</b> (' + esc(erroresCarga[0]) + '). Se han cargado igualmente. Revisa tu perfil en Ajustes y exporta una copia.</p></div>';
   if (recuperadoDeCopia) h += '<div class="card" style="margin-bottom:14px;border-color:var(--warn)"><p class="small"><b>Se recuperaron tus datos de la copia de seguridad</b> porque el archivo principal estaba dañado.</p></div>';
-  if (estado.modo === "demo") h += '<div class="row between" style="margin-bottom:14px"><span class="demo-tag">Datos de ejemplo</span><button class="btn-txt small" data-act="salir-demo">Crear mi perfil</button></div>';
+  if (estado.modo === "demo") h += '<div class="row between" style="margin-bottom:14px"><span class="demo-tag">Invitado</span><button class="btn-txt small" data-act="salir-demo">Crear mi perfil</button></div>';
 
   h += '<div class="stack">';
 

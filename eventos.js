@@ -40,12 +40,32 @@ const ACCIONES = {
   // ---------- Bienvenida y registro ----------
   "ir-registro": function () { pintarRegistro(); },
   "volver-bienvenida": function () { pintarBienvenida(); },
-  // Ejemplo: se entra en la app de "Alex", un usuario ficticio con entrenos de ejemplo.
-  // Ya no lleva el nombre de la persona: así no ve como suyo un progreso (racha, rango Oro) que no ha hecho.
-  // Para empezar de cero sin cuenta está "Crear mi perfil" (los datos se guardan en el móvil).
+  // Invitado: primero se pregunta el nombre (se puede dejar vacío) y luego se entra empezando de cero
   "usar-demo": function () {
+    abrirHoja(cabeceraHoja("Entrar como invitado", "") + '<div class="stack">' +
+      '<label class="f">¿Cómo te llamas?<input id="fInvitado" maxlength="30" placeholder="Invitado" autocomplete="given-name"></label>' +
+      '<p class="muted small">Empiezas de cero, como cualquier usuario nuevo. Puedes cambiar tu nombre cuando quieras en Ajustes → Perfil.</p>' +
+      '<button class="btn full" data-act="entrar-invitado">Entrar</button></div>');
+  },
+  "entrar-invitado": function () {
+    const nombre = $("fInvitado") ? $("fInvitado").value.trim() : "";
     crearDemo();
-    guardar(); tab = "inicio"; pintar();
+    // El progreso empieza de cero, como cualquier usuario nuevo: sin entrenos, sin racha, sin rangos ni retos.
+    // (De la demo solo quedan los amigos ficticios de Social, para ver cómo funciona.)
+    estado.sesiones = [];
+    estado.ascensos = [];
+    estado.social.retos = [];
+    estado.pesoCorporal = [{ fecha: hoy(), kg: estado.perfil.peso }];
+    estado.perfil.experiencia = "principiante";
+    estado.perfil.dias = 3;
+    estado.rutina = generarRutina({ objetivo: "masa", nivel: "principiante", dias: 3, duracion: 60, tipo: "auto",
+      equipo: estado.perfil.equipo, prioridad: "", evitar: "" });
+    recalcularHistorial();
+    estado.perfil.nombre = nombre || (typeof tr === "function" ? tr("Invitado") : "Invitado");
+    // El @usuario sale del nombre (sin tildes ni espacios), para que Social no muestre «@alex.demo» junto a otro nombre
+    const usuario = nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, ".").replace(/[^a-z0-9._]/g, "").slice(0, 20);
+    estado.perfil.usuario = usuario.length >= 3 ? usuario : "invitado";
+    cerrarHoja(); guardar(); tab = "inicio"; pintar();
   },
   "crear-perfil": function () {
     const p = leerPerfil();
