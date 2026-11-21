@@ -3053,6 +3053,7 @@ function hojaReto() {
 let seccionAjustes = "";
 function hojaAjustes(seccion) {
   if (seccion !== undefined) seccionAjustes = seccion;
+  if (seccionAjustes === "instalar" && appInstalada() && !MODO_DESARROLLO) seccionAjustes = "";
   const a = estado.ajustes;
   const n = a.notif;
   function chk(id, valor, texto) { return '<label class="check"><input type="checkbox" id="' + id + '"' + (valor ? " checked" : "") + '>' + texto + '</label>'; }
@@ -3120,11 +3121,10 @@ function hojaAjustes(seccion) {
       '<label class="f">Quién ve tu perfil<select id="aPrivacidad">' + opciones([["publico", "Todo el mundo"], ["amigos", "Solo amigos"], ["privado", "Solo yo"]], a.privacidad) + '</select></label>' +
       chk("aCompartir", a.compartir, "Mostrar mis entrenos a mis amigos") + '</div>' +
       '<button class="btn-sec full" data-act="abrir-privacidad">Privacidad y condiciones de uso</button>' + guardado + '</div>';
-  } else if (seccionAjustes === "ayuda") {
-    h = cabeza("Ayuda") + '<div class="stack">' +
-      '<button class="btn-sec full" data-act="ver-tutorial">Ver el tutorial otra vez</button>' +
-      // Solo sale si aún no la tienes instalada (si ya lo está, no aporta nada)
-      (appInstalada() ? "" : '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>') +
+  } else if (seccionAjustes === "instalar") {
+    // Se llega desde Soporte. Solo sale si aún no la tienes instalada (si ya lo está, no aporta nada)
+    h = cabeza("Instalar en el móvil") + '<div class="stack">' +
+      (appInstalada() ? "" : '<div class="card stack tight">' + textoInstalar() + '</div>') +
       // Herramientas para revisar la app: solo se ven abriendo la app con ?dev al final de la dirección
       (MODO_DESARROLLO ? '<button class="btn-sec full" data-act="exportar">Ver los datos como texto</button>' +
         '<button class="btn-sec full" data-act="pruebas">Ejecutar pruebas de calidad</button>' +
@@ -3135,7 +3135,14 @@ function hojaAjustes(seccion) {
     seccionAjustes = "";
     const p = estado.perfil;
     const filas = [["cuenta", "☁️", "Cuenta y copia"], ["entreno", "🏋️", "Entrenamiento"], ["avisos", "🔔", "Notificaciones"],
-      ["apariencia", "🎨", "Apariencia"], ["privacidad", "🔒", "Privacidad"], ["ayuda", "❓", "Ayuda"]];
+      ["apariencia", "🎨", "Apariencia"], ["privacidad", "🔒", "Privacidad"]];
+    // Soporte: [acción, dato, icono, texto]. Las de "contactar" abren el correo con el asunto ya escrito (eventos.js)
+    const soporte = [["ver-tutorial", "", "🎓", "Ver el tutorial otra vez"], ["contactar", "error", "❗", "Informa de un error"],
+      ["contactar", "idea", "💡", "Sugiere una funcionalidad"], ["contactar", "ejercicio", "💪", "Sugerir un ejercicio al catálogo"],
+      ["contactar", "opinion", "⭐", "Déjanos una reseña"]];
+    if (!appInstalada()) soporte.push(["ajustes-seccion", "instalar", "📲", "Instalar en el móvil"]);
+    // Herramientas para revisar la app: solo se ven abriendo la app con ?dev al final de la dirección
+    else if (MODO_DESARROLLO) soporte.push(["ajustes-seccion", "instalar", "🛠", "Herramientas"]);
     h = cabeceraHoja("Perfil y ajustes", estado.modo === "demo" ? "Modo demo" : "Cuenta en este dispositivo") + '<div class="stack">' +
       '<div class="card row perfil-aj"><span class="avatar">' + esc(p.nombre[0] || "?").toUpperCase() + '</span>' +
         '<div class="grow"><b>' + esc(p.nombre) + '</b><p class="muted small" data-no-traducir>@' + esc(p.usuario || "") + '</p></div>' +
@@ -3143,10 +3150,8 @@ function hojaAjustes(seccion) {
       '<div class="card menu-aj">' + filas.map(function (x) {
         return '<button data-act="ajustes-seccion" data-a="' + x[0] + '"><span class="ico" aria-hidden="true">' + x[1] + '</span><span>' + x[2] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
       }).join("") + '</div>' +
-      // Soporte: cada fila abre el correo con el asunto ya escrito (acción "contactar" en eventos.js)
-      '<p class="label titulo-grupo-aj">Soporte</p><div class="card menu-aj">' + [["error", "❗", "Informa de un error"], ["idea", "💡", "Sugiere una funcionalidad"],
-        ["ejercicio", "💪", "Sugerir un ejercicio al catálogo"], ["opinion", "⭐", "Déjanos una reseña"]].map(function (x) {
-        return '<button data-act="contactar" data-a="' + x[0] + '"><span class="ico" aria-hidden="true">' + x[1] + '</span><span>' + x[2] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
+      '<p class="label titulo-grupo-aj">Soporte</p><div class="card menu-aj">' + soporte.map(function (x) {
+        return '<button data-act="' + x[0] + '" data-a="' + x[1] + '"><span class="ico" aria-hidden="true">' + x[2] + '</span><span>' + x[3] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
       }).join("") + '</div>' +
       '<button class="btn-sec full" data-act="cerrar-sesion">Cerrar sesión</button>' +
       '<button class="btn-sec full btn-danger" data-act="borrar-todo">' + (confirmar === "borrar-todo" ? "Pulsa otra vez: se borrará todo" : "Eliminar cuenta y datos") + '</button></div>';
