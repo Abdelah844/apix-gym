@@ -408,7 +408,8 @@ function pintarInicio() {
   });
   // Una sola tarjeta: racha, anillo de la semana, días y rango global
   h += '<div class="card stack tight"><div class="row between"><div><p class="label">Racha de constancia</p>' +
-    '<div class="row" style="gap:6px;align-items:baseline"><span class="big-num num" style="color:var(--fire)">' + diasDeRacha() + '</span><span class="muted">' + plural(diasDeRacha(), "día", "días") + '</span></div>' +   // solo los días: es el número exacto
+    '<div class="row" style="gap:6px;align-items:baseline"><span class="big-num num" style="color:var(--fire)">' + rachaSemanas() + '</span><span class="muted">semanas</span>' +
+      (diasDeRacha() ? '<span class="racha-dias">🔥 <b class="num">' + diasDeRacha() + '</b> ' + (diasDeRacha() === 1 ? "día" : "días") + '</span>' : "") + '</div>' +
     '<p class="muted small">Una semana cuenta si entrenas al menos ' + minimoSemanal() + ' días.</p></div>' +
     anilloSemana(semana, p.dias) + '</div>' +
     '<div class="week">' + semanaHtml + '</div>' +
