@@ -553,7 +553,7 @@ const RANGOS = [
   { nombre: "Esmeralda", min: 58, color: "#2FC46B", claro: "#B5F5CD", oscuro: "#0D6A33" },
   { nombre: "Diamante",  min: 68, color: "#4A9DFF", claro: "#CFE5FF", oscuro: "#1A4FA0" },
   { nombre: "Titán",     min: 78, color: "#9B6BFF", claro: "#DCCBFF", oscuro: "#4B2A9E" },
-  { nombre: "Leyenda",   min: 88, color: "#FF4D8D", claro: "#FFC2D8", oscuro: "#9E1446" }
+  { nombre: "Apex",      min: 88, color: "#FF4D8D", claro: "#FFC2D8", oscuro: "#9E1446" }
 ];
 
 // Usuarios ficticios para el modo demo de la parte social

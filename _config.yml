@@ -5,6 +5,7 @@ exclude:
   - INFORME.md
   - PILOTO.md
   - package.json
+  - firebase.json
   - servidor/
   - test/
   - i18n/

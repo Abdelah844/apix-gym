@@ -58,7 +58,7 @@ const I = {
 // Gema hexagonal con relieve. Cuanto más alto el rango, más adornos:
 //   Hierro, Bronce, Plata → 1, 2 o 3 galones
 //   Oro, Platino, Esmeralda → estrella y 1, 2 o 3 puntos
-//   Diamante, Titán → gema central y alas · Leyenda → gema, alas, corona y brillo
+//   Diamante, Titán → gema central y alas · Apex → gema, alas, corona y brillo
 let contadorInsignia = 0;
 function insignia(i, tam) {
   const vacio = i === null || i === undefined;
@@ -74,9 +74,9 @@ function insignia(i, tam) {
   s += '<defs><linearGradient id="' + id + 'c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + r.claro + '"/><stop offset=".55" stop-color="' + r.color + '"/><stop offset="1" stop-color="' + r.oscuro + '"/></linearGradient>' +
     '<linearGradient id="' + id + 'a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + r.color + '"/><stop offset="1" stop-color="' + r.oscuro + '"/></linearGradient></defs>';
 
-  // Brillo de fondo (Leyenda)
+  // Brillo de fondo (Apex)
   if (i === 8) s += '<circle cx="50" cy="58" r="60" fill="' + r.color + '" opacity=".18"/>';
-  // Alas (Diamante, Titán y Leyenda)
+  // Alas (Diamante, Titán y Apex)
   if (i >= 6) {
     const ala = function (lado) {
       let t = "";
@@ -89,7 +89,7 @@ function insignia(i, tam) {
     };
     s += ala(-1) + ala(1);
   }
-  // Pinchos laterales (Titán y Leyenda)
+  // Pinchos laterales (Titán y Apex)
   if (i >= 7) s += '<polygon points="50,-8 58,6 42,6" fill="url(#' + id + 'a)"/><polygon points="50,120 58,106 42,106" fill="url(#' + id + 'a)"/>';
 
   // Cuerpo de la gema con facetas
@@ -122,7 +122,7 @@ function insignia(i, tam) {
     s += '<polygon points="50,30 70,48 50,82 30,48" ' + blanco + '/>' +
       '<path d="M30,48 L70,48 M50,30 L42,48 L50,82 L58,48 Z" fill="none" stroke="' + r.oscuro + '" stroke-opacity=".55" stroke-width="1.5"/>';
   }
-  // Corona (Leyenda)
+  // Corona (Apex)
   if (i === 8) s += '<path d="M30,2 L36,-8 L43,0 L50,-12 L57,0 L64,-8 L70,2 Z" fill="#FFD25A" stroke="#9A6A00" stroke-width="2" stroke-linejoin="round"/>';
   return s + '</svg>';
 }
@@ -205,7 +205,7 @@ function pintarBienvenida() {
   const VENTAJAS = [
     ["📋", "Rutina hecha para ti", "Según tus días, tu tiempo y lo que hay en tu gimnasio. La cambias cuando quieras."],
     ["📈", "Sabes cuándo subir peso", "Te dice cuándo toca subir, mantener o bajar, con tus series reales."],
-    ["🏆", "Rangos por músculo", "De Hierro a Leyenda: ves qué músculos van bien y cuáles flojean."],
+    ["🏆", "Rangos por músculo", "De Hierro a Apex: ves qué músculos van bien y cuáles flojean."],
     ["🎓", "Aprende la técnica", "Cada ejercicio con fotos, animación y los errores típicos."]
   ];
   let v = "";
@@ -331,6 +331,7 @@ function pintarInicio() {
   const semana = sesionesPorSemana()[lunesDe(hoy())] || 0;
   const pg = puntosGlobal();
   const rg = pg === null ? null : rangoDePuntos(pg);
+  const ultima = estado.sesiones[estado.sesiones.length - 1];
 
   let h = '<div class="head"><div class="grow"><p class="label">' + new Date().toLocaleDateString(localeApp(), { weekday: "long", day: "numeric", month: "long" }) + '</p>' +
     '<h1>Hola, ' + esc(p.nombre) + '</h1></div>' +
@@ -407,7 +408,8 @@ function pintarInicio() {
   });
   // Una sola tarjeta: racha, anillo de la semana, días y rango global
   h += '<div class="card stack tight"><div class="row between"><div><p class="label">Racha de constancia</p>' +
-    '<div class="row" style="gap:6px;align-items:baseline"><span class="big-num num" style="color:var(--fire)">' + rachaSemanas() + '</span><span class="muted">' + plural(rachaSemanas(), "semana", "semanas") + '</span></div>' +   // solo semanas: los días repetían lo mismo con otro número
+    '<div class="row" style="gap:6px;align-items:baseline"><span class="big-num num" style="color:var(--fire)">' + rachaSemanas() + '</span><span class="muted">semanas</span>' +
+      (diasDeRacha() ? '<span class="racha-dias">🔥 <b class="num">' + diasDeRacha() + '</b> ' + (diasDeRacha() === 1 ? "día" : "días") + '</span>' : "") + '</div>' +
     '<p class="muted small">Una semana cuenta si entrenas al menos ' + minimoSemanal() + ' días.</p></div>' +
     anilloSemana(semana, p.dias) + '</div>' +
     '<div class="week">' + semanaHtml + '</div>' +
@@ -425,8 +427,56 @@ function pintarInicio() {
       '<p class="muted small">Te falta un ' + Math.max(1, Math.round(prox.falta * 100)) + ' % de fuerza en este ejercicio.</p></div></button>';
   }
 
-  // Inicio se queda con lo esencial: entreno de hoy, siguiente paso, racha, rango y próximo ascenso.
-  // Logros y récords recientes están en Progreso; los amigos, en Social.
+  // Logros: cuántos llevas y cuál es el siguiente
+  h += logrosInicioHtml();
+
+  // Datos rápidos
+  const pesoC = estado.pesoCorporal.length ? estado.pesoCorporal[estado.pesoCorporal.length - 1].kg : null;
+  const hace4 = puntosGlobal(fechaTexto(28));
+  let fuerza = "—";
+  if (pg !== null && hace4 !== null) { const d = pg - hace4; fuerza = (d >= 0 ? "+" : "") + numero(d.toFixed(1)); }   // con coma, como los kilos
+  h += '<div class="grid3">' +
+    '<div class="card"><p class="label">Peso</p><div class="big-num num">' + (pesoC ? numero(pesoVista(pesoC)) : "—") + '</div><p class="muted small">' + unidadPeso() + '</p></div>' +
+    '<div class="card"><p class="label">Fuerza</p><div class="big-num num">' + fuerza + '</div><p class="muted small">pts · 4 sem</p></div>' +
+    '<div class="card"><p class="label">Entrenos</p><div class="big-num num">' + estado.sesiones.length + '</div><p class="muted small">en total</p></div>' +
+  '</div>';
+
+  // Último entreno y récords recientes, en una sola tarjeta
+  const prs = [];
+  for (let i = estado.sesiones.length - 1; i >= 0 && prs.length < 3; i--) {
+    for (const id of estado.sesiones[i].prs) if (prs.length < 3) prs.push({ id: id, fecha: estado.sesiones[i].fecha, s: estado.sesiones[i] });
+  }
+  if (ultima) {
+    h += '<div class="card stack tight"><button class="stack tight" data-act="ver-sesion" data-a="' + ultima.id + '" style="text-align:left;width:100%;padding:0"><div class="row between"><p class="label">Último entreno</p><span class="muted small">' + fechaBonita(ultima.fecha) + '</span></div>' +
+      '<h3>' + esc(ultima.diaNombre) + '</h3><p class="muted num">' + lineaSesion(ultima) +
+      (ultima.prs.length ? ' · <span style="color:var(--pr);font-weight:700">' + ultima.prs.length + ' récord' + (ultima.prs.length > 1 ? "s" : "") + '</span>' : "") + '</p></button>';
+    if (prs.length) {
+      h += '<div class="row between" style="border-top:1px solid var(--line);padding-top:10px"><p class="label">Récords recientes</p><button class="btn-txt small" data-tab="progreso">Ver progreso</button></div><div class="list">';
+      for (const r of prs) {
+        const e = r.s.ejercicios.find(function (x) { return x.id === r.id; });
+        const mejor = e.series.filter(function (x) { return x.hecha; }).sort(function (a, b) { return unaRM(b.peso, b.reps) - unaRM(a.peso, a.reps); })[0];
+        h += '<div class="item" style="padding:7px 0"><div class="grow"><span class="name small">' + esc(buscarEj(r.id).nombre) + '</span><span class="muted small num">' + numero(pesoVista(mejor.peso)) + ' ' + unidadPeso() + ' × ' + mejor.reps + ' · ' + fechaBonita(r.fecha) + '</span></div><span class="pill pr">Récord</span></div>';
+      }
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+
+  // Amigos: los tuyos (con su tarjeta) y, en la demo, su actividad
+  const reales = (estado.social.amigosReales || []).slice().sort(function (x, y) { return y.racha - x.racha; }).slice(0, 3);
+  const posts = feedVisible().filter(function (x) { return x.autorId !== miId(); }).slice(0, 2);
+  h += '<div class="card"><div class="row between"><h3>Amigos</h3><button class="btn-txt small" data-act="ir-amigos">' + (reales.length ? "Ver todos" : "Invitar") + '</button></div>';
+  if (reales.length) {
+    h += '<div class="list">' + reales.map(function (a) {
+      return '<div class="item">' + insignia(a.rango, "sm") + '<div class="grow"><span class="name small">@' + esc(a.usuario) + '</span><span class="muted small">' + nombreRango(a.rango) + ' · racha ' + a.racha + ' sem</span></div></div>';
+    }).join("") + '</div>';
+  }
+  if (posts.length === 0 && !reales.length) h += '<p class="muted small" style="padding-top:6px">Invita a tus amigos y compara rango y racha.</p>';
+  else if (posts.length) {
+    h += '<div class="list">';
+    for (const x of posts) h += '<div class="item"><div class="avatar" style="width:32px;height:32px;font-size:.85rem">' + esc(nombreDe(x.autorId, x.autorNombre)[0]).toUpperCase() + '</div><div class="grow"><span class="name small">@' + esc(nombreDe(x.autorId, x.autorNombre)) + '</span><span class="muted small">' + esc(x.texto) + '</span></div></div>';
+    h += '</div>';
+  }
   h += '</div></div>';
   $("app").innerHTML = h;
 }
@@ -1201,7 +1251,7 @@ function avisoRangosNuevosHtml() {
   if (estado.ajustes.rangosV3Visto || estado.modo === "demo") return "";
   if (!estado.sesiones.some(function (x) { return x.fecha < FECHA_RANGOS_V3; })) return "";
   return '<div class="card stack tight" style="border-color:var(--accent)"><h3>Los rangos ahora son más exigentes</h3>' +
-    '<p class="small">Antes se llegaba arriba demasiado pronto. Ahora cada rango vale más: Leyenda es nivel de élite. Si has bajado de rango, tu fuerza es la misma; lo que ha cambiado es la vara de medir, y es igual para todos.</p>' +
+    '<p class="small">Antes se llegaba arriba demasiado pronto. Ahora cada rango vale más: Apex es nivel de élite. Si has bajado de rango, tu fuerza es la misma; lo que ha cambiado es la vara de medir, y es igual para todos.</p>' +
     '<button class="btn-sec small" data-act="cerrar-aviso-rangos">Entendido</button></div>';
 }
 
@@ -1398,8 +1448,7 @@ function calendarioConstanciaHtml() {
   const entrenados = {};
   for (const s of sesionesValidas()) entrenados[s.fecha] = true;
   const inicio = sumarDias(lunesDe(hoy()), -77);           // lunes de hace 11 semanas
-  // aria-hidden: los lectores de pantalla se saltan las 84 casillas y leen solo la frase de abajo
-  let h = '<div class="card stack"><h3>Tu constancia</h3><div class="calendario" aria-hidden="true">';
+  let h = '<div class="card stack"><h3>Tu constancia</h3><div class="calendario">';
   // Inicial de cada día de la semana en el idioma de la app (L, M, X... o M, T, W...)
   const letras = [];
   for (let i = 0; i < 7; i++) letras.push(new Date(sumarDias(inicio, i) + "T12:00:00").toLocaleDateString(localeApp(), { weekday: "narrow" }));
@@ -1570,30 +1619,12 @@ function pintarProgreso() {
   }
   h += ejerciciosClaveHtml(clave);
   if (ejerciciosHechos().length) h += '<button class="btn-sec small full" data-act="ver-evolucion">📈 Ver la gráfica de otro ejercicio</button>';
-  h += recordsRecientesHtml();
-  h += logrosInicioHtml();       // logros: cuántos llevas y cuál es el siguiente
   h += mapaProgresoHtml(cuenta, semanas, olvidados);
   h += calendarioConstanciaHtml();
   h += cardioProgresoHtml(ses);
   h += pesoTotalHtml(ses);
 
   $("app").innerHTML = h + '</div>';
-}
-
-// Tus 3 récords más recientes (en Progreso)
-function recordsRecientesHtml() {
-  const prs = [];
-  for (let i = estado.sesiones.length - 1; i >= 0 && prs.length < 3; i--) {
-    for (const id of estado.sesiones[i].prs) if (prs.length < 3) prs.push({ id: id, fecha: estado.sesiones[i].fecha, s: estado.sesiones[i] });
-  }
-  if (!prs.length) return "";
-  let h = '<div class="card stack tight"><p class="label">Récords recientes</p><div class="list">';
-  for (const r of prs) {
-    const e = r.s.ejercicios.find(function (x) { return x.id === r.id; });
-    const mejor = e.series.filter(function (x) { return x.hecha; }).sort(function (a, b) { return unaRM(b.peso, b.reps) - unaRM(a.peso, a.reps); })[0];
-    h += '<div class="item" style="padding:7px 0"><div class="grow"><span class="name small">' + esc(buscarEj(r.id).nombre) + '</span><span class="muted small num">' + numero(pesoVista(mejor.peso)) + ' ' + unidadPeso() + ' × ' + mejor.reps + ' · ' + fechaBonita(r.fecha) + '</span></div><span class="pill pr">Récord</span></div>';
-  }
-  return h + '</div></div>';
 }
 
 // Cardio del periodo elegido (solo si has hecho alguno)
@@ -3538,7 +3569,7 @@ const PASOS_TUTORIAL = [
   { tab: "inicio", humor: "contento", titulo: "¡Hola! Soy Apix 👋", texto: "Estaré aquí para que cumplas tus objetivos. Te enseño la app en 30 segundos." },
   { tab: "inicio", humor: "anima", titulo: "Tu entreno de hoy", texto: "En Inicio ves qué te toca hoy. Pulsa «Empezar» y la app te guía ejercicio a ejercicio." },
   { tab: "entrenar", humor: "anima", titulo: "Apunta cada serie", texto: "Escribe los kg y las repeticiones y pulsa ✓. El descanso empieza solo y te aviso cuando acabe." },
-  { tab: "rangos", humor: "contento", titulo: "Sube de rango", texto: "Cada músculo tiene su rango, de Hierro a Leyenda. Entrena equilibrado para subir tu rango global." },
+  { tab: "rangos", humor: "contento", titulo: "Sube de rango", texto: "Cada músculo tiene su rango, de Hierro a Apex. Entrena equilibrado para subir tu rango global." },
   { tab: "progreso", humor: "contento", titulo: "Mira cómo mejoras", texto: "Aquí tienes tus récords, tus entrenos por semanas y las gráficas de cada ejercicio." },
   { tab: "social", humor: "anima", titulo: "Entrena con amigos", texto: "Si quieres, añade amigos, mira sus entrenos y reaccionad con 💪🔥. ¡A por ello!" }
 ];

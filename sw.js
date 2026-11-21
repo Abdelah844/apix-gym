@@ -5,7 +5,7 @@
 // Si cambias algún archivo, sube el número de VERSION para que los móviles descarguen la nueva.
 // =====================================================
 
-const VERSION = "apix-gym-2.54.23";
+const VERSION = "apix-gym-2.54.24";
 
 // Archivos que se guardan nada más instalar la app
 const ARCHIVOS = [
