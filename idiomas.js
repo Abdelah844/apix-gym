@@ -10363,6 +10363,31 @@ const TRADUCCIONES = {
 "Dernière séance",
 "آخر حصة"
 ],
+"Soporte": [
+"Support",
+"Assistance",
+"الدعم"
+],
+"Informa de un error": [
+"Report a bug",
+"Signale un bug",
+"بلّغ على شي غلطة"
+],
+"Sugiere una funcionalidad": [
+"Suggest a feature",
+"Propose une fonctionnalité",
+"اقترح شي ميزة"
+],
+"Sugerir un ejercicio al catálogo": [
+"Suggest an exercise for the catalogue",
+"Proposer un exercice pour le catalogue",
+"اقترح تمرين للكتالوگ"
+],
+"Déjanos una reseña": [
+"Leave us a review",
+"Laisse-nous un avis",
+"خلي لينا رأيك"
+],
 "← Volver": [
 "← Back",
 "← Retour",

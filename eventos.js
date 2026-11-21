@@ -672,13 +672,24 @@ const ACCIONES = {
   "ir-amigos": function () { vistaSocial = "amigos"; irA("social"); },
   "ir-retos": function () { vistaSocial = "retos"; irA("social"); },
   // Botón del descanso: pide permiso de notificaciones para oír el final con la app cerrada
-  // Abre el correo para contar un problema, con la versión y el móvil ya escritos
-  "informar-problema": async function () {
-    // La versión es el nombre de la caché del service worker (por ejemplo "apix-gym-2.54.8")
-    let version = "?";
-    try { const claves = await caches.keys(); version = claves.filter(function (k) { return k.indexOf("apix-gym-") === 0; }).join(", ") || "?"; } catch (e) {}
-    const cuerpo = "Cuéntame qué ha pasado:\n\n\n---\nVersión: " + version + "\nMóvil: " + navigator.userAgent;
-    location.href = "mailto:" + CORREO_SOPORTE + "?subject=" + encodeURIComponent("Problema en Apix Gym") + "&body=" + encodeURIComponent(cuerpo);
+  // Soporte (Ajustes): abre el correo con el asunto ya escrito.
+  // tipo: "error", "idea", "ejercicio" u "opinion". En los errores se añaden la versión y el móvil para poder arreglarlo.
+  "contactar": async function (tipo) {
+    const textos = {
+      error: ["Error en Apix Gym", "Cuéntame qué ha pasado:"],
+      idea: ["Idea para Apix Gym", "¿Qué te gustaría que tuviera la app?"],
+      ejercicio: ["Ejercicio para el catálogo", "¿Qué ejercicio falta? Dime su nombre y, si puedes, la máquina o un enlace con un vídeo:"],
+      opinion: ["Mi opinión sobre Apix Gym", "¿Qué te parece la app? ¿Qué es lo que más te gusta y qué cambiarías?"]
+    };
+    const t = textos[tipo] || textos.error;
+    let cuerpo = t[1] + "\n\n\n";
+    if (tipo === "error") {
+      // La versión es el nombre de la caché del service worker (por ejemplo "apix-gym-2.54.8")
+      let version = "?";
+      try { const claves = await caches.keys(); version = claves.filter(function (k) { return k.indexOf("apix-gym-") === 0; }).join(", ") || "?"; } catch (err) {}
+      cuerpo += "---\nVersión: " + version + "\nMóvil: " + navigator.userAgent;
+    }
+    location.href = "mailto:" + CORREO_SOPORTE + "?subject=" + encodeURIComponent(t[0]) + "&body=" + encodeURIComponent(cuerpo);
   },
   // Imagen del entreno para redes sociales
   "compartir-imagen": function (id) {

@@ -3123,7 +3123,6 @@ function hojaAjustes(seccion) {
   } else if (seccionAjustes === "ayuda") {
     h = cabeza("Ayuda") + '<div class="stack">' +
       '<button class="btn-sec full" data-act="ver-tutorial">Ver el tutorial otra vez</button>' +
-      '<button class="btn-sec full" data-act="informar-problema">Informar de un problema</button>' +
       // Solo sale si aún no la tienes instalada (si ya lo está, no aporta nada)
       (appInstalada() ? "" : '<div class="card stack tight"><h3>Instalar en el móvil</h3>' + textoInstalar() + '</div>') +
       // Herramientas para revisar la app: solo se ven abriendo la app con ?dev al final de la dirección
@@ -3143,6 +3142,11 @@ function hojaAjustes(seccion) {
         '<button class="btn-sec" data-act="ajustes-seccion" data-a="perfil">Editar perfil</button></div>' +
       '<div class="card menu-aj">' + filas.map(function (x) {
         return '<button data-act="ajustes-seccion" data-a="' + x[0] + '"><span class="ico" aria-hidden="true">' + x[1] + '</span><span>' + x[2] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
+      }).join("") + '</div>' +
+      // Soporte: cada fila abre el correo con el asunto ya escrito (acción "contactar" en eventos.js)
+      '<p class="label titulo-grupo-aj">Soporte</p><div class="card menu-aj">' + [["error", "❗", "Informa de un error"], ["idea", "💡", "Sugiere una funcionalidad"],
+        ["ejercicio", "💪", "Sugerir un ejercicio al catálogo"], ["opinion", "⭐", "Déjanos una reseña"]].map(function (x) {
+        return '<button data-act="contactar" data-a="' + x[0] + '"><span class="ico" aria-hidden="true">' + x[1] + '</span><span>' + x[2] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
       }).join("") + '</div>' +
       '<button class="btn-sec full" data-act="cerrar-sesion">Cerrar sesión</button>' +
       '<button class="btn-sec full btn-danger" data-act="borrar-todo">' + (confirmar === "borrar-todo" ? "Pulsa otra vez: se borrará todo" : "Eliminar cuenta y datos") + '</button></div>';
