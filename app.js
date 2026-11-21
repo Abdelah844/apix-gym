@@ -1225,13 +1225,14 @@ function pintarRangos() {
     h += '</div></details>';
   }
 
-  // Historial de ascensos
-  h += '<div class="card"><h3>Historial de ascensos</h3><div class="list">';
+  // Historial de ascensos: plegado (cerrado) para que la pantalla de Rangos no sea tan larga.
+  // Al tocarlo se abre y enseña los 10 últimos.
+  h += '<details class="card dia-plegado"><summary><h3 class="grow">Historial de ascensos</h3><span class="muted small">' + estado.ascensos.length + '</span><span class="flecha" aria-hidden="true">▾</span></summary><div class="list" style="margin-top:8px">';
   if (estado.ascensos.length === 0) h += '<p class="muted" style="padding-top:8px">Cuando subas de rango aparecerá aquí.</p>';
-  for (const a of estado.ascensos.slice().reverse().slice(0, 5)) {
+  for (const a of estado.ascensos.slice().reverse().slice(0, 10)) {
     h += '<div class="item">' + insignia(a.rango, "sm") + '<div class="grow"><span class="name small">' + esc(a.nombre) + ' → ' + RANGOS[a.rango].nombre + '</span><span class="muted small">' + fechaBonita(a.fecha) + '</span></div></div>';
   }
-  $("app").innerHTML = h + '</div></div></div>';
+  $("app").innerHTML = h + '</div></details></div>';
 }
 
 // Una frase que dice qué hacer para subir (lo más importante primero)
