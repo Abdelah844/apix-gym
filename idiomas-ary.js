@@ -3330,6 +3330,7 @@ TRADUCCIONES.ary = {
 "Te faltan {n} entrenos esta semana para no perder la racha.": "باقيين ليك {n} حصص هاد السيمانة باش ما تضيعش السلسلة.",
 "Esta semana ya cuenta. ¡Racha a salvo!": "هاد السيمانة محسوبة. السلسلة فالأمان!",
 "Llevas {n} de {n} entrenos esta semana. Con {n} más, la racha sigue.": "درتي {n} من {n} حصص هاد السيمانة. ب {n} أخرى، السلسلة كتكمل.",
+"¿Qué significa?": "شنو كيعني؟",
 "Social": "سوسيال",
 "Kilos": "كيلوات",
 "min": "دقيقة",

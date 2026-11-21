@@ -1412,11 +1412,13 @@ function mapaProgresoHtml(cuenta, semanas, olvidados) {
       '<p class="muted small">Cuando entrenes, cada músculo se pintará de un color según lo que lo trabajas.</p></div>';
   }
   function colorDe(g) { return COLOR_NIVEL[nivelMusculo(g, cuenta[g] / semanas)]; }
+  // Las explicaciones van plegadas en «¿Qué significa?» para que el mapa ocupe menos
   let h = '<div class="card stack"><h3>Mapa del cuerpo</h3>' +
-    '<p class="muted small">Series efectivas a la semana de cada músculo (media del periodo). Toca un músculo para ver sus semanas.</p>' +
     mapaCorporal(colorDe, "grupo-progreso") +
     '<div class="row wrap leyenda"><span><i style="background:var(--danger)"></i>Poco</span><span><i style="background:var(--good)"></i>Bien</span><span><i style="background:var(--accent)"></i>Mucho</span></div>' +
-    '<p class="muted small">Para ganar músculo, lo normal es dar a cada músculo entre 6 y 20 series a la semana (menos en abdomen, antebrazos, gemelos y aductores).</p>' +
+    '<details><summary class="small">¿Qué significa?</summary>' +
+      '<p class="muted small">Series efectivas a la semana de cada músculo (media del periodo). Toca un músculo para ver sus semanas.</p>' +
+      '<p class="muted small">Para ganar músculo, lo normal es dar a cada músculo entre 6 y 20 series a la semana (menos en abdomen, antebrazos, gemelos y aductores).</p></details>' +
     '<details><summary class="small">Ver los números</summary>';
   let max = 1;
   for (const g in cuenta) max = Math.max(max, cuenta[g] / semanas);

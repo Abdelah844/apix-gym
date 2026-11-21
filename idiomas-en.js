@@ -3330,6 +3330,7 @@ TRADUCCIONES.en = {
 "Te faltan {n} entrenos esta semana para no perder la racha.": "You need {n} more workouts this week to keep your streak.",
 "Esta semana ya cuenta. ¡Racha a salvo!": "This week already counts. Streak safe!",
 "Llevas {n} de {n} entrenos esta semana. Con {n} más, la racha sigue.": "You’ve done {n} of {n} workouts this week. {n} more and your streak continues.",
+"¿Qué significa?": "What does it mean?",
 "Social": "Social",
 "Kilos": "Kilos",
 "min": "min",

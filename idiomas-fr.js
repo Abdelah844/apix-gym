@@ -3330,6 +3330,7 @@ TRADUCCIONES.fr = {
 "Te faltan {n} entrenos esta semana para no perder la racha.": "Il te manque {n} séances cette semaine pour garder ta série.",
 "Esta semana ya cuenta. ¡Racha a salvo!": "Cette semaine compte déjà. Série sauvée !",
 "Llevas {n} de {n} entrenos esta semana. Con {n} más, la racha sigue.": "Tu as fait {n} séance sur {n} cette semaine. Encore {n} et ta série continue.",
+"¿Qué significa?": "Ça veut dire quoi ?",
 "Social": "Social",
 "Kilos": "Kilos",
 "min": "min",
