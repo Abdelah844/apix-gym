@@ -83,7 +83,7 @@
 | extension-cuadriceps | Leg_Extensions |
 | extension-cuerda | Imágenes generadas por IA (generadas con Figma) |
 | extension-cuerda-nuca | Cable_Rope_Overhead_Triceps_Extension |
-| extension-inversa-polea | Reverse_Grip_Triceps_Pushdown |
+| extension-inversa-polea | Reverse_Grip_Triceps_Pushdown (con un recuadro del agarre generado por IA) |
 | extension-nuca | Standing_Dumbbell_Triceps_Extension |
 | extension-polea | Imágenes generadas por IA (generadas con Figma) |
 | extension-una-pierna | Single-Leg_Leg_Extension |
