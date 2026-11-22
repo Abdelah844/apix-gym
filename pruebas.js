@@ -669,6 +669,21 @@ const PRUEBAS = [
     estado.ajustes.unidad = "kg";
     return pesoVista(80) === 80 && pesoDesdeVista(80) === 80 || "en kg no debe cambiar nada";
   }],
+  ["Unidades", "En millas y pulgadas se guarda en km y cm, y se ve en mi e in", function () {
+    estadoPrueba();
+    estado.ajustes.unidadDistancia = "mi"; estado.ajustes.unidadMedidas = "in";
+    const km = distDesdeVista(3);                            // escribes 3 millas
+    if (Math.abs(km - 4.828) > 0.01) return "3 mi deberían ser 4,83 km y son " + km;
+    if (distVista(km) !== 3) return "al volver a verlo sale " + distVista(km);
+    if (distTexto(5) !== "3,11 mi") return "5 km deberían verse como 3,11 mi y salen " + distTexto(5);
+    const c = crearCardio("correr", "30", "3", "", "");
+    if (Math.abs(c.km - 4.828) > 0.01) return "el cardio no se guarda en km: " + c.km;
+    const cm = medDesdeVista(15);                            // escribes 15 pulgadas
+    if (Math.abs(cm - 38.1) > 0.1) return "15 in deberían ser 38,1 cm y son " + cm;
+    if (medVista(cm) !== 15) return "al volver a verlo sale " + medVista(cm);
+    estado.ajustes.unidadDistancia = "km"; estado.ajustes.unidadMedidas = "cm";
+    return distVista(5) === 5 && medVista(40) === 40 && distTexto(5) === "5 km" || "en km y cm no debe cambiar nada";
+  }],
   ["Rutinas", "Añadir, duplicar o borrar un día mantiene el calendario cuadrado", function () {
     estadoPrueba();
     estado.rutina = { nombre: "Prueba", dias: [{ nombre: "A", ejercicios: [] }, { nombre: "B", ejercicios: [] }, { nombre: "C", ejercicios: [] }], calendario: [0, 2, 4] };

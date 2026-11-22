@@ -128,6 +128,22 @@ function pesoVista(kg) { if (!usaLibras() || typeof kg !== "number") return kg; 
 // número que escribes → kg que se guardan
 function pesoDesdeVista(v) { if (!usaLibras() || typeof v !== "number" || isNaN(v)) return v; return Math.round(v / KG_A_LB * 1000) / 1000; }
 
+// Lo mismo para la distancia (se guarda en km) y las medidas corporales (se guardan en cm)
+const KM_A_MI = 0.621371, CM_A_IN = 0.393701;
+function ajusteUnidad(clave) { return typeof estado !== "undefined" && estado && estado.ajustes ? estado.ajustes[clave] : ""; }
+function usaMillas() { return ajusteUnidad("unidadDistancia") === "mi"; }
+function usaPulgadas() { return ajusteUnidad("unidadMedidas") === "in"; }
+function unidadDistancia() { return usaMillas() ? "mi" : "km"; }
+function unidadMedida() { return usaPulgadas() ? "in" : "cm"; }
+// km guardados → número que ves (millas con 2 decimales)
+function distVista(km) { if (!usaMillas() || typeof km !== "number") return km; return Math.round(km * KM_A_MI * 100) / 100; }
+function distDesdeVista(v) { if (!usaMillas() || typeof v !== "number" || isNaN(v)) return v; return Math.round(v / KM_A_MI * 1000) / 1000; }
+// "3,1 km" o "1,93 mi"
+function distTexto(km) { return String(distVista(km)).replace(".", ",") + " " + unidadDistancia(); }
+// cm guardados → número que ves (pulgadas con 1 decimal)
+function medVista(cm) { if (!usaPulgadas() || typeof cm !== "number") return cm; return Math.round(cm * CM_A_IN * 10) / 10; }
+function medDesdeVista(v) { if (!usaPulgadas() || typeof v !== "number" || isNaN(v)) return v; return Math.round(v / CM_A_IN * 10) / 10; }
+
 // Si cambia el número de días de la rutina (añadir, duplicar o borrar un día),
 // el calendario semanal tiene que tener el mismo número de días.
 function cuadrarCalendario(r) {
@@ -1477,7 +1493,7 @@ function guardarMedidas(valores) {
   for (const c of CAMPOS_MEDIDAS) {
     const v = valores[c[0]];
     if (v === null || v === undefined || v === "" || isNaN(v)) { m[c[0]] = null; continue; }
-    if (v < 10 || v > 250) return { ok: false, msg: c[1] + ": escribe un valor entre 10 y 250 cm." };
+    if (v < 10 || v > 250) return { ok: false, msg: c[1] + (usaPulgadas() ? ": escribe un valor entre 4 y 98 in." : ": escribe un valor entre 10 y 250 cm.") };
     m[c[0]] = Math.round(v * 10) / 10; alguna = true;
   }
   if (!alguna) return { ok: false, msg: "Escribe al menos una medida." };

@@ -643,7 +643,7 @@ function hojaCardio(destino) {
     h += '<div class="card stack tight"><p class="label">' + tipo.icono + ' <span>' + tipo.nombre + '</span></p>' +
       (anterior ? '<p class="muted small">La última vez: <span class="num">' + cardioHtml(anterior) + '</span></p>' : "") +
       '<div class="grid2"><label class="f">Minutos<input id="cMin" type="number" inputmode="numeric" min="1" max="300" placeholder="' + (anterior ? anterior.min : 20) + '"></label>' +
-      (tipo.km ? '<label class="f">Km (opcional)<input id="cKm" type="text" inputmode="decimal" placeholder="' + (anterior && anterior.km ? String(anterior.km).replace(".", ",") : "—") + '"></label>' : "") +
+      (tipo.km ? '<label class="f">' + (usaMillas() ? "Millas (opcional)" : "Km (opcional)") + '<input id="cKm" type="text" inputmode="decimal" placeholder="' + (anterior && anterior.km ? String(distVista(anterior.km)).replace(".", ",") : "—") + '"></label>' : "") +
       (tipo.nivel ? '<label class="f">Nivel (opcional)<input id="cNivel" type="number" inputmode="numeric" min="1" max="30" placeholder="' + (anterior && anterior.nivel ? anterior.nivel : "—") + '"></label>' : "") +
       (tipo.inc ? '<label class="f">Inclinación % (opcional)<input id="cInc" type="text" inputmode="decimal" placeholder="' + (anterior && anterior.inc ? String(anterior.inc).replace(".", ",") : "—") + '"></label>' : "") +
       '</div><p class="err" id="cardioError"></p>' +
@@ -671,7 +671,7 @@ function lineaSesion(s) {
   const c = totalCardio(s);
   if (c.min && s.ejercicios.length) partes.push('<span>🏃 ' + c.min + ' min</span>');
   if (c.min && !s.ejercicios.length) partes.push('<span>' + (s.cardio || []).map(function (x) { return tr(buscarCardio(x.id).nombre); }).join(", ") + '</span>');
-  if (c.km) partes.push('<span>' + String(c.km).replace(".", ",") + ' km</span>');
+  if (c.km) partes.push('<span>' + distTexto(c.km) + '</span>');
   return partes.join(" · ");
 }
 
@@ -1639,7 +1639,7 @@ function cardioProgresoHtml(ses) {
   if (!c.min) return "";
   return '<div class="card stack tight"><p class="label">🏃 Cardio</p><div class="grid3">' +
     '<div><div class="big-num num">' + c.min + '</div><p class="muted small">min</p></div>' +
-    '<div><div class="big-num num">' + (c.km ? String(c.km).replace(".", ",") : "—") + '</div><p class="muted small">km</p></div>' +
+    '<div><div class="big-num num">' + (c.km ? String(distVista(c.km)).replace(".", ",") : "—") + '</div><p class="muted small">' + unidadDistancia() + '</p></div>' +
     '<div><div class="big-num num">' + c.veces + '</div><p class="muted small">' + (c.veces === 1 ? "día" : "días") + '</p></div></div></div>';
 }
 
@@ -1717,13 +1717,13 @@ function htmlMedidas() {
   const ultimaMed = (estado.medidas || [])[(estado.medidas || []).length - 1] || {};
   h += '<div class="card stack"><h3>Medidas corporales</h3>' +
     '<div class="seg">' + CAMPOS_MEDIDAS.map(function (c) { return '<button data-act="medida-grafica" data-a="' + c[0] + '" class="' + (medidaGrafica === c[0] ? "on" : "") + '">' + c[1] + '</button>'; }).join("") + '</div>' +
-    (meds.length ? graficaLinea(meds.map(function (m) { return fechaBonita(m.fecha); }), meds.map(function (m) { return m[medidaGrafica]; }), "cm") : '<p class="muted small">Apunta tus medidas una vez al mes para ver cómo crecen.</p>') +
+    (meds.length ? graficaLinea(meds.map(function (m) { return fechaBonita(m.fecha); }), meds.map(function (m) { return medVista(m[medidaGrafica]); }), unidadMedida()) : '<p class="muted small">Apunta tus medidas una vez al mes para ver cómo crecen.</p>') +
     '<div class="row wrap cambios-medidas">' + CAMPOS_MEDIDAS.map(function (c) {
       const d = cambioMedida(c[0]);
-      return d === null ? "" : '<span class="pill ' + (d > 0 ? "up" : (d < 0 ? "down" : "keep")) + '">' + c[1] + ' ' + (d > 0 ? "+" : "") + String(d).replace(".", ",") + ' cm</span>';
+      return d === null ? "" : '<span class="pill ' + (d > 0 ? "up" : (d < 0 ? "down" : "keep")) + '">' + c[1] + ' ' + (d > 0 ? "+" : "") + String(medVista(d)).replace(".", ",") + ' ' + unidadMedida() + '</span>';
     }).join("") + '</div>' +
     '<div class="grid2 medidas-form">' + CAMPOS_MEDIDAS.map(function (c) {
-      return '<label class="f small">' + c[1] + ' (cm)<input id="med-' + c[0] + '" type="text" inputmode="decimal" autocomplete="off" placeholder="' + (ultimaMed[c[0]] ? String(ultimaMed[c[0]]).replace(".", ",") : "—") + '"></label>';
+      return '<label class="f small">' + c[1] + ' (' + unidadMedida() + ')<input id="med-' + c[0] + '" type="text" inputmode="decimal" autocomplete="off" placeholder="' + (ultimaMed[c[0]] ? String(medVista(ultimaMed[c[0]])).replace(".", ",") : "—") + '"></label>';
     }).join("") + '</div>' +
     '<button class="btn" data-act="guardar-medidas">Guardar medidas de hoy</button><p class="err" id="errMedidas"></p>' +
     '<p class="muted small">Mide siempre igual: por la mañana, sin bombear, brazo y muslo en su parte más ancha y cintura a la altura del ombligo.</p></div>';
@@ -2801,7 +2801,7 @@ function hojaSesion(id) {
       '<div class="card"><p class="label">Tonelaje externo</p><div class="big-num num">' + miles(pesoVista(s.volumen)) + '</div><p class="muted small">' + unidadPeso() + ' (sin peso corporal)</p></div></div>';
   } else {
     h += '<div class="grid2"><div class="card"><p class="label">Cardio</p><div class="big-num num">' + tc.min + '</div><p class="muted small">min</p></div>' +
-      '<div class="card"><p class="label">Distancia</p><div class="big-num num">' + (tc.km ? String(tc.km).replace(".", ",") : "—") + '</div><p class="muted small">km</p></div></div>';
+      '<div class="card"><p class="label">Distancia</p><div class="big-num num">' + (tc.km ? String(distVista(tc.km)).replace(".", ",") : "—") + '</div><p class="muted small">' + unidadDistancia() + '</p></div></div>';
   }
   if (tc.min) {
     h += '<div class="card stack tight"><h3>🏃 Cardio</h3>' + s.cardio.map(function (c, i) {
@@ -3202,6 +3202,8 @@ function hojaAjustes(seccion) {
   } else if (seccionAjustes === "unidades") {
     h = cabeza("Unidades") + '<div class="stack" data-ajustes><div class="card stack tight">' +
       '<label class="f">Peso<select id="aUnidad">' + opciones([["kg", "Kilogramos (kg)"], ["lb", "Libras (lb)"]], a.unidad || "kg") + '</select></label>' +
+      '<label class="f">Distancia<select id="aUnidadDist">' + opciones([["km", "Kilómetros (km)"], ["mi", "Millas (mi)"]], usaMillas() ? "mi" : "km") + '</select></label>' +
+      '<label class="f">Medidas corporales<select id="aUnidadMed">' + opciones([["cm", "Centímetros (cm)"], ["in", "Pulgadas (in)"]], usaPulgadas() ? "in" : "cm") + '</select></label>' +
       '<p class="muted small">Tus datos se guardan siempre igual: cambiar de unidad no pierde nada.</p></div>' + guardado + '</div>';
   } else if (seccionAjustes === "idioma") {
     h = cabeza("Idioma") + '<div class="stack" data-ajustes><div class="card stack tight"><h3>🌐 Idioma · Language · Langue</h3>' + selectorIdioma() + '</div>' + guardado + '</div>';
@@ -3277,6 +3279,8 @@ function guardarAjustesPantalla() {
   if (valor("aIncremento") !== null) a.incremento = parseFloat(valor("aIncremento"));
   if (valor("aIncMancuernas") !== null) a.incrementoMancuernas = parseFloat(valor("aIncMancuernas"));
   if (valor("aUnidad") !== null) a.unidad = valor("aUnidad") === "lb" ? "lb" : "kg";
+  if (valor("aUnidadDist") !== null) a.unidadDistancia = valor("aUnidadDist") === "mi" ? "mi" : "km";
+  if (valor("aUnidadMed") !== null) a.unidadMedidas = valor("aUnidadMed") === "in" ? "in" : "cm";
   if (marcado("aCalentamiento") !== null) a.calentamiento = marcado("aCalentamiento");
   if (marcado("aSugerencias") !== null) a.sugerencias = marcado("aSugerencias");
   if (marcado("aPantalla") !== null) a.pantallaEncendida = marcado("aPantalla");

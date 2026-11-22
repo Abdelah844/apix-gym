@@ -552,7 +552,7 @@ const ACCIONES = {
   "medida-grafica": function (c) { medidaGrafica = c; pintarProgreso(); },
   "guardar-medidas": function () {
     const v = {};
-    for (const c of CAMPOS_MEDIDAS) { const t = $("med-" + c[0]).value.trim(); v[c[0]] = t === "" ? null : leerNumero(t); }
+    for (const c of CAMPOS_MEDIDAS) { const t = $("med-" + c[0]).value.trim(); v[c[0]] = t === "" ? null : medDesdeVista(leerNumero(t)); }   // se guarda en cm
     const r = guardarMedidas(v);
     if (!r.ok) { $("errMedidas").textContent = r.msg; return; }
     guardar(); pintarProgreso(); toast("✓ Medidas guardadas", "ok");

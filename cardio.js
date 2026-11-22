@@ -29,7 +29,7 @@ function errorCardio(c) {
   const tipo = buscarCardio(c.id);
   if (!tipo) return "Elige una actividad.";
   if (!(c.min >= 1 && c.min <= 300)) return "Pon los minutos (de 1 a 300).";
-  if (c.km !== null && !(c.km > 0 && c.km <= 100)) return "Los km tienen que estar entre 0 y 100.";
+  if (c.km !== null && !(c.km > 0 && c.km <= 100)) return usaMillas() ? "Las millas tienen que estar entre 0 y 62." : "Los km tienen que estar entre 0 y 100.";
   if (c.nivel !== null && !(c.nivel >= 1 && c.nivel <= 30)) return "El nivel tiene que estar entre 1 y 30.";
   if (c.inc !== null && !(c.inc >= 0 && c.inc <= 30)) return "La inclinación tiene que estar entre 0 y 30 %.";
   return "";
@@ -46,7 +46,7 @@ function crearCardio(id, min, km, nivel, inc) {
   return {
     id: id,
     min: Math.round(num(min) || 0),
-    km: tipo.km ? num(km) : null,
+    km: tipo.km ? distDesdeVista(num(km)) : null,      // se guarda siempre en km
     nivel: tipo.nivel ? num(nivel) : null,
     inc: tipo.inc ? num(inc) : null
   };
@@ -56,7 +56,7 @@ function crearCardio(id, min, km, nivel, inc) {
 function textoCardio(c) {
   const tipo = buscarCardio(c.id);
   const partes = [tipo ? tipo.nombre : c.id, c.min + " min"];
-  if (c.km) partes.push(String(c.km).replace(".", ",") + " km");
+  if (c.km) partes.push(distTexto(c.km));
   if (c.nivel) partes.push("nivel " + c.nivel);
   if (c.inc) partes.push(String(c.inc).replace(".", ",") + " %");
   return partes.join(" · ");
@@ -66,7 +66,7 @@ function textoCardio(c) {
 function cardioHtml(c) {
   const tipo = buscarCardio(c.id);
   const partes = ['<span>' + (tipo ? tipo.nombre : c.id) + '</span>', '<span>' + c.min + ' min</span>'];
-  if (c.km) partes.push('<span>' + String(c.km).replace(".", ",") + ' km</span>');
+  if (c.km) partes.push('<span>' + distTexto(c.km) + '</span>');
   if (c.nivel) partes.push('<span>nivel ' + c.nivel + '</span>');
   if (c.inc) partes.push('<span>' + String(c.inc).replace(".", ",") + ' %</span>');
   return partes.join(" · ");
