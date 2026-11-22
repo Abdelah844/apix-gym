@@ -22,13 +22,18 @@ const SONIDOS = {
   ],
   // Cuenta atrás de los últimos 3 segundos: "tic"
   tic: [{ f: 1600, t: 0, d: 0.05, tipo: "sine", v: 0.2 }],
-  // Nuevo récord: fanfarria (do, mi, sol, do agudo)
+  // Nuevo récord: golpe grave ("bum"), fanfarria (do, mi, sol, do agudo) y un brillo al final
   record: [
-    { f: 523, t: 0, d: 0.12, tipo: "square", v: 0.12 },
-    { f: 659, t: 0.12, d: 0.12, tipo: "square", v: 0.12 },
-    { f: 784, t: 0.24, d: 0.12, tipo: "square", v: 0.12 },
-    { f: 1047, t: 0.36, d: 0.45, tipo: "square", v: 0.12 }
+    { f: 150, f2: 45, t: 0, d: 0.4, tipo: "sine", v: 0.3, e: 6 }, { f: 2000, t: 0, d: 0.04, tipo: "ruido", v: 0.12, e: 60 },
+    { f: 523, t: 0.1, d: 0.12, tipo: "square", v: 0.12 },
+    { f: 659, t: 0.22, d: 0.12, tipo: "square", v: 0.12 },
+    { f: 784, t: 0.34, d: 0.12, tipo: "square", v: 0.12 },
+    { f: 1047, t: 0.46, d: 0.45, tipo: "square", v: 0.12 },
+    { f: 2093, t: 0.62, d: 0.35, tipo: "sine", v: 0.06, e: 7 }, { f: 2637, t: 0.68, d: 0.35, tipo: "sine", v: 0.06, e: 7 },
+    { f: 3136, t: 0.74, d: 0.35, tipo: "sine", v: 0.06, e: 7 }, { f: 4186, t: 0.8, d: 0.35, tipo: "sine", v: 0.06, e: 7 }
   ],
+  // Quedan 10 segundos de descanso: dos toques suaves para ir cogiendo la barra
+  aviso10: [{ f: 660, t: 0, d: 0.12, tipo: "sine", v: 0.2 }, { f: 660, t: 0.2, d: 0.12, tipo: "sine", v: 0.2 }],
   // Subir de rango: más largo y épico, termina con un acorde
   rango: [
     { f: 392, t: 0, d: 0.15, tipo: "sawtooth", v: 0.08 },
@@ -60,10 +65,43 @@ const SONIDOS = {
   ]
 };
 
+// ---------- Estilo «Metal de gimnasio» (se elige en Ajustes) ----------
+// Solo cambia la serie, el fin del descanso y el récord; los demás sonidos son los de siempre.
+// «Clinc» de disco: armónicos que no encajan entre sí (por eso suena a metal) y se apagan rápido
+function clincMetal(f, t, v) {
+  return [
+    { f: f, t: t, d: 0.5, tipo: "sine", v: 0.25 * v, e: 14 }, { f: f * 1.51, t: t, d: 0.4, tipo: "sine", v: 0.16 * v, e: 18 },
+    { f: f * 2.27, t: t, d: 0.3, tipo: "sine", v: 0.12 * v, e: 24 }, { f: f * 2.95, t: t, d: 0.2, tipo: "sine", v: 0.08 * v, e: 32 },
+    { f: 4000, t: t, d: 0.015, tipo: "ruido", v: 0.15 * v, e: 150 }
+  ];
+}
+// Gong grave de metal (tono + armónicos + golpe)
+function gongMetal(t) {
+  const f = 220, v = 1;
+  return [
+    { f: f, t: t, d: 1.1, tipo: "sine", v: 0.3 * v, e: 3.2 }, { f: f * 1.006, t: t, d: 1.1, tipo: "sine", v: 0.14 * v, e: 3.4 },
+    { f: f * 2.32, t: t, d: 0.8, tipo: "sine", v: 0.16 * v, e: 6 }, { f: f * 3.73, t: t, d: 0.5, tipo: "sine", v: 0.1 * v, e: 9 },
+    { f: 3000, t: t, d: 0.025, tipo: "ruido", v: 0.12 * v, e: 80 }
+  ];
+}
+const SONIDOS_METAL = {
+  serie: clincMetal(1900, 0, 1),
+  descanso: [].concat(gongMetal(0), gongMetal(0.35), gongMetal(0.7), clincMetal(900, 0, 0.5), clincMetal(900, 0.35, 0.5), clincMetal(900, 0.7, 0.5)),
+  record: [].concat(
+    [{ f: 150, f2: 45, t: 0, d: 0.4, tipo: "sine", v: 0.3, e: 6 }, { f: 2000, t: 0, d: 0.04, tipo: "ruido", v: 0.12, e: 60 }],
+    clincMetal(1400, 0.08, 1), clincMetal(1760, 0.22, 1), clincMetal(2100, 0.36, 1.2),
+    [{ f: 2093, t: 0.5, d: 0.35, tipo: "sine", v: 0.06, e: 7 }, { f: 2637, t: 0.56, d: 0.35, tipo: "sine", v: 0.06, e: 7 },
+     { f: 3136, t: 0.62, d: 0.35, tipo: "sine", v: 0.06, e: 7 }, { f: 4186, t: 0.68, d: 0.35, tipo: "sine", v: 0.06, e: 7 }]
+  )
+};
+
+// Sonidos que deben oírse más bajos que el resto (1 = normal)
+const VOLUMEN_SONIDO = { aviso10: 0.45 };
+
 // Vibración que acompaña a cada sonido (milisegundos: vibra, pausa, vibra…). En iPhone no hay vibración web.
 const VIBRACIONES = {
   serie: [30], descanso: [120, 140, 120, 140, 300], tic: [20], record: [80, 60, 80, 60, 200], rango: [100, 60, 100, 60, 400],
-  fin: [150], enfadado: [300], racha: [60, 40, 120]
+  fin: [150], enfadado: [300], racha: [60, 40, 120], aviso10: [40, 80, 40]
 };
 
 // ---------- Fabricar el audio ----------
@@ -80,7 +118,7 @@ function onda(tipo, fase) {
 }
 
 // Convierte las notas en muestras de audio (números entre -1 y 1)
-function muestrasDe(notas) {
+function muestrasDe(notas, volumen) {
   const total = Math.ceil((duracionSonido2(notas) + 0.05) * FRECUENCIA_MUESTREO);
   const m = new Float32Array(total);
   for (const n of notas) {
@@ -100,7 +138,7 @@ function muestrasDe(notas) {
   // Ajusta el volumen para que el sonido más fuerte no se distorsione
   let pico = 0;
   for (let i = 0; i < total; i++) pico = Math.max(pico, Math.abs(m[i]));
-  const k = pico > 0 ? 0.9 / pico : 1;     // todos los sonidos al 90 % del volumen máximo: se oyen bien en el gimnasio
+  const k = pico > 0 ? 0.9 * (volumen || 1) / pico : 1;     // al 90 % del volumen máximo (se oyen bien en el gimnasio), salvo los marcados como suaves
   for (let i = 0; i < total; i++) m[i] *= k;
   return m;
 }
@@ -147,15 +185,18 @@ function prepararAudio() {
   } catch (e) { reproductor = null; }
   return reproductor;
 }
-function urlDe(notas) {
-  return URL.createObjectURL(new Blob([wavDe(muestrasDe(notas))], { type: "audio/wav" }));
+function urlDe(notas, volumen) {
+  return URL.createObjectURL(new Blob([wavDe(muestrasDe(notas, volumen))], { type: "audio/wav" }));
 }
 
 // Reproduce un sonido por su nombre. Devuelve true si estaba permitido sonar.
 function sonar(nombre) {
-  const notas = SONIDOS[nombre];
-  if (!notas) return false;
   const aj = (typeof estado !== "undefined" && estado && estado.ajustes) ? estado.ajustes : {};
+  // Con el estilo «Metal de gimnasio», los sonidos que tiene se cambian por los suyos
+  const metal = aj.estiloSonido === "metal" && SONIDOS_METAL[nombre];
+  const notas = metal ? SONIDOS_METAL[nombre] : SONIDOS[nombre];
+  if (!notas) return false;
+  const clave = (metal ? "metal-" : "") + nombre;     // cada versión se fabrica una sola vez
   if (aj.vibracion !== false && typeof navigator !== "undefined" && navigator.vibrate) {
     try { navigator.vibrate(VIBRACIONES[nombre] || [50]); } catch (e) { }
   }
@@ -164,8 +205,8 @@ function sonar(nombre) {
   const r = prepararAudio();
   if (!r) return true;
   try {
-    if (!urlsSonido[nombre]) urlsSonido[nombre] = urlDe(notas);
-    r.pause(); r.src = urlsSonido[nombre]; r.currentTime = 0;
+    if (!urlsSonido[clave]) urlsSonido[clave] = urlDe(notas, VOLUMEN_SONIDO[nombre]);
+    r.pause(); r.src = urlsSonido[clave]; r.currentTime = 0;
     const p = r.play(); if (p && p.catch) p.catch(function () { });
   } catch (e) { }
   return true;

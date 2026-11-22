@@ -3175,7 +3175,9 @@ function hojaAjustes(seccion) {
     h = cabeza("Apariencia") + '<div class="stack" data-ajustes>' +
       '<div class="card stack tight"><h3>🌐 Idioma · Language · Langue</h3>' + selectorIdioma() + '</div>' +
       '<div class="card stack tight"><div class="seg">' + [["oscuro", "Oscuro"], ["claro", "Claro"], ["sistema", "Sistema"]].map(function (o) { return '<button data-act="tema" data-a="' + o[0] + '" class="' + (a.tema === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div>' +
-      '<div class="card stack tight"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") + chk("aVibracion", a.vibracion !== false, "Vibración") + '</div>' +
+      '<div class="card stack tight"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") +
+        '<label class="f">Estilo de sonido<select id="aEstiloSonido">' + opciones([["clasico", "Clásico"], ["metal", "Metal de gimnasio"]], a.estiloSonido === "metal" ? "metal" : "clasico") + '</select></label>' +
+        chk("aVibracion", a.vibracion !== false, "Vibración") + '</div>' +
       '<div class="card stack tight"><h3>Apix, la mascota</h3>' + chk("aMascota", a.mascota !== false, "Mostrar a Apix en Inicio") +
         '<label class="f">Carácter de Apix<select id="aCaracter">' + opciones([["amable", "😊 Amable"], ["chulo", "😏 Chulo (te vacila en plan colega)"]], a.apixCaracter === "chulo" ? "chulo" : "amable") + '</select></label>' +
         '<p class="muted small">Te anima los días de entreno, se enfada si pierdes la racha y celebra tus récords. Tócalo en Inicio y te contestará.</p></div>' +
@@ -3238,6 +3240,7 @@ function guardarAjustesPantalla() {
   if (marcado("aPantalla") !== null) a.pantallaEncendida = marcado("aPantalla");
   if (valor("aCopiaDias") !== null) a.copiaDias = parseInt(valor("aCopiaDias"));
   if (marcado("aSonido") !== null) a.sonido = marcado("aSonido");
+  if (valor("aEstiloSonido") !== null) a.estiloSonido = valor("aEstiloSonido") === "metal" ? "metal" : "clasico";
   if (marcado("aVibracion") !== null) a.vibracion = marcado("aVibracion");
   if (marcado("aMascota") !== null) a.mascota = marcado("aMascota");
   if (valor("aCaracter") !== null) a.apixCaracter = valor("aCaracter") === "chulo" ? "chulo" : "amable";
@@ -3484,6 +3487,7 @@ function empezarDescanso(seg, finGuardado) {
   tIntervalo = setInterval(function () {
     tRest = Math.ceil((tFin - Date.now()) / 1000);
     if (tRest <= 0) { pararDescanso(); avisoFinDescanso(); return; }
+    if (tRest === 10 && tTotal > 15 && ultimoTic !== 10) { ultimoTic = 10; sonar("aviso10"); }   // quedan 10 s: ve cogiendo la barra
     if (tRest <= 3 && tRest !== ultimoTic) { ultimoTic = tRest; sonar("tic"); }     // 3, 2, 1…
     pintarTimer();
   }, 250);

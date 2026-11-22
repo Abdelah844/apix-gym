@@ -819,12 +819,16 @@ const PRUEBAS = [
     const svg = apixSVG("contento");
     return (svg.indexOf("Apix") > 0 && MENSAJES_APIX.contento.some(function (m) { return m.indexOf("Apix") >= 0; })) || "El nombre no es Apix";
   }],
-  ["Sonido", "Existen los 7 efectos y todos son cortos (menos de 2 segundos)", function () {
-    const nombres = ["serie", "descanso", "tic", "record", "rango", "fin", "enfadado", "racha"];
+  ["Sonido", "Existen todos los efectos y son cortos (menos de 2 segundos), también los del estilo Metal", function () {
+    const nombres = ["serie", "descanso", "tic", "record", "rango", "fin", "enfadado", "racha", "aviso10"];
     for (const n of nombres) {
       if (!SONIDOS[n] || SONIDOS[n].length === 0) return "Falta " + n;
       if (duracionSonido(n) > 2) return n + " dura " + duracionSonido(n) + " s";
       for (const nota of SONIDOS[n]) if (!(nota.f > 20 && nota.f < 20000 && nota.v > 0 && nota.v <= 0.3)) return n + ": nota fuera de rango";
+    }
+    for (const n in SONIDOS_METAL) {
+      if (duracionSonido2(SONIDOS_METAL[n]) > 2) return "metal " + n + " dura demasiado";
+      for (const nota of SONIDOS_METAL[n]) if (!(nota.f > 20 && nota.f < 20000 && nota.v > 0 && nota.v <= 0.3)) return "metal " + n + ": nota fuera de rango";
     }
     return true;
   }],
