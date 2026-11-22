@@ -37,6 +37,25 @@ const MENSAJES_APIX = {
     "¡Entreno completo! Mira qué color me has puesto. Ahora toca comer bien y dormir.",
     "Todas las series hechas. Así se construye la constancia: ¡estoy que brillo!"
   ],
+  // Día de entreno con la racha en peligro: Apix habla de eso
+  animaRacha: ["Hoy toca entrenar y esta semana te faltan {n} entrenos para salvar la racha. ¡Vamos!"],
+  animaRacha1: ["Hoy toca entrenar: con este entreno salvas la racha de la semana. ¡Vamos!"],
+  // Al tocar a Apix (va cambiando en cada toque)
+  toque: [
+    "¡Eh, que me haces cosquillas!",
+    "¿Qué pasa, campeón? 💪",
+    "Estoy listo cuando tú lo estés.",
+    "¡Choca esos cinco! ✋",
+    "Hoy tiene pinta de récord.",
+    "Si me sigues tocando, me pongo a hacer flexiones.",
+    "Bebe agua, que se te olvida. 💧"
+  ],
+  toqueChulo: [
+    "¿Me tocas a mí en vez de tocar la barra? 😏",
+    "Menos tocarme y más series.",
+    "Tocar a Apix no cuenta como entreno, ¿eh?",
+    "Vale, ya me has saludado. Ahora, a sudar."
+  ],
   // Día de descanso, pero esta semana aún faltan entrenos para no perder la racha
   descansoPeligro: ["Hoy descansas, pero esta semana te faltan {n} entrenos para no perder la racha. ¡Mañana a por ello!"],
   descansoPeligro1: ["Hoy descansas, pero esta semana te falta 1 entreno para no perder la racha. ¡Mañana a por ello!"],
@@ -177,6 +196,16 @@ function faltanParaRacha() {
   if (rachaSemanas() === 0) return 0;
   const hechos = sesionesPorSemana()[lunesDe(hoy())] || 0;
   return Math.max(0, minimoSemanal() - hechos);
+}
+
+// Frase al tocar a Apix: una distinta cada vez (no repite la anterior)
+let ultimaFraseToque = -1;
+function fraseAlTocar() {
+  const lista = apixChulo() ? MENSAJES_APIX.toqueChulo : MENSAJES_APIX.toque;
+  let i = Math.floor(Math.random() * lista.length);
+  if (i === ultimaFraseToque) i = (i + 1) % lista.length;
+  ultimaFraseToque = i;
+  return lista[i];
 }
 
 // Mensaje de Apix en un día de descanso: si la racha está en peligro, lo dice (en vez de «día libre»)
@@ -321,6 +350,9 @@ function estadoMascota() {
   const recuerdo = recuerdoApix(hoyF);
   if (recuerdo) return { humor: "orgulloso", mensaje: recuerdo };
   if (cal.includes(hoyN)) {
+    const faltan = faltanParaRacha();
+    if (faltan === 1) return { humor: "anima", mensaje: mensajeDelDia(MENSAJES_APIX.animaRacha1, hoyF) };
+    if (faltan > 1) return { humor: "anima", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.animaRacha, hoyF), { n: faltan }) };
     const dias = diasSinEntrenar();
     if (apixChulo() && dias !== null && dias >= 3) return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.sinEntrenar, hoyF) };
     if (apixChulo() && sinPiernaUltimamente()) return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.sinPierna, hoyF) };

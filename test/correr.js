@@ -59,6 +59,15 @@ comprobar("Todos los archivos que guarda sw.js existen", noExisten.length === 0,
 let scripts = (fs.readFileSync(path.join(raiz, "index.html"), "utf8").match(/src="([^"]+\.js)"/g) || []).map(function (t) { return "./" + t.slice(5, -1); });
 // El archivo de idioma se elige al cargar (document.write): no va en ARCHIVOS, pero los 3 tienen que existir
 scripts = scripts.filter(function (f) { return f.indexOf("'") < 0; });
+// Todos los scripts de index.html comparten las mismas variables globales: si dos archivos declaran
+// la misma con let/const, la app no arranca. Se juntan todos y se comprueba que se pueden compilar.
+(function () {
+  let todo = "";
+  for (const f of scripts) todo += fs.readFileSync(path.join(raiz, f), "utf8") + "\n;\n";
+  let error = "";
+  try { new vm.Script(todo); } catch (e) { error = e.message; }
+  comprobar("Los scripts de la app no repiten nombres de variables globales", error === "", error);
+})();
 comprobar("Existen los archivos de los 3 idiomas", ["en", "fr", "ary"].every(function (c) { return fs.existsSync(path.join(raiz, "idiomas-" + c + ".js")); }), "falta algún idiomas-xx.js");
 comprobar("sw.js guarda todos los scripts de index.html", scripts.every(function (f) { return lista.includes(f); }), "añade a ARCHIVOS: " + scripts.filter(function (f) { return !lista.includes(f); }).join(", "));
 

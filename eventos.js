@@ -30,6 +30,12 @@ $("hoja").addEventListener("click", function (ev) { if (ev.target.id === "hoja")
 const ACCIONES = {
   "tocar-apix": function (humor) {
     sonar(humor === "enfadado" ? "enfadado" : (humor === "celebra" || humor === "campeon" ? "record" : "racha"));
+    // Saltito (se quita la clase y se vuelve a poner para que la animación se repita en cada toque)
+    const boton = document.querySelector(".apix-card .apix-boton");
+    if (boton) { boton.classList.remove("salta"); void boton.offsetWidth; boton.classList.add("salta"); }
+    // Otra frase en el bocadillo
+    const texto = document.querySelector(".apix-card .bocadillo p:not(.label)");
+    if (texto) texto.textContent = fraseAlTocar();
   },
   "probar-sonido": function (nombre) { sonar(nombre); },
   "instalar-app": function () {

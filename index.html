@@ -812,6 +812,9 @@ nav.tabs button.on svg { color: var(--accent); filter: drop-shadow(0 0 6px var(-
 [hidden] { display: none !important; }
 /* Apix, la mascota */
 .apix-boton { background: none; border: 0; padding: 0; cursor: pointer; flex: none; }
+.apix-boton.salta { animation: apix-salta .5s ease-out; }
+@keyframes apix-salta { 0% { transform: translateY(0) scale(1, 1); } 25% { transform: translateY(0) scale(1.1, .9); } 55% { transform: translateY(-14px) scale(.95, 1.05); } 100% { transform: translateY(0) scale(1, 1); } }
+@media (prefers-reduced-motion: reduce) { .apix-boton.salta { animation: none; } }
 .apix-card { display: flex; gap: 10px; align-items: flex-end; }
 .apix { width: 86px; height: 86px; flex: none; }
 .apix.sm { width: 48px; height: 48px; }
