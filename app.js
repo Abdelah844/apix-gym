@@ -3111,7 +3111,34 @@ function hojaReto() {
 }
 
 // ---------- Ajustes ----------
-// Ajustes en forma de menú, como los ajustes del móvil: una lista corta y cada fila abre su pantalla.
+// Iconos de línea para el menú de Ajustes (como los de Hevy). Son SVG: cogen el color del texto
+const ICONOS_AJUSTES = {
+  perfil: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>',
+  nube: '<path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.6 4.2 4.2 0 0 0 7 18z"/>',
+  campana: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
+  pesa: '<path d="M6.5 7v10M17.5 7v10M3.5 10v4M20.5 10v4M6.5 12h11"/>',
+  escudo: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><circle cx="12" cy="11" r="2"/><path d="M12 13v3"/>',
+  regla: '<path d="M3.5 15.5 15.5 3.5l5 5-12 12z"/><path d="M7.5 11.5l2 2M10.5 8.5l2 2M13.5 5.5l2 2"/>',
+  bandera: '<path d="M5 21V4h12l-2.5 4 2.5 4H5"/>',
+  luna: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  altavoz: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9a4.5 4.5 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/>',
+  apix: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4 4 0 0 0 7 0M9 9.5v.5M15 9.5v.5"/>',
+  exportar: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  copa: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>',
+  aviso: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/>',
+  bombilla: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+  mas: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+  estrella: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+  documento: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  movil: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5"/>',
+  llave: '<path d="M14.5 6.5a4 4 0 0 0 5 5L11 20l-3-3 8.5-8.5a4 4 0 0 0-2-2z"/>'
+};
+function iconoAjuste(nombre) {
+  return '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (ICONOS_AJUSTES[nombre] || "") + '</svg>';
+}
+
+// Ajustes en forma de menú, como en Hevy: grupos con título y cada fila abre su pantalla.
 // seccionAjustes: "" = el menú; si no, la pantalla abierta ("cuenta", "perfil", "entreno"...).
 // Quien llama a hojaAjustes() sin nada vuelve a dibujar la pantalla que estaba abierta.
 let seccionAjustes = "";
@@ -3130,8 +3157,10 @@ function hojaAjustes(seccion) {
   let h;
 
   if (seccionAjustes === "cuenta") {
+    h = cabeza("Cuenta en la nube") + '<div class="stack">' + tarjetaNube() + '</div>';
+  } else if (seccionAjustes === "datos") {
     const diasCopia = a.ultimaCopia ? diasEntre(a.ultimaCopia, hoy()) : null;
-    h = cabeza("Cuenta y copia") + '<div class="stack" data-ajustes>' + tarjetaNube() +
+    h = cabeza("Exportar e importar datos") + '<div class="stack" data-ajustes>' +
       '<div class="card stack tight copia-ajustes"><h3>💾 Copia de seguridad</h3>' +
         '<p class="small">' + (diasCopia === null ? "<b>Aún no tienes ninguna copia.</b>" : "Última copia: <b>" + fechaBonita(a.ultimaCopia) + "</b> (hace " + diasCopia + " " + plural(diasCopia, "día", "días") + ").") + (conectado() ? ' Tus entrenos ya se guardan en la nube; esta copia es un extra por si acaso.' : ' Tus entrenos solo están en este móvil: si borras la app, se pierden.') + '</p>' +
         '<button class="btn full" data-act="hacer-copia">Hacer copia ahora</button>' +
@@ -3152,8 +3181,7 @@ function hojaAjustes(seccion) {
       '<p class="muted small" style="margin-top:-4px">Para ejercicios añadidos a mano. En la rutina, cada ejercicio guarda su propio descanso.</p>' +
       '<div class="grid2"><label class="f">Incremento barra y máquina<select id="aIncremento">' + opciones([[1, "1 kg"], [1.25, "1,25 kg"], [2.5, "2,5 kg"], [5, "5 kg"]], a.incremento) + '</select></label>' +
       '<label class="f">Incremento de mancuernas<select id="aIncMancuernas">' + opciones([[1, "1 kg"], [2, "2 kg"], [2.5, "2,5 kg"]], a.incrementoMancuernas) + '</select></label></div>' +
-      '<label class="f">Unidades<select id="aUnidad">' + opciones([["kg", "Kilogramos (kg)"], ["lb", "Libras (lb)"]], a.unidad || "kg") + '</select></label>' +
-      '<p class="muted small">Tus datos se guardan siempre igual: cambiar de unidad no pierde nada.</p></div>' +
+      '</div>' +
       '<div class="card stack tight">' +
         chk("aCalentamiento", a.calentamiento !== false, "Proponer series de calentamiento") +
         '<p class="muted small">En los ejercicios grandes con peso (sentadilla, press banca, peso muerto…). No cuentan para récords ni rangos.</p>' +
@@ -3171,17 +3199,23 @@ function hojaAjustes(seccion) {
       '<button class="btn-sec" data-act="activar-avisos">' + (permisoAvisos() === "granted" ? "✓ Avisos activados en este móvil · Probar" : "Activar avisos en este móvil") + '</button>' +
       '<p class="muted small">' + (permisoAvisos() === "denied" ? "Has bloqueado los avisos. Actívalos en los ajustes del navegador." : (permisoAvisos() === "no" ? "Este navegador no permite avisos. En iPhone, instala la app en la pantalla de inicio." : (pushActivo() ? "Te llegan a esa hora aunque tengas la app cerrada. Máximo 1 al día." : "Llegan si abres la app ese día o la tienes en segundo plano. Máximo 1 al día."))) + '</p>' +
       '</div>' + guardado + '</div>';
-  } else if (seccionAjustes === "apariencia") {
-    h = cabeza("Apariencia") + '<div class="stack" data-ajustes>' +
-      '<div class="card stack tight"><h3>🌐 Idioma · Language · Langue</h3>' + selectorIdioma() + '</div>' +
-      '<div class="card stack tight"><div class="seg">' + [["oscuro", "Oscuro"], ["claro", "Claro"], ["sistema", "Sistema"]].map(function (o) { return '<button data-act="tema" data-a="' + o[0] + '" class="' + (a.tema === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div>' +
-      '<div class="card stack tight"><h3>Sonido y vibración</h3>' + chk("aSonido", a.sonido !== false, "Efectos de sonido") +
-        '<label class="f">Estilo de sonido<select id="aEstiloSonido">' + opciones([["clasico", "Clásico"], ["metal", "Metal de gimnasio"]], a.estiloSonido === "metal" ? "metal" : "clasico") + '</select></label>' +
-        chk("aVibracion", a.vibracion !== false, "Vibración") + '</div>' +
-      '<div class="card stack tight"><h3>Apix, la mascota</h3>' + chk("aMascota", a.mascota !== false, "Mostrar a Apix en Inicio") +
-        '<label class="f">Carácter de Apix<select id="aCaracter">' + opciones([["amable", "😊 Amable"], ["chulo", "😏 Chulo (te vacila en plan colega)"]], a.apixCaracter === "chulo" ? "chulo" : "amable") + '</select></label>' +
-        '<p class="muted small">Te anima los días de entreno, se enfada si pierdes la racha y celebra tus récords. Tócalo en Inicio y te contestará.</p></div>' +
-      guardado + '</div>';
+  } else if (seccionAjustes === "unidades") {
+    h = cabeza("Unidades") + '<div class="stack" data-ajustes><div class="card stack tight">' +
+      '<label class="f">Peso<select id="aUnidad">' + opciones([["kg", "Kilogramos (kg)"], ["lb", "Libras (lb)"]], a.unidad || "kg") + '</select></label>' +
+      '<p class="muted small">Tus datos se guardan siempre igual: cambiar de unidad no pierde nada.</p></div>' + guardado + '</div>';
+  } else if (seccionAjustes === "idioma") {
+    h = cabeza("Idioma") + '<div class="stack" data-ajustes><div class="card stack tight"><h3>🌐 Idioma · Language · Langue</h3>' + selectorIdioma() + '</div>' + guardado + '</div>';
+  } else if (seccionAjustes === "modo") {
+    h = cabeza("Modo") + '<div class="stack"><div class="card stack tight"><p class="small">Elige si la app se ve oscura, clara o como tenga el móvil.</p><div class="seg">' +
+      [["oscuro", "Oscuro"], ["claro", "Claro"], ["sistema", "Sistema"]].map(function (o) { return '<button data-act="tema" data-a="' + o[0] + '" class="' + (a.tema === o[0] ? "on" : "") + '">' + o[1] + '</button>'; }).join("") + '</div></div></div>';
+  } else if (seccionAjustes === "sonido") {
+    h = cabeza("Sonido y vibración") + '<div class="stack" data-ajustes><div class="card stack tight">' + chk("aSonido", a.sonido !== false, "Efectos de sonido") +
+      '<label class="f">Estilo de sonido<select id="aEstiloSonido">' + opciones([["clasico", "Clásico"], ["metal", "Metal de gimnasio"]], a.estiloSonido === "metal" ? "metal" : "clasico") + '</select></label>' +
+      chk("aVibracion", a.vibracion !== false, "Vibración") + '</div>' + guardado + '</div>';
+  } else if (seccionAjustes === "apix") {
+    h = cabeza("Apix, la mascota") + '<div class="stack" data-ajustes><div class="card stack tight">' + chk("aMascota", a.mascota !== false, "Mostrar a Apix en Inicio") +
+      '<label class="f">Carácter de Apix<select id="aCaracter">' + opciones([["amable", "😊 Amable"], ["chulo", "😏 Chulo (te vacila en plan colega)"]], a.apixCaracter === "chulo" ? "chulo" : "amable") + '</select></label>' +
+      '<p class="muted small">Te anima los días de entreno, se enfada si pierdes la racha y celebra tus récords. Tócalo en Inicio y te contestará.</p></div>' + guardado + '</div>';
   } else if (seccionAjustes === "privacidad") {
     h = cabeza("Privacidad") + '<div class="stack" data-ajustes><div class="card stack tight">' +
       '<label class="f">Quién ve tu perfil<select id="aPrivacidad">' + opciones([["publico", "Todo el mundo"], ["amigos", "Solo amigos"], ["privado", "Solo yo"]], a.privacidad) + '</select></label>' +
@@ -3197,28 +3231,36 @@ function hojaAjustes(seccion) {
         '<button class="btn-sec full" data-act="abrir-piloto">Prueba piloto</button>' : "") +
       '</div>';
   } else {
-    // El menú: tu perfil arriba y una fila por pantalla
+    // El menú, al estilo de Hevy: grupos con título y filas con icono de línea y flecha.
+    // Cada fila: [acción, dato, icono, texto]. "ajustes-seccion" abre una pantalla de arriba;
+    // las de "contactar" abren el correo con el asunto ya escrito (eventos.js)
     seccionAjustes = "";
     const p = estado.perfil;
-    const filas = [["cuenta", "☁️", "Cuenta y copia"], ["entreno", "🏋️", "Entrenamiento"], ["avisos", "🔔", "Notificaciones"],
-      ["apariencia", "🎨", "Apariencia"], ["privacidad", "🔒", "Privacidad"]];
-    // Soporte: [acción, dato, icono, texto]. Las de "contactar" abren el correo con el asunto ya escrito (eventos.js)
-    const soporte = [["ver-tutorial", "", "🎓", "Ver el tutorial otra vez"], ["contactar", "error", "❗", "Informa de un error"],
-      ["contactar", "idea", "💡", "Sugiere una funcionalidad"], ["contactar", "ejercicio", "💪", "Sugerir un ejercicio al catálogo"],
-      ["contactar", "opinion", "⭐", "Déjanos una reseña"]];
-    if (!appInstalada()) soporte.push(["ajustes-seccion", "instalar", "📲", "Instalar en el móvil"]);
+    const grupos = [
+      ["Cuenta", [["ajustes-seccion", "perfil", "perfil", "Perfil"], ["ajustes-seccion", "cuenta", "nube", "Cuenta en la nube"],
+        ["ajustes-seccion", "avisos", "campana", "Notificaciones"]]],
+      ["Preferencias", [["ajustes-seccion", "entreno", "pesa", "Entrenamiento"], ["ajustes-seccion", "privacidad", "escudo", "Privacidad"],
+        ["ajustes-seccion", "unidades", "regla", "Unidades"], ["ajustes-seccion", "idioma", "bandera", "Idioma"],
+        ["ajustes-seccion", "modo", "luna", "Modo"], ["ajustes-seccion", "sonido", "altavoz", "Sonido y vibración"],
+        ["ajustes-seccion", "apix", "apix", "Apix, la mascota"], ["ajustes-seccion", "datos", "exportar", "Exportar e importar datos"]]],
+      ["Guías", [["ver-tutorial", "", "info", "Guía de inicio"], ["como-rangos", "", "copa", "Cómo funcionan los rangos"]]],
+      ["Ayuda", [["contactar", "error", "aviso", "Informa de un error"], ["contactar", "idea", "bombilla", "Sugiere una funcionalidad"],
+        ["contactar", "ejercicio", "mas", "Sugerir un ejercicio al catálogo"], ["contactar", "opinion", "estrella", "Déjanos una reseña"],
+        ["abrir-privacidad", "", "documento", "Privacidad y condiciones de uso"]]]
+    ];
+    if (!appInstalada()) grupos[2][1].push(["ajustes-seccion", "instalar", "movil", "Instalar en el móvil"]);
     // Herramientas para revisar la app: solo se ven abriendo la app con ?dev al final de la dirección
-    else if (MODO_DESARROLLO) soporte.push(["ajustes-seccion", "instalar", "🛠", "Herramientas"]);
-    h = cabeceraHoja("Perfil y ajustes", estado.modo === "demo" ? "Modo demo" : "Cuenta en este dispositivo") + '<div class="stack">' +
-      '<div class="card row perfil-aj"><span class="avatar">' + esc(p.nombre[0] || "?").toUpperCase() + '</span>' +
-        '<div class="grow"><b>' + esc(p.nombre) + '</b><p class="muted small" data-no-traducir>@' + esc(p.usuario || "") + '</p></div>' +
-        '<button class="btn-sec" data-act="ajustes-seccion" data-a="perfil">Editar perfil</button></div>' +
-      '<div class="card menu-aj">' + filas.map(function (x) {
-        return '<button data-act="ajustes-seccion" data-a="' + x[0] + '"><span class="ico" aria-hidden="true">' + x[1] + '</span><span>' + x[2] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
-      }).join("") + '</div>' +
-      '<p class="label titulo-grupo-aj">Soporte</p><div class="card menu-aj">' + soporte.map(function (x) {
-        return '<button data-act="' + x[0] + '" data-a="' + x[1] + '"><span class="ico" aria-hidden="true">' + x[2] + '</span><span>' + x[3] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
-      }).join("") + '</div>' +
+    else if (MODO_DESARROLLO) grupos[2][1].push(["ajustes-seccion", "instalar", "llave", "Herramientas"]);
+    function fila(x) {
+      return '<button data-act="' + x[0] + '" data-a="' + x[1] + '"><span class="ico" aria-hidden="true">' + iconoAjuste(x[2]) + '</span><span>' + x[3] + '</span><span class="flecha" aria-hidden="true">›</span></button>';
+    }
+    h = cabeceraHoja("Ajustes", estado.modo === "demo" ? "Modo demo" : "Perfil y ajustes") + '<div class="stack ajustes-hevy">' +
+      // Arriba tu perfil: al tocarlo se edita
+      '<button class="card row perfil-aj" data-act="ajustes-seccion" data-a="perfil"><span class="avatar">' + esc(p.nombre[0] || "?").toUpperCase() + '</span>' +
+        '<span class="grow"><b>' + esc(p.nombre) + '</b><span class="muted small" data-no-traducir>@' + esc(p.usuario || "") + '</span></span><span class="flecha" aria-hidden="true">›</span></button>' +
+      grupos.map(function (g) {
+        return '<p class="titulo-grupo-aj">' + g[0] + '</p><div class="card menu-aj">' + g[1].map(fila).join("") + '</div>';
+      }).join("") +
       '<button class="btn-sec full" data-act="cerrar-sesion">Cerrar sesión</button>' +
       '<button class="btn-sec full btn-danger" data-act="borrar-todo">' + (confirmar === "borrar-todo" ? "Pulsa otra vez: se borrará todo" : "Eliminar cuenta y datos") + '</button></div>';
   }
