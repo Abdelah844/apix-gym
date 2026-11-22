@@ -37,6 +37,12 @@ const MENSAJES_APIX = {
     "¡Entreno completo! Mira qué color me has puesto. Ahora toca comer bien y dormir.",
     "Todas las series hechas. Así se construye la constancia: ¡estoy que brillo!"
   ],
+  // Día de descanso, pero esta semana aún faltan entrenos para no perder la racha
+  descansoPeligro: ["Hoy descansas, pero esta semana te faltan {n} entrenos para no perder la racha. ¡Mañana a por ello!"],
+  descansoPeligro1: ["Hoy descansas, pero esta semana te falta 1 entreno para no perder la racha. ¡Mañana a por ello!"],
+  // Lo mismo, pero en domingo: es el último día de la semana
+  descansoDomingo: ["Es el último día de la semana y te faltan {n} entrenos para no perder la racha. ¿Un entreno rápido hoy?"],
+  descansoDomingo1: ["Es el último día de la semana y te falta 1 entreno para no perder la racha. ¿Un entreno rápido hoy?"],
   descanso: [
     "Hoy toca descanso. Recuperar también es entrenar.",
     "Día libre. El músculo crece mientras descansas.",
@@ -166,6 +172,24 @@ function mensajeDelDia(lista, fecha) {
   return lista[dia % lista.length];
 }
 
+// Entrenos que faltan esta semana para no perder la racha (0 si ya está a salvo o si no tienes racha)
+function faltanParaRacha() {
+  if (rachaSemanas() === 0) return 0;
+  const hechos = sesionesPorSemana()[lunesDe(hoy())] || 0;
+  return Math.max(0, minimoSemanal() - hechos);
+}
+
+// Mensaje de Apix en un día de descanso: si la racha está en peligro, lo dice (en vez de «día libre»)
+function mensajeDescanso(hoyF) {
+  const faltan = faltanParaRacha();
+  const domingo = new Date(hoyF + "T12:00:00").getDay() === 0;     // el domingo ya no hay «mañana» esa semana
+  if (domingo && faltan === 1) return mensajeDelDia(MENSAJES_APIX.descansoDomingo1, hoyF);
+  if (domingo && faltan > 1) return rellenar(mensajeDelDia(MENSAJES_APIX.descansoDomingo, hoyF), { n: faltan });
+  if (faltan === 1) return mensajeDelDia(MENSAJES_APIX.descansoPeligro1, hoyF);
+  if (faltan > 1) return rellenar(mensajeDelDia(MENSAJES_APIX.descansoPeligro, hoyF), { n: faltan });
+  return mensajeDelDia(MENSAJES_APIX.descanso, hoyF);
+}
+
 function rellenar(texto, datos) {
   return texto.replace(/\{(\w+)\}/g, function (m, k) { return datos[k] !== undefined ? datos[k] : m; });
 }
@@ -289,7 +313,7 @@ function estadoMascota() {
     return { humor: "anima", mensaje: rellenar(mensajeDelDia(d.dias <= 1 ? MENSAJES_APIX.retoUltimo : MENSAJES_APIX.reto, hoyF), d), accion: "ver-retos" };
   }
   // 3c. Día de descanso: Apix descansa contigo
-  if (esDescanso) return { humor: "descanso", mensaje: mensajeDelDia(MENSAJES_APIX.descanso, hoyF) };
+  if (esDescanso) return { humor: "descanso", mensaje: mensajeDescanso(hoyF) };
   // 4. Hoy ya has entrenado
   if (ultima && ultima.fecha === hoyF) return { humor: "orgulloso", mensaje: mensajeDelDia(MENSAJES_APIX.orgulloso, hoyF) };
   // 5. Hoy toca entrenar (según tu calendario) y aún no lo has hecho
@@ -307,7 +331,7 @@ function estadoMascota() {
   if (!(estado.social.retos || []).length && validas.length >= 3 && (new Date(hoyF + "T12:00:00").getDate() % 3 === 0)) {
     return { humor: "contento", mensaje: mensajeDelDia(MENSAJES_APIX.sinReto, hoyF), accion: "nuevo-reto" };
   }
-  if (cal.length) return { humor: "descanso", mensaje: mensajeDelDia(MENSAJES_APIX.descanso, hoyF) };
+  if (cal.length) return { humor: "descanso", mensaje: mensajeDescanso(hoyF) };
   return { humor: "contento", mensaje: mensajeDelDia(MENSAJES_APIX.contento, hoyF) };
 }
 
