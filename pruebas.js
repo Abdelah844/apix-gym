@@ -1339,10 +1339,25 @@ const PRUEBAS = [
       [true, { actualizado: t }, { ultimaSync: t, pendiente: true }, "subir"],
       [true, { actualizado: t }, { ultimaSync: t, pendiente: false }, "nada"],
       [true, { actualizado: t }, { ultimaSync: "2026-11-01T10:00:00Z", pendiente: false }, "bajar"],
-      [true, { actualizado: t }, { ultimaSync: "", pendiente: true }, "elegir"]
+      [true, { actualizado: t }, { ultimaSync: "", pendiente: true }, "elegir"],
+      // Subimos y se perdió la respuesta (saliste de la app): no debe preguntar
+      [true, { actualizado: "2026-11-03T10:00:00+00:00" }, { ultimaSync: "2026-11-01T10:00:00Z", subiendo: t, pendiente: true }, "subir"]
     ];
     for (const c of casos) { const r = decidirSync(c[0], c[1], c[2]); if (r !== c[3]) return "Esperaba " + c[3] + " y salió " + r; }
     return true;
+  }],
+  ["2.8 Nube", "Usar los datos de la nube no borra el entreno que llevas", function () {
+    estadoPrueba();
+    crearSesionLibre();
+    const enCurso = estado.activa;
+    const copia = { version: VERSION_DATOS, actualizado: "2026-11-03T10:00:00Z", datos: JSON.parse(JSON.stringify(estado)) };
+    copia.datos.activa = null;
+    const antes = nube;
+    nube = {};                                  // como si hubiera sesión iniciada (sin internet)
+    const r = usarCopiaNube(copia);
+    nube = antes; guardarNube();
+    if (!r.ok) return "No se usó la copia: " + r.msg;
+    return estado.activa === enCurso || "Se perdió el entreno en curso";
   }],
   ["2.8 Nube", "Lee el enlace del correo (cambiar contraseña) y no confunde el de amigos", function () {
     const v = leerVueltaCorreo("#access_token=abc&expires_in=3600&refresh_token=xyz&token_type=bearer&type=recovery");

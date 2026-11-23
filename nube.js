@@ -198,6 +198,9 @@ async function leerCopiaNube() {
 
 async function subirCopiaNube() {
   const ahora = new Date().toISOString();
+  // Se apunta antes de enviar: si sales de la app y se pierde la respuesta, al volver sabremos
+  // que la copia de la nube es la nuestra y no preguntaremos «¿Qué datos usamos?»
+  nube.subiendo = ahora; guardarNube();
   const r = await pedirNube("/rest/v1/copias?on_conflict=usuario&select=actualizado", "POST",
     { usuario: nube.id, datos: estado, version: VERSION_DATOS, actualizado: ahora },
     { "Prefer": "resolution=merge-duplicates,return=representation" });
@@ -212,10 +215,15 @@ async function subirCopiaNube() {
 //  "bajar": la nube tiene algo más nuevo y aquí no hemos cambiado nada
 //  "elegir": han cambiado los dos sitios (o es la primera vez en este móvil y hay datos en los dos): pregunta al usuario
 //  "nada": todo al día
+function mismaFecha(a, b) {
+  if (!a || !b) return false;
+  return a === b || new Date(a).getTime() === new Date(b).getTime();
+}
 function decidirSync(hayLocal, copia, meta) {
   if (!copia) return hayLocal ? "subir" : "nada";
   if (!hayLocal) return "bajar";
-  if (copia.actualizado === meta.ultimaSync) return meta.pendiente ? "subir" : "nada";
+  // Es la copia que subimos desde este móvil (aunque no nos llegara la respuesta)
+  if (mismaFecha(copia.actualizado, meta.ultimaSync) || mismaFecha(copia.actualizado, meta.subiendo)) return meta.pendiente ? "subir" : "nada";
   return meta.pendiente ? "elegir" : "bajar";
 }
 
@@ -223,10 +231,13 @@ function decidirSync(hayLocal, copia, meta) {
 function usarCopiaNube(copia) {
   const v = validarImport(JSON.stringify({ formato: "apex-gym", version: copia.version || 1, datos: copia.datos }));
   if (!v.ok) return { ok: false, msg: "La copia de la nube no es válida: " + v.msg };
+  // validarImport quita el entreno a medias: si en este móvil llevas uno, se conserva
+  const enCurso = estado && estado.activa ? estado.activa : null;
   estado = v.datos;
+  if (enCurso) estado.activa = enCurso;
   recalcularHistorial();
   nubeSilencio = true; guardar(); nubeSilencio = false;
-  nube.ultimaSync = copia.actualizado; nube.pendiente = false; nube.ultimoError = ""; guardarNube();
+  nube.ultimaSync = copia.actualizado; nube.subiendo = ""; nube.pendiente = false; nube.ultimoError = ""; guardarNube();
   return { ok: true };
 }
 

@@ -1440,6 +1440,15 @@ function pantallaEncendida() {
 }
 document.addEventListener("visibilitychange", pantallaEncendida);
 
+// Si sales de la app con el teclado abierto, el número que escribías aún no se ha guardado
+// (se guarda al salir del campo). Al ocultarse la app se quita el foco y así se guarda.
+function guardarCampoAbierto() {
+  const el = document.activeElement;
+  if (el && el.tagName === "INPUT" && el.dataset && el.dataset.in) el.blur();
+}
+document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") guardarCampoAbierto(); });
+window.addEventListener("pagehide", guardarCampoAbierto);
+
 // ---------- Fotos de tu rutina sin internet ----------
 // Con internet, descarga en segundo plano las fotos de los ejercicios de tu rutina.
 // El service worker las guarda, y así se ven en el gimnasio aunque no haya cobertura.
