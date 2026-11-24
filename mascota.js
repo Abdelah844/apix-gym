@@ -5,41 +5,78 @@
 // Los mensajes se eligen según la fecha (no al azar), así se pueden probar.
 // =====================================================
 
-const FRASE_DISCIPLINA = "Hay que tener disciplina para el cuerpo que deseas.";
-
+// {nombre} = tu nombre; {dia} = el día de tu rutina que toca; {ejercicio} = su primer ejercicio
 const MENSAJES_APIX = {
   anima: [
-    FRASE_DISCIPLINA,
     "Hoy toca. Tu yo del futuro te lo agradecerá.",
     "No hacen falta ganas, hace falta empezar.",
     "Un entreno más, un paso más cerca.",
     "Las pesas no se levantan solas.",
-    "El sofá te echará de menos. 😏"
+    "El sofá te echará de menos. 😏",
+    "¿Vamos, {nombre}? Hoy es un buen día para entrenar."
+  ],
+  // Día de entreno: dice qué día de tu rutina toca
+  animaDia: [
+    "Hoy toca {dia}. Empiezas con {ejercicio}: ¿le ganas a la última vez?",
+    "{nombre}, hoy toca {dia}. ¡Vamos a por ello!",
+    "Día de {dia}. Calienta bien y empieza con {ejercicio}.",
+    "Hoy te espera {dia}. Una repetición más que la última vez ya es ganar.",
+    "Toca {dia}. Yo llevo la cuenta, tú pon las ganas. 💪"
+  ],
+  // Según la hora (día de entreno y aún sin entrenar)
+  animaManana: [
+    "Madrugando, ¿eh? Así me gusta. Hoy toca entrenar.",
+    "Buenos días, {nombre}. Hoy toca entrenar: desayuna bien.",
+    "Hoy toca entrenar. Piensa a qué hora vas y no lo dejes para luego."
+  ],
+  animaNoche: [
+    "Aún estás a tiempo de un entreno rápido. ¿20 minutos?",
+    "{nombre}, se acaba el día y hoy tocaba entrenar. ¿Uno rapidito?",
+    "Un entreno corto vale más que ninguno. ¡Todavía da tiempo!"
   ],
   animaFuerte: [
-    "Llevas {dias} días sin entrenar. " + FRASE_DISCIPLINA,
+    "Llevas {dias} días sin entrenar. Hoy es buen día para volver.",
     "Las mancuernas preguntan por ti. Les he dicho que estabas en el sofá.",
-    "¿Vas a estar todo el día en casa? 👀"
+    "¿Vas a estar todo el día en casa? 👀",
+    "{dias} días sin pesas… Empieza suave, pero empieza."
   ],
   enfadado: [
     "¡¿Cómo que has perdido la racha?! {racha} semanas seguidas… Esta semana la recuperamos, ¿vale?",
-    "Grrr… {racha} semanas de racha a la basura. Venga, levanta y empezamos otra hoy."
+    "Grrr… {racha} semanas de racha a la basura. Venga, levanta y empezamos otra hoy.",
+    "{racha} semanas de racha y se acabó. Estoy enfadado, pero se me pasa si entrenas hoy. 😤",
+    "Adiós a {racha} semanas de racha. Lo bueno: la siguiente empieza en cuanto entrenes."
   ],
   celebra: [
     "¡{peso} en {ejercicio}! Eso antes no lo levantabas. ¡Estoy orgulloso!",
-    "¡Nuevo récord en {ejercicio}: {peso}! El trabajo de estas semanas se nota."
+    "¡Nuevo récord en {ejercicio}: {peso}! El trabajo de estas semanas se nota.",
+    "¡{nombre}, récord en {ejercicio}! {peso}. Esto hay que celebrarlo.",
+    "{peso} en {ejercicio}… ¡Eso es un récord! Hoy has superado a tu yo de ayer.",
+    "¡Récord! {ejercicio} con {peso}. Ahora come bien, que te lo has ganado."
   ],
   orgulloso: [
     "Bien por entrenar hoy. Si la próxima vez acabas todas las series, me pondré amarillo.",
-    "Hoy has entrenado, ¡bien! Termina el entreno completo y verás cómo me pongo."
+    "Hoy has entrenado, ¡bien! Termina el entreno completo y verás cómo me pongo.",
+    "Entreno hecho, {nombre}. La próxima, todas las series y me pongo amarillo.",
+    "Has venido, que es lo más difícil. La próxima vez, a por todas las series."
   ],
   campeon: [
     "¡Entreno completo! Mira qué color me has puesto. Ahora toca comer bien y dormir.",
-    "Todas las series hechas. Así se construye la constancia: ¡estoy que brillo!"
+    "Todas las series hechas. Así se construye la constancia: ¡estoy que brillo!",
+    "¡Entreno completo, {nombre}! Así se hace.",
+    "Todo hecho, sin dejar ni una serie. Me encanta este color. 💛",
+    "Entreno completo. Hoy ya has ganado: ahora a descansar."
   ],
   // Día de entreno con la racha en peligro: Apix habla de eso
-  animaRacha: ["Hoy toca entrenar y esta semana te faltan {n} entrenos para salvar la racha. ¡Vamos!"],
-  animaRacha1: ["Hoy toca entrenar: con este entreno salvas la racha de la semana. ¡Vamos!"],
+  animaRacha: [
+    "Hoy toca entrenar y esta semana te faltan {n} entrenos para salvar la racha. ¡Vamos!",
+    "Te faltan {n} entrenos esta semana para salvar la racha. El de hoy es uno. ¡Vamos!",
+    "La racha pide {n} entrenos más esta semana. Hoy toca, ¿empezamos?"
+  ],
+  animaRacha1: [
+    "Hoy toca entrenar: con este entreno salvas la racha de la semana. ¡Vamos!",
+    "Solo te falta un entreno para salvar la racha de la semana. ¡Que sea hoy!",
+    "Un entreno más y la racha está a salvo. ¡A por él!"
+  ],
   // Al tocar a Apix (va cambiando en cada toque)
   toque: [
     "¡Eh, que me haces cosquillas!",
@@ -57,8 +94,14 @@ const MENSAJES_APIX = {
     "Vale, ya me has saludado. Ahora, a sudar."
   ],
   // Día de descanso, pero esta semana aún faltan entrenos para no perder la racha
-  descansoPeligro: ["Hoy descansas, pero esta semana te faltan {n} entrenos para no perder la racha. ¡Mañana a por ello!"],
-  descansoPeligro1: ["Hoy descansas, pero esta semana te falta 1 entreno para no perder la racha. ¡Mañana a por ello!"],
+  descansoPeligro: [
+    "Hoy descansas, pero esta semana te faltan {n} entrenos para no perder la racha. ¡Mañana a por ello!",
+    "Hoy toca descanso, pero ojo: te faltan {n} entrenos esta semana para la racha."
+  ],
+  descansoPeligro1: [
+    "Hoy descansas, pero esta semana te falta 1 entreno para no perder la racha. ¡Mañana a por ello!",
+    "Hoy descansas, pero recuerda: falta un entreno esta semana para la racha."
+  ],
   // Lo mismo, pero en domingo: es el último día de la semana
   descansoDomingo: ["Es el último día de la semana y te faltan {n} entrenos para no perder la racha. ¿Un entreno rápido hoy?"],
   descansoDomingo1: ["Es el último día de la semana y te falta 1 entreno para no perder la racha. ¿Un entreno rápido hoy?"],
@@ -66,7 +109,9 @@ const MENSAJES_APIX = {
     "Hoy toca descanso. Recuperar también es entrenar.",
     "Día libre. El músculo crece mientras descansas.",
     "Descansa bien hoy: mañana vuelves más fuerte.",
-    "Hoy toca sofá, pero con permiso. 😴"
+    "Hoy toca sofá, pero con permiso. 😴",
+    "Hoy descansas, {nombre}. Estira un poco y bebe agua. 💧",
+    "Día libre. Duerme bien esta noche: ahí es donde creces."
   ],
   // Salen hasta 3 días después de marcar molestias: una frase distinta cada día para que no canse
   cuida: [
@@ -79,21 +124,82 @@ const MENSAJES_APIX = {
     "Hoy has marcado molestias en {ejercicio}. Descansa esa zona y, el próximo día, menos peso. Si sigue doliendo, consulta a un profesional."
   ],
   reto: [
-    "Te faltan {falta} {unidad} para tu reto «{reto}» y quedan {dias} días. " + FRASE_DISCIPLINA,
-    "Tu reto «{reto}» te espera: faltan {falta} {unidad}. ¡No lo sueltes ahora!"
+    "Te faltan {falta} {unidad} para tu reto «{reto}» y quedan {dias} días. ¡Tú puedes!",
+    "Tu reto «{reto}» te espera: faltan {falta} {unidad}. ¡No lo sueltes ahora!",
+    "Quedan {dias} días de reto y te faltan {falta} {unidad}. Poco a poco se llega."
   ],
   retoUltimo: [
-    "¡Último día para tu reto «{reto}»! Te faltan {falta} {unidad}. Hoy es el día."
+    "¡Último día para tu reto «{reto}»! Te faltan {falta} {unidad}. Hoy es el día.",
+    "Hoy acaba tu reto «{reto}». Faltan {falta} {unidad}: ¡a por ello!"
   ],
   retoConseguido: [
-    "¡Reto «{reto}» conseguido! Sabía que podías. ¿Te pones otro más difícil?"
+    "¡Reto «{reto}» conseguido! Sabía que podías. ¿Te pones otro más difícil?",
+    "¡Lo has conseguido! Reto «{reto}» completado. Estoy muy orgulloso."
   ],
   sinReto: [
-    "¿Y si te pones un reto? Una meta clara ayuda a no faltar. Créalo en Social → Retos."
+    "¿Y si te pones un reto? Una meta clara ayuda a no faltar. Créalo en Social → Retos.",
+    "Un reto le da emoción a la semana. ¿Te creas uno en Social → Retos?"
   ],
   contento: [
     "¡Hola! Soy Apix. Cuando quieras, empezamos.",
-    "Cada serie cuenta. ¿Entrenamos?"
+    "Cada serie cuenta. ¿Entrenamos?",
+    "¡Hola, {nombre}! ¿Qué entrenamos hoy?",
+    "Aquí estoy, listo para la próxima serie."
+  ],
+  // Momentos especiales (solo el día que pasan)
+  hitoEntrenos: [
+    "¡Entreno número {n}! Cada uno ha contado. ¡Enhorabuena, {nombre}!",
+    "¡{n} entrenos conmigo! Esto ya no es suerte, es constancia."
+  ],
+  hitoRacha: [
+    "¡{n} semanas seguidas de racha! Esto ya es un hábito. 🔥",
+    "¡Racha de {n} semanas! Pocos llegan hasta aquí, {nombre}."
+  ],
+  vuelta: [
+    "¡Has vuelto! Te echaba de menos. Hoy ya cuenta.",
+    "¡Qué alegría verte otra vez, {nombre}! Lo importante es volver."
+  ]
+};
+
+// Las mismas situaciones con el carácter «Chulo» (vacila, pero sin pasarse).
+// Si una situación no está aquí, el chulo usa la frase normal (p. ej. con molestias nunca vacila).
+const MENSAJES_APIX_CHULO = {
+  anima: [
+    "Hoy toca entrenar. Y no, mirar vídeos de gimnasio no cuenta. 😏",
+    "Las pesas no se levantan solas… ni mirándolas.",
+    "¿Entrenamos o seguimos haciendo scroll?",
+    "Venga, {nombre}, que el sofá ya tiene tu forma."
+  ],
+  animaDia: [
+    "Hoy toca {dia}. Ni se te ocurra saltártelo. 😏",
+    "Toca {dia}. Empiezas con {ejercicio}… a ver si esta vez le subes algo."
+  ],
+  celebra: [
+    "Vaya, {peso} en {ejercicio}. Al final no eras tan flojo. 😏",
+    "¡Récord en {ejercicio}: {peso}! Vale, lo admito: me has impresionado.",
+    "{peso} en {ejercicio}… ¿Seguro que no te ayudó nadie? 😏 ¡Récord!"
+  ],
+  campeon: [
+    "Entreno completo. Ni yo me lo esperaba. 😏",
+    "Todas las series. Hoy no te puedo vacilar… y eso me fastidia.",
+    "Completo. Vale, hoy te has ganado el color amarillo."
+  ],
+  orgulloso: [
+    "Has entrenado, pero te has dejado series. Medio aplauso. 👏",
+    "Bien… pero si acabas todas las series no me tendrás que oír."
+  ],
+  descanso: [
+    "Hoy toca descanso. No te acostumbres. 😏",
+    "Día libre. Disfruta del sofá, que mañana te quiero ver sudar.",
+    "Descansa, campeón. Bueno, campeón… ya veremos."
+  ],
+  enfadado: [
+    "{racha} semanas de racha tiradas a la basura. Bravo. 👏",
+    "Has perdido {racha} semanas de racha. ¿El sofá te tenía secuestrado?"
+  ],
+  contento: [
+    "¿Qué pasa, {nombre}? ¿Hoy vienes a entrenar o a mirarme?",
+    "Soy Apix y tengo más constancia que tú. De momento. 😏"
   ]
 };
 
@@ -183,6 +289,30 @@ function burlaResumen(s) {
   return "";
 }
 
+// La lista de frases de una situación: la versión chula si Apix es chulo y existe
+function frasesApix(clave) {
+  return (apixChulo() && MENSAJES_APIX_CHULO[clave]) || MENSAJES_APIX[clave];
+}
+// Tu nombre (solo el primero) para que Apix te llame por él
+function nombreApix() {
+  const n = (estado.perfil && estado.perfil.nombre || "").trim().split(" ")[0];
+  return n || "campeón";
+}
+// El día de tu rutina que toca y su primer ejercicio (o null si no hay rutina)
+function diaQueToca() {
+  const r = estado.rutina;
+  if (!r || !r.dias || !r.dias.length) return null;
+  const d = r.dias[indiceSiguienteDia()];
+  if (!d || !d.ejercicios.length) return null;
+  // «Martes · Pecho y tríceps» → «Pecho y tríceps»
+  const partes = d.nombre.split("·");
+  const nombre = partes[partes.length - 1].trim() || d.nombre;
+  return { dia: nombre, ejercicio: buscarEj(d.ejercicios[0].id).nombre.toLowerCase() };
+}
+// Entrenos y semanas de racha que se celebran
+const HITOS_ENTRENOS = [10, 25, 50, 100, 150, 200, 300, 400, 500];
+const HITOS_RACHA = [4, 8, 12, 26, 52];
+
 // Elige un mensaje según el día del año (siempre el mismo durante el día)
 function mensajeDelDia(lista, fecha) {
   const d = new Date((fecha || hoy()) + "T12:00:00");
@@ -216,7 +346,7 @@ function mensajeDescanso(hoyF) {
   if (domingo && faltan > 1) return rellenar(mensajeDelDia(MENSAJES_APIX.descansoDomingo, hoyF), { n: faltan });
   if (faltan === 1) return mensajeDelDia(MENSAJES_APIX.descansoPeligro1, hoyF);
   if (faltan > 1) return rellenar(mensajeDelDia(MENSAJES_APIX.descansoPeligro, hoyF), { n: faltan });
-  return mensajeDelDia(MENSAJES_APIX.descanso, hoyF);
+  return mensajeDelDia(frasesApix("descanso"), hoyF);
 }
 
 function rellenar(texto, datos) {
@@ -276,8 +406,13 @@ function sesionCompleta(s) {
 }
 
 // Humor y mensaje de Apix. Devuelve null si el usuario lo ha desactivado.
-// Orden de prioridad: molestias → récord → racha perdida → hoy ya entrenaste → día de entreno → descanso → normal
+// Orden de prioridad: molestias → momentos especiales → entreno completo → récord → vuelta → racha perdida → hoy ya entrenaste → día de entreno → descanso → normal
 function estadoMascota() {
+  const r = estadoMascotaBase();
+  if (r) r.mensaje = rellenar(r.mensaje, { nombre: nombreApix() });
+  return r;
+}
+function estadoMascotaBase() {
   if (estado.ajustes.mascota === false) return null;
   const hoyF = hoy();
   const validas = sesionesValidas();
@@ -300,9 +435,17 @@ function estadoMascota() {
     }
     return { humor: "cuida", mensaje: mensajeDelDia(MENSAJES_APIX.cuida, hoyF) };
   }
+  // 1a. Momentos especiales del entreno de hoy: entreno número 10, 25, 50… o racha redonda
+  if (ultima && ultima.fecha === hoyF) {
+    const humorHoy = sesionCompleta(ultima) ? "campeon" : "celebra";
+    if (HITOS_ENTRENOS.includes(validas.length)) return { humor: humorHoy, mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.hitoEntrenos, hoyF), { n: validas.length }) };
+    const semanas = rachaSemanas();
+    const estaSemana = sesionesPorSemana()[lunesDe(hoyF)] || 0;
+    if (HITOS_RACHA.includes(semanas) && estaSemana === minimoSemanal()) return { humor: humorHoy, mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.hitoRacha, hoyF), { n: semanas }) };
+  }
   // 1b. Hoy has acabado el entreno completo: Apix se pone amarillo (es el premio)
   if (ultima && ultima.fecha === hoyF && sesionCompleta(ultima)) {
-    return { humor: "campeon", mensaje: mensajeDelDia(MENSAJES_APIX.campeon, hoyF) };
+    return { humor: "campeon", mensaje: mensajeDelDia(frasesApix("campeon"), hoyF) };
   }
   // ¿Hoy es día de descanso? (no está en «Mi semana» y no has entrenado hoy)
   const cal = diasDeEntreno();
@@ -318,7 +461,12 @@ function estadoMascota() {
     let mejor = null;
     for (const s of e.series) if (serieValida(s) && (!mejor || unaRM(cargaSerie(ej, s.peso, ultima.fecha), s.reps) > unaRM(cargaSerie(ej, mejor.peso, ultima.fecha), mejor.reps))) mejor = s;
     const peso = ej.asistido ? mejor.reps + " reps con " + String(mejor.peso).replace(".", ",") + " kg de ayuda" : String(mejor.peso).replace(".", ",") + " kg × " + mejor.reps;
-    return { humor: "celebra", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.celebra, hoyF), { peso: peso, ejercicio: ej.nombre.toLowerCase() }) };
+    return { humor: "celebra", mensaje: rellenar(mensajeDelDia(frasesApix("celebra"), hoyF), { peso: peso, ejercicio: ej.nombre.toLowerCase() }) };
+  }
+  // 2a. Has vuelto después de una semana o más sin entrenar
+  if (ultima && ultima.fecha === hoyF) {
+    const previa = validas[validas.length - 2];
+    if (previa && diasEntre(previa.fecha, hoyF) >= 7) return { humor: sesionCompleta(ultima) ? "campeon" : "celebra", mensaje: mensajeDelDia(MENSAJES_APIX.vuelta, hoyF) };
   }
   // 2b. Reto conseguido: felicitar
   const conseguido = retoRecienConseguido();
@@ -328,7 +476,7 @@ function estadoMascota() {
   // 3. Racha perdida esta semana
   const perdida = rachaPerdida();
   if (perdida >= 1 && !(ultima && ultima.fecha === hoyF)) {
-    return { humor: "enfadado", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.enfadado, hoyF), { racha: perdida }) };
+    return { humor: "enfadado", mensaje: rellenar(mensajeDelDia(frasesApix("enfadado"), hoyF), { racha: perdida }) };
   }
   // 3a. (Chulo) Racha a punto de perderse
   if (apixChulo() && !(ultima && ultima.fecha === hoyF) && rachaEnUci()) {
@@ -344,7 +492,7 @@ function estadoMascota() {
   // 3c. Día de descanso: Apix descansa contigo
   if (esDescanso) return { humor: "descanso", mensaje: mensajeDescanso(hoyF) };
   // 4. Hoy ya has entrenado
-  if (ultima && ultima.fecha === hoyF) return { humor: "orgulloso", mensaje: mensajeDelDia(MENSAJES_APIX.orgulloso, hoyF) };
+  if (ultima && ultima.fecha === hoyF) return { humor: "orgulloso", mensaje: mensajeDelDia(frasesApix("orgulloso"), hoyF) };
   // 5. Hoy toca entrenar (según tu calendario) y aún no lo has hecho
   // 4b. Recuerdo (fecha especial o mejora en tu ejercicio favorito)
   const recuerdo = recuerdoApix(hoyF);
@@ -357,14 +505,22 @@ function estadoMascota() {
     if (apixChulo() && dias !== null && dias >= 3) return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.sinEntrenar, hoyF) };
     if (apixChulo() && sinPiernaUltimamente()) return { humor: "anima", mensaje: mensajeDelDia(BURLAS_APIX.sinPierna, hoyF) };
     if (dias !== null && dias >= 3) return { humor: "anima", mensaje: rellenar(mensajeDelDia(MENSAJES_APIX.animaFuerte, hoyF), { dias: dias }) };
-    return { humor: "anima", mensaje: mensajeDelDia(MENSAJES_APIX.anima, hoyF) };
+    // Por la mañana temprano o por la noche, habla de la hora
+    const hora = new Date().getHours();
+    if (hora < 10) return { humor: "anima", mensaje: mensajeDelDia(MENSAJES_APIX.animaManana, hoyF) };
+    if (hora >= 21) return { humor: "anima", mensaje: mensajeDelDia(MENSAJES_APIX.animaNoche, hoyF) };
+    // Si tienes rutina, dice qué día toca (2 de cada 3 días, para que no sea siempre igual)
+    const toca = diaQueToca();
+    const numDia = Math.round((new Date(hoyF + "T12:00:00") - new Date(hoyF.slice(0, 4) + "-01-01T12:00:00")) / 86400000);
+    if (toca && numDia % 3 !== 0) return { humor: "anima", mensaje: rellenar(mensajeDelDia(frasesApix("animaDia"), hoyF), toca) };
+    return { humor: "anima", mensaje: mensajeDelDia(frasesApix("anima"), hoyF) };
   }
   // 6. Día de descanso (si llevas unos entrenos y no tienes retos, te propone uno de vez en cuando)
   if (!(estado.social.retos || []).length && validas.length >= 3 && (new Date(hoyF + "T12:00:00").getDate() % 3 === 0)) {
     return { humor: "contento", mensaje: mensajeDelDia(MENSAJES_APIX.sinReto, hoyF), accion: "nuevo-reto" };
   }
   if (cal.length) return { humor: "descanso", mensaje: mensajeDescanso(hoyF) };
-  return { humor: "contento", mensaje: mensajeDelDia(MENSAJES_APIX.contento, hoyF) };
+  return { humor: "contento", mensaje: mensajeDelDia(frasesApix("contento"), hoyF) };
 }
 
 // ---------- Etapas de Apix: crece contigo, pero cuesta ----------

@@ -1162,7 +1162,8 @@ const PRUEBAS = [
   ["3.5 Apix chulo", "Las burlas solo salen con el carácter «Chulo»", function () {
     estadoPrueba();
     const h = hoy();
-    sesionPrueba(sumarDias(h, -8), [["press-banca", [[60, 10], [60, 10]]]]);
+    // 7 días entre uno y otro: nunca caen en la misma semana, así no hay racha que salvar (si no, Apix habla de eso)
+    sesionPrueba(sumarDias(h, -11), [["press-banca", [[60, 10], [60, 10]]]]);
     sesionPrueba(sumarDias(h, -4), [["press-banca", [[60, 10], [60, 10]]]]);
     estado.ajustes.diasEntreno = [0, 1, 2, 3, 4, 5, 6];         // hoy toca entrenar
     estado.ajustes.apixCaracter = "amable";
@@ -1172,6 +1173,30 @@ const PRUEBAS = [
     estado.ajustes.apixCaracter = "chulo";
     const chulo = estadoMascota().mensaje;
     return BURLAS_APIX.sinEntrenar.includes(chulo) || "En modo chulo con 4 días sin entrenar debería vacilar, dice: " + chulo;
+  }],
+  ["Apix mensajes", "Usa tu nombre, dice el día que toca y celebra el entreno número 10", function () {
+    estadoPrueba({ nombre: "Abde Prueba" });
+    if (nombreApix() !== "Abde") return "No coge el primer nombre: " + nombreApix();
+    estado.rutina = generarRutina({ objetivo: "masa", nivel: "intermedio", dias: 3, duracion: 60, tipo: "auto", equipo: TODO_EQUIPO, prioridad: "", evitar: "" });
+    estado.rutina.dias[0].nombre = "Martes · Pecho y tríceps";
+    const t = diaQueToca();
+    if (!t || t.dia !== "Pecho y tríceps") return "No quita el día de la semana del nombre: " + JSON.stringify(t);
+    for (const lista of [MENSAJES_APIX, MENSAJES_APIX_CHULO]) for (const k in lista) for (const m of lista[k])
+      if (/\{(?!nombre|dia|ejercicio|peso|racha|n|dias|falta|unidad|reto)\w+\}/.test(m)) return "Hueco desconocido en: " + m;
+    // Ningún mensaje se queda con huecos sin rellenar
+    estado.ajustes.diasEntreno = [0, 1, 2, 3, 4, 5, 6];
+    for (let i = 9; i >= 1; i--) sesionPrueba(sumarDias(hoy(), -i * 2), [["press-banca", [[60, 10]]]]);
+    sesionPrueba(hoy(), [["press-banca", [[60, 10]]]]);
+    const m = estadoMascota();
+    if (m.mensaje.indexOf("10") < 0) return "No celebra el entreno 10: " + m.humor + ": " + m.mensaje;
+    return !/\{\w+\}/.test(m.mensaje) || "Mensaje con huecos: " + m.mensaje;
+  }],
+  ["Apix mensajes", "El carácter chulo cambia también las frases de entreno completo", function () {
+    estadoPrueba();
+    sesionPrueba(hoy(), [["press-banca", [[60, 8]]]]);
+    estado.ajustes.apixCaracter = "chulo";
+    const m = estadoMascota();
+    return (m.humor === "campeon" && MENSAJES_APIX_CHULO.campeon.indexOf(m.mensaje) >= 0) || m.humor + ": " + m.mensaje;
   }],
   ["3.5 Apix chulo", "Detecta: sin pierna, mismo peso varias semanas, medio entreno, vuelta y pecho otra vez", function () {
     estadoPrueba();
