@@ -715,6 +715,11 @@ const ACCIONES = {
   },
   // Ajustes fijos de cada máquina
   "editar-ajuste": function (id) { hojaAjusteMaquina(id); },
+  "ocultar-aviso-ajuste": function () {
+    estado.ajustes.avisoAjusteMaquina = false;
+    guardar(); cerrarHoja(); pintar();
+    toast("Ya no saldrá. Puedes volver a activarlo en Ajustes → Entrenamiento.");
+  },
   "guardar-ajuste": function (id) {
     const texto = $("ajusteTxt").value.trim().slice(0, 80);
     if (!estado.ajustesMaquina) estado.ajustesMaquina = {};

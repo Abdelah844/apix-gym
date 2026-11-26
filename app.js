@@ -2675,6 +2675,8 @@ function lineaAjusteMaquina(id) {
   const nota = ajusteMaquina(id);
   if (nota) return '<button class="link-nombre small banco-linea" data-act="editar-ajuste" data-a="' + id + '">⚙️ <span>' + esc(nota) + '</span></button>';
   const ej = buscarEj(id);
+  // Se puede ocultar en Ajustes → Entrenamiento (las notas ya apuntadas se siguen viendo)
+  if (estado.ajustes.avisoAjusteMaquina === false) return "";
   if (ej && EQUIPO_CON_AJUSTES.indexOf(ej.equipo) >= 0) return '<button class="btn-txt small banco-linea" data-act="editar-ajuste" data-a="' + id + '">⚙️ Apuntar ajustes de la máquina</button>';
   return "";
 }
@@ -2684,7 +2686,8 @@ function hojaAjusteMaquina(id) {
   abrirHoja(cabeceraHoja("Ajustes de la máquina", esc(ej.nombre)) + '<div class="stack">' +
     '<p class="muted small">Apunta cómo dejas la máquina para no tener que acordarte: te saldrá cada vez que hagas este ejercicio.</p>' +
     '<label class="f">Tus ajustes<input id="ajusteTxt" maxlength="80" placeholder="Ej.: asiento 4, respaldo 2, agarre medio" value="' + esc(ajusteMaquina(id)) + '"></label>' +
-    '<div class="grid2"><button class="btn-sec" data-act="borrar-ajuste" data-a="' + id + '">Borrar</button><button class="btn" data-act="guardar-ajuste" data-a="' + id + '">Guardar</button></div></div>');
+    '<div class="grid2"><button class="btn-sec" data-act="borrar-ajuste" data-a="' + id + '">Borrar</button><button class="btn" data-act="guardar-ajuste" data-a="' + id + '">Guardar</button></div>' +
+    (ajusteMaquina(id) ? "" : '<button class="btn-txt small" data-act="ocultar-aviso-ajuste">No mostrar más «Apuntar ajustes de la máquina»</button>') + '</div>');
   setTimeout(function () { const i = $("ajusteTxt"); if (i) i.focus(); }, 50);
 }
 
@@ -3191,6 +3194,7 @@ function hojaAjustes(seccion) {
         chk("aCalentamiento", a.calentamiento !== false, "Proponer series de calentamiento") +
         '<p class="muted small">En los ejercicios grandes con peso (sentadilla, press banca, peso muerto…). No cuentan para récords ni rangos.</p>' +
         chk("aSugerencias", a.sugerencias !== false, "Mostrar ajustes recomendados en Entrenar") +
+        chk("aAvisoAjusteMaq", a.avisoAjusteMaquina !== false, "Mostrar «Apuntar ajustes de la máquina»") +
         '<p class="muted small">Son propuestas para tu rutina según tu historial (por ejemplo, añadir una serie). Nunca se aplican solas.</p>' +
         (("wakeLock" in navigator) ? chk("aPantalla", a.pantallaEncendida !== false, "No apagar la pantalla mientras entreno") : "") +
       '</div>' +
@@ -3288,6 +3292,7 @@ function guardarAjustesPantalla() {
   if (valor("aUnidadMed") !== null) a.unidadMedidas = valor("aUnidadMed") === "in" ? "in" : "cm";
   if (marcado("aCalentamiento") !== null) a.calentamiento = marcado("aCalentamiento");
   if (marcado("aSugerencias") !== null) a.sugerencias = marcado("aSugerencias");
+  if (marcado("aAvisoAjusteMaq") !== null) a.avisoAjusteMaquina = marcado("aAvisoAjusteMaq");
   if (marcado("aPantalla") !== null) a.pantallaEncendida = marcado("aPantalla");
   if (valor("aCopiaDias") !== null) a.copiaDias = parseInt(valor("aCopiaDias"));
   if (marcado("aSonido") !== null) a.sonido = marcado("aSonido");
