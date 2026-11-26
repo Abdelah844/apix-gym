@@ -944,7 +944,8 @@ function pintarSesion() {
   h += '<div class="progreso-entreno"><div class="row between"><span class="cronometro" aria-label="Tiempo de entreno">⏱ <b id="cronometro" class="num">' + tiempoEntreno() + '</b></span>' +
     '<span class="small"><b>' + hechas + ' de ' + total + ' series</b> <span class="muted">· ' + pct + ' %</span></span></div>' +
     '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
-    '<div class="chips saltos">' + a.ejercicios.map(function (e, i) {
+    // El primer botón de la fila cambia el orden (a la vista, no escondido en «Más opciones»)
+    '<div class="chips saltos">' + (a.ejercicios.length > 1 ? '<button class="chip chip-ej chip-orden" data-act="ordenar-sesion" aria-label="Cambiar el orden">↕ Orden</button>' : "") + a.ejercicios.map(function (e, i) {
       const n = e.series.filter(function (s) { return s.hecha; }).length;
       const lleno = n === e.series.length && n > 0;
       return '<button class="chip chip-ej' + (i === ei ? " on" : "") + (lleno ? " hecho" : "") + '" data-act="ir-ej" data-a="' + i + '">' + (lleno ? "✓ " : (i + 1) + ". ") + esc(tr(buscarEj(e.id).nombre)) + (e.superserie ? " ⇄" : "") + '</button>';
@@ -2512,20 +2513,24 @@ let ordenTemp = null;   // { titulo, sub, ids, orden, alGuardar, alCancelar }
 function hojaOrdenar(titulo, sub, ids, alGuardar, alCancelar) {
   ordenTemp = { titulo: titulo, sub: sub, ids: ids, orden: ids.map(function (x, k) { return k; }), alGuardar: alGuardar, alCancelar: alCancelar };
   abrirHoja(cabeceraHoja(titulo, sub) + '<div class="stack">' +
-    '<p class="muted small">Mantén pulsado ⠿ y arrastra el ejercicio a su sitio.</p>' +
+    '<p class="muted small">Toca ▲ ▼ para subir o bajar un ejercicio, o mantén pulsado ⠿ y arrástralo.</p>' +
     '<div class="lista-orden" id="listaOrden"></div>' +
     '<button class="btn" data-act="orden-guardar">Guardar orden</button>' +
     '<button class="btn-sec full" data-act="orden-cancelar">Cancelar</button></div>');
   pintarListaOrden();
 }
 
-function pintarListaOrden() {
+function pintarListaOrden(movido) {
+  const ultima = ordenTemp.orden.length - 1;
   $("listaOrden").innerHTML = ordenTemp.orden.map(function (k, pos) {
     const ej = buscarEj(ordenTemp.ids[k]);
     const foto = miniaturaDe(ej.id);
-    return '<div class="fila-orden"><span class="orden num">' + (pos + 1) + '</span>' +
+    return '<div class="fila-orden' + (pos === movido ? " recien" : "") + '"><span class="orden num">' + (pos + 1) + '</span>' +
       (foto ? '<img class="foto-mini" src="' + foto + '" alt="">' : "") +
       '<span class="grow"><b class="small">' + esc(ej.nombre) + '</b><span class="muted small" style="display:block">' + GRUPOS[ej.grupo] + '</span>' + '</span>' +
+      // Flechas para subir y bajar con un toque (más fácil que arrastrar)
+      '<span class="flechas-orden"><button data-act="orden-mover" data-a="' + pos + ',-1" aria-label="Subir"' + (pos === 0 ? " disabled" : "") + '>▲</button>' +
+      '<button data-act="orden-mover" data-a="' + pos + ',1" aria-label="Bajar"' + (pos === ultima ? " disabled" : "") + '>▼</button></span>' +
       '<span class="asa" aria-label="Arrastrar">⠿</span></div>';
   }).join("");
   $("listaOrden").querySelectorAll(".asa").forEach(function (asa) { asa.addEventListener("pointerdown", empezarArrastre); });

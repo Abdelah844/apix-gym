@@ -245,6 +245,17 @@ const ACCIONES = {
       },
       function () { cerrarHoja(); });
   },
+  // ▲ ▼ en la pantalla de ordenar: mueve el ejercicio un puesto arriba o abajo
+  "orden-mover": function (a) {
+    if (!ordenTemp) return;
+    const partes = String(a).split(",");
+    const desde = parseInt(partes[0]), hasta = desde + parseInt(partes[1]);
+    if (hasta < 0 || hasta >= ordenTemp.orden.length) return;
+    const k = ordenTemp.orden.splice(desde, 1)[0];
+    ordenTemp.orden.splice(hasta, 0, k);
+    if (navigator.vibrate) navigator.vibrate(10);
+    pintarListaOrden(hasta);
+  },
   "orden-guardar": function () { if (ordenTemp) ordenTemp.alGuardar(ordenTemp.orden); },
   "orden-cancelar": function () { if (ordenTemp) ordenTemp.alCancelar(); },
   "dia-mover": function (i, k, dir) {

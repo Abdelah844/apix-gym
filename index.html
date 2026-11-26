@@ -470,6 +470,12 @@ input, select, textarea { font-size: 16px; }
 .fila-orden { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--surface2); transition: transform .15s ease; }
 .fila-orden .foto-mini { width: 40px; height: 40px; }
 .fila-orden.arrastrando { transition: none; position: relative; z-index: 2; background: var(--surface3); box-shadow: 0 10px 28px rgba(0,0,0,.35); outline: 1px solid var(--accent); }
+.flechas-orden { display: flex; gap: 6px; }
+.flechas-orden button { width: 40px; height: 40px; border-radius: 12px; border: 0; background: var(--surface3); color: var(--fg); font-size: .95rem; cursor: pointer; }
+.flechas-orden button:disabled { opacity: .3; cursor: default; }
+.flechas-orden button:active:not(:disabled) { background: var(--accent); color: #fff; }
+.fila-orden.recien { outline: 1px solid var(--accent); }
+.chip-orden { color: var(--accent); border-color: var(--accent); }
 .asa { touch-action: none; cursor: grab; font-size: 1.5rem; line-height: 1; color: var(--muted); padding: 10px 6px; user-select: none; -webkit-user-select: none; }
 .fila-orden.arrastrando .asa { color: var(--accent); cursor: grabbing; }
 
